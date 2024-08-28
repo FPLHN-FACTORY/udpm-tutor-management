@@ -1,0 +1,38 @@
+HELP.md
+server/.gradle
+server/build/
+server/!gradle/wrapper/gradle-wrapper.jar
+server/!**/src/main/**/build/
+server/!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+server/.idea
+server//*.iws
+server/*.iml
+server/*.ipr
+server/out/
+server/!**/src/main/**/out/
+server/!**/src/test/**/out/
+
+### VS Code ###
+client/.vscode/
+client/node_modules/
+client/dist/
+client/!**/src/main/**/dist/
+client/!**/src/test/**/dist/
+
+### Environments ###
+client/.env
+server/.env

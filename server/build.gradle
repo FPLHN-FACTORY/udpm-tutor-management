@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.3'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'udpm.hn'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+    implementation 'org.webjars:webjars-locator-core:0.55'
+    runtimeOnly 'org.webjars:jquery:3.7.1'
+    runtimeOnly 'org.webjars:bootstrap:5.3.3'
+    runtimeOnly 'org.webjars:font-awesome:6.5.2'
+    runtimeOnly 'org.webjars:popper.js:2.11.7'
+    runtimeOnly 'org.webjars.npm:toastify-js:1.12.0'
+    runtimeOnly 'org.webjars:js-cookie:3.0.1'
+    runtimeOnly 'org.webjars:select2:4.0.13'
+
+    implementation 'org.apache.poi:poi:3.17'
+    implementation 'org.apache.poi:poi-ooxml:3.17'
+    implementation 'org.springframework.batch:spring-batch-core:5.0.3'
+    implementation 'com.github.kumarpankaj18:spring-batch-excel:1.0.6'
+    implementation 'org.json:json:20231013'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
