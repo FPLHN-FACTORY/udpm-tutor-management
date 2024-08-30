@@ -7,7 +7,10 @@
       :data-source="dataSource || []"
       :loading="loading"
       :table-layout="tableLayout || 'auto'"
-      :scroll="scroll"
+      :scroll="{
+        y: scroll?.y || calcTableScroll?.y,
+        x: scroll?.x || 'none',
+      }"
       :size="size || 'small'"
       :sticky="true"
       :show-sorter-tooltip="false"
@@ -39,7 +42,7 @@
       "
       :show-size-changer="!isNaN(totalPages * paginationParams.size)"
       :page-size-options="
-        isNaN(totalPages * paginationParams.size) ? [] : ['5', '10', '15', '20']
+        isNaN(totalPages * paginationParams.size) ? [] : ['10', '15', '20']
       "
       :default-page-size="paginationParams.size"
       :show-quick-jumper="showSizeChanger"
@@ -57,89 +60,83 @@
   </div>
 </template>
 
-<script>
-import { Empty, Pagination, Table } from "ant-design-vue";
-import { defineComponent, h } from "vue";
+<script setup lang="ts">
+import { useCalcTableScroll } from "@/composable/useCalcTableScroll";
+import { defineEmits, defineProps } from "vue";
 
-export default defineComponent({
-  name: "TutorTable",
-  components: {
-    ATable: Table,
-    APagination: Pagination,
+const props = defineProps({
+  title: [String, Function],
+  columns: {
+    type: Array,
+    required: true,
   },
-  props: {
-    title: [String, Function],
-    columns: {
-      type: Array,
-      required: true,
-    },
-    dataSource: {
-      type: Array,
-      default: () => [],
-    },
-    paginationParams: {
-      type: Object,
-      required: true,
-    },
-    totalPages: [Number, String],
-    tableLayout: {
-      type: String,
-      default: "auto",
-    },
-    className: String,
-    size: {
-      type: String,
-      default: "small",
-    },
-    loading: Boolean,
-    showSizeChanger: {
-      type: Boolean,
-      default: true,
-    },
-    showTotal: {
-      type: Boolean,
-      default: false,
-    },
-    isPagination: {
-      type: Boolean,
-      default: true,
-    },
-    scroll: {
-      type: Object,
-      default: () => ({
-        x: "max-content",
-      }),
-    },
-    wrapperClassName: {
-      type: String,
-      default: "min-h-[310px]",
-    },
+  dataSource: {
+    type: Array,
+    default: () => [],
   },
-  emits: ["update:paginationParams", "tableChange"],
-  setup(props, { emit }) {
-    const handleTableChange = (pagination, filters, sorter) => {
-      emit("tableChange", pagination, filters, sorter);
-    };
-
-    const onPaginationChange = (page, pageSize) => {
-      emit("update:paginationParams", {
-        ...props.paginationParams,
-        page,
-        size: pageSize,
-      });
-    };
-
-    const totalFormatter = (total, range) => {
-      return props.showTotal
-        ? `Hiển thị ${range[0]}-${range[1]} trong tổng số ${total} bản ghi`
-        : "";
-    };
-
-    return {
-      handleTableChange,
-      onPaginationChange,
-      totalFormatter,
-    };
+  paginationParams: {
+    type: Object,
+    required: true,
   },
+  totalPages: {
+    type: Number,
+    required: true,
+  },
+  tableLayout: {
+    type: String,
+    default: "auto",
+  },
+  className: String,
+  size: {
+    type: String,
+    default: "small",
+  },
+  loading: Boolean,
+  showSizeChanger: {
+    type: Boolean,
+    default: true,
+  },
+  showTotal: {
+    type: Boolean,
+    default: false,
+  },
+  isPagination: {
+    type: Boolean,
+    default: true,
+  },
+  scroll: {
+    type: Object,
+    default: () => ({
+      x: "max-content",
+    }),
+  },
+  wrapperClassName: {
+    type: String,
+    default: "min-h-[310px]",
+  },
+});
+
+const emit = defineEmits(["update:paginationParams", "tableChange"]);
+
+const handleTableChange = (pagination: any, filters: any, sorter: any) => {
+  emit("tableChange", pagination, filters, sorter);
+};
+
+const onPaginationChange = (page: number, pageSize: number) => {
+  emit("update:paginationParams", {
+    ...props.paginationParams,
+    page,
+    size: pageSize,
+  });
+};
+
+const totalFormatter = (total: number, range: [number, number]) => {
+  return props.showTotal
+    ? `Hiển thị ${range[0]}-${range[1]} trong tổng số ${total} bản ghi`
+    : "";
+};
+
+const { scroll: calcTableScroll } = useCalcTableScroll({
+  className: props.wrapperClassName,
 });
 </script>

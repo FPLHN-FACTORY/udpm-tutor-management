@@ -17,7 +17,7 @@ const itemsAdmin = [
   {
     key: "1",
     icon: CalendarOutlined,
-    text: "Quản lý học kỳ - block",
+    text: "Quản lý học kỳ",
     path: "/admin/semester",
   },
   {

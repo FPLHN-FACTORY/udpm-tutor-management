@@ -35,6 +35,8 @@ public interface SubjectExtendRepository extends SubjectRepository {
                         AND (:#{#request.departmentId} IS NULL OR s.id_department = :#{#request.departmentId})
                         AND (:#{#request.subjectType} IS NULL OR s.subject_type = :#{#request.subjectType})
                         AND (:#{#request.startDate} IS NULL OR s.created_date >= :#{#request.startDate})
+                    ORDER BY
+                        s.created_date DESC
                     """,
             countQuery = """
                     SELECT

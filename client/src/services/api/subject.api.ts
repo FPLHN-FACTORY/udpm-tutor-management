@@ -52,6 +52,7 @@ export interface CreateUpdateSubjectParams {
   subjectName: string;
   departmentId: string;
   subjectType: string;
+  startDate: number;
 }
 
 export const createSubject = async (params: CreateUpdateSubjectParams) => {

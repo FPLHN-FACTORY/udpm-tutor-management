@@ -65,12 +65,12 @@ export const useUpdateSubject = () => {
 };
 
 export const useDetailSubject = (
-  subjectId: string | null,
+  subjectId: Ref<string | null>,
   options?: any
 ): UseQueryReturnType<Awaited<ReturnType<typeof getDetailSubject>>, Error> => {
   return useQuery({
     queryKey: [queryKey.admin.subject.subjectDetail, subjectId],
-    queryFn: () => getDetailSubject(subjectId),
+    queryFn: () => getDetailSubject(subjectId.value),
     ...options,
   });
 };

@@ -27,4 +27,9 @@ public class CommonRestController {
         return Helper.createResponseEntity(commonServiceHelper.getStaffSearch(request));
     }
 
+    @GetMapping("/department")
+    public ResponseEntity<?> getDepartment() {
+        return Helper.createResponseEntity(commonServiceHelper.getAllDepartmentSubject());
+    }
+
 }
