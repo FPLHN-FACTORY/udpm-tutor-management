@@ -18,13 +18,13 @@ public interface SubjectExtendRepository extends SubjectRepository {
     @Query(
             value = """
                     SELECT
-                        ROW_NUMBER() OVER (ORDER BY s.id DESC ) as orderNumber,
+                        ROW_NUMBER() OVER (ORDER BY s.created_date DESC ) as orderNumber,
                         s.id as id,
                         s.subject_code as subjectCode,
                         s.name as subjectName,
                         d.name as departmentName,
                         s.subject_type as subjectType,
-                        s.created_date as createdDate
+                        s.created_time as createdDate
                     FROM
                         subject s
                     LEFT JOIN
