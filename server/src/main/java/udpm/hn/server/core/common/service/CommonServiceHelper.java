@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.core.common.model.request.StaffSearchRequest;
 import udpm.hn.server.core.common.model.response.SemesterInfoResponse;
+import udpm.hn.server.core.common.repository.CMDepartmentExtendRepository;
 import udpm.hn.server.core.common.repository.CMSemesterExtendRepository;
 import udpm.hn.server.core.common.repository.CMStaffExtendRepository;
 import udpm.hn.server.utils.SessionHelper;
@@ -19,6 +20,8 @@ public class CommonServiceHelper {
     private final CMSemesterExtendRepository cMSemesterExtendRepository;
 
     private final CMStaffExtendRepository cMStaffExtendRepository;
+
+    private final CMDepartmentExtendRepository cmDepartmentExtendRepository;
 
     private final SessionHelper sessionHelper;
 
@@ -59,6 +62,14 @@ public class CommonServiceHelper {
                 cMStaffExtendRepository.getStaffs(request),
                 HttpStatus.OK,
                 "Lấy thông tin nhân viên thành công"
+        );
+    }
+
+    public ResponseObject<?> getAllDepartmentSubject() {
+        return new ResponseObject<>(
+                cmDepartmentExtendRepository.getAllDepartment(),
+                HttpStatus.OK,
+                "Lấy danh sách bộ môn thành công"
         );
     }
 

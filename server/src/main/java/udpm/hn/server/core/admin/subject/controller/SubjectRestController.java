@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import udpm.hn.server.core.admin.subject.model.request.CreateUpdateSubjectRequest;
 import udpm.hn.server.core.admin.subject.model.request.SubjectRequest;
 import udpm.hn.server.core.admin.subject.service.SubjectService;
-import udpm.hn.server.core.admin.subject.service.impl.CommonService;
 import udpm.hn.server.infrastructure.constant.MappingConstants;
 import udpm.hn.server.utils.Helper;
 
@@ -24,8 +23,6 @@ import udpm.hn.server.utils.Helper;
 public class SubjectRestController {
 
     private final SubjectService subjectService;
-
-    private final CommonService commonService;
 
     @GetMapping
     public ResponseEntity<?> getAll(SubjectRequest request) {
@@ -45,11 +42,6 @@ public class SubjectRestController {
     @GetMapping("/{subjectId}")
     public ResponseEntity<?> getById(@PathVariable String subjectId) {
         return Helper.createResponseEntity(subjectService.getSubjectById(subjectId));
-    }
-
-    @GetMapping("/department")
-    public ResponseEntity<?> getAllDepartment() {
-        return Helper.createResponseEntity(commonService.getAllDepartmentSubject());
     }
 
 }

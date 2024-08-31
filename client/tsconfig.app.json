@@ -23,7 +23,10 @@
     "allowJs": true,
     "paths": {
       "@/*": ["./src/*", "./dist/*"]
-    }
+    },
+    "types": [
+      "vue3-toastify/global"
+    ]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"]
 }

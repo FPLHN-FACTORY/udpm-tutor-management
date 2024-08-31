@@ -9,7 +9,6 @@ import org.springframework.validation.annotation.Validated;
 import udpm.hn.server.core.admin.subject.model.request.CreateUpdateSubjectRequest;
 import udpm.hn.server.core.admin.subject.model.request.SubjectRequest;
 import udpm.hn.server.core.admin.subject.repository.DepartmentSubjectRepository;
-import udpm.hn.server.core.admin.subject.repository.SFacilityExtendRepository;
 import udpm.hn.server.core.admin.subject.repository.SubjectExtendRepository;
 import udpm.hn.server.core.admin.subject.service.SubjectService;
 import udpm.hn.server.core.common.base.PageableObject;
@@ -31,11 +30,9 @@ public class SubjectServiceImpl implements SubjectService {
 
     private final DepartmentSubjectRepository departmentSubjectRepository;
 
-    private final SFacilityExtendRepository facilityRepository;
-
     @Override
     public ResponseObject<?> getAllSubject(SubjectRequest request) {
-        Pageable pageable = Helper.createPageable(request, "id");
+        Pageable pageable = Helper.createPageable(request);
         return new ResponseObject<>(
                 PageableObject.of(subjectExtendRepository.getAllSubject(pageable, request)),
                 HttpStatus.OK,

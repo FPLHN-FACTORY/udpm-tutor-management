@@ -360,6 +360,18 @@
   resolved "https://registry.npmjs.org/@tanstack/query-core/-/query-core-5.52.0.tgz"
   integrity sha512-U1DOEgltjUwalN6uWYTewSnA14b+tE7lSylOiASKCAO61ENJeCq9VVD/TXHA6O5u9+6v5+UgGYBSccTKDoyMqw==
 
+"@tanstack/query-devtools@5.52.3":
+  version "5.52.3"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-devtools/-/query-devtools-5.52.3.tgz#33c0251d5618421601c5473c759054bf31dbe4b8"
+  integrity sha512-oGX9qJuNpr4vOQyeksqHr+FgLQGs5UooK87R1wTtcsUUdrRKGSgs3cBllZMtWBJxg+yVvg0TlHNGYLMjvqX3GA==
+
+"@tanstack/vue-query-devtools@^5.53.1":
+  version "5.53.1"
+  resolved "https://registry.yarnpkg.com/@tanstack/vue-query-devtools/-/vue-query-devtools-5.53.1.tgz#83e8e7173f7f731fbf04bad02e1005d6b36eb80a"
+  integrity sha512-XxxQmAW0cLkl8ac64eeLYHJd/2kb52cTK2u0ZZ6V/UPDLiU+0zIsw5OnynPJMWWDewJaIUiJ9+fGSuVyXnWC5Q==
+  dependencies:
+    "@tanstack/query-devtools" "5.52.3"
+
 "@tanstack/vue-query@^5.52.0":
   version "5.52.0"
   resolved "https://registry.npmjs.org/@tanstack/vue-query/-/vue-query-5.52.0.tgz"
@@ -741,14 +753,9 @@ csstype@^3.1.1, csstype@^3.1.3:
   resolved "https://registry.npmjs.org/csstype/-/csstype-3.1.3.tgz"
   integrity sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==
 
-dayjs@^1.10.5:
+dayjs@^1.10.5, dayjs@^1.11.13:
   version "1.11.13"
   resolved "https://registry.npmjs.org/dayjs/-/dayjs-1.11.13.tgz"
-  integrity sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==
-
-dayjs@^1.11.13:
-  version "1.11.13"
-  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.13.tgz#92430b0139055c3ebb60150aa13e860a4b5a366c"
   integrity sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==
 
 de-indent@^1.0.2:

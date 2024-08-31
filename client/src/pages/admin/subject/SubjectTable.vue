@@ -1,37 +1,46 @@
 <template>
   <div class="shadow-xl p-3 m-3 rounded-md">
-    <h2 class="p-4 flex items-center text-primary text-3xl font-semibold">
-      <v-icon name="bi-list-ul" scale="2" />
-      <span class="ml-2 text-xl">Danh sách môn học</span>
-    </h2>
+    <div class="flex justify-between items-center">
+      <h2 class="p-4 flex items-center text-primary text-3xl font-semibold">
+        <v-icon name="bi-list-ul" scale="2" />
+        <span class="ml-2 text-xl">Danh sách môn học</span>
+      </h2>
+      <a-button
+        type="primary"
+        @click="$emit('handleOpenModalAdd')"
+        size="large"
+        class="m-4"
+      >
+        Tạo môn học
+      </a-button>
+    </div>
     <tutor-table
-      class="p-4 min-h-[310px]"
+      wrapperClassName="min-h-[320px]"
       :columns="columnsSubject"
       :data-source="dataSource"
       :loading="loading"
-      :pagination-params="paginationParams"
-      :total-pages="totalPages"
+      :pagination-params="paginationParams || {}"
+      :total-pages="totalPages || 0"
+      :scroll="{ y: 'calc(100vh - 400px)' }"
       @update:pagination-params="$emit('update:paginationParams', $event)"
     >
       <template #bodyCell="{ column, record }">
         <div v-if="column.key === 'action'" class="space-x-2 text-center">
-          <a-button
-            type="primary"
-            @click="editRecord(record)"
-            :icon="h(EditOutlined)"
-          />
-          <a-button
-            type="primary"
-            @click="deleteRecord(record)"
-            :icon="h(RedoOutlined)"
-          />
+          <a-tooltip title="Chỉnh sửa môn học" color="#FFC26E">
+            <a-button
+              type="primary"
+              size="large"
+              @click="$emit('handleOpenModalUpdate', record)"
+              :icon="h(EditOutlined)"
+            />
+          </a-tooltip>
         </div>
         <div v-else-if="column.key === 'subjectType'" class="text-center">
           <a-tag color="warning">{{ record.subjectType }}</a-tag>
         </div>
-        <div v-else-if="column.key === 'createdDate'" class="text-center">
+        <!-- <div v-else-if="column.key === 'createdDate'" class="text-center">
           {{ getDateFormat(record.createdDate, false) }}
-        </div>
+        </div> -->
       </template>
     </tutor-table>
   </div>
@@ -40,8 +49,7 @@
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
 import { SubjectResponse } from "@/services/api/subject.api";
-import { getDateFormat } from "@/utils/common.helper";
-import { EditOutlined, RedoOutlined } from "@ant-design/icons-vue";
+import { EditOutlined } from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { defineEmits, defineProps, h } from "vue";
 
@@ -52,7 +60,11 @@ defineProps({
   totalPages: Number,
 });
 
-defineEmits(["update:paginationParams"]);
+defineEmits([
+  "update:paginationParams",
+  "handleOpenModalUpdate",
+  "handleOpenModalAdd",
+]);
 
 const columnsSubject: ColumnType[] = [
   {
@@ -89,25 +101,10 @@ const columnsSubject: ColumnType[] = [
     align: "center",
   },
   {
-    title: "Ngày tạo",
-    dataIndex: "createdDate",
-    key: "createdDate",
-    ellipsis: true,
-    width: "100px",
-  },
-  {
     title: "Hành động",
     key: "action",
     align: "center",
     width: "150px",
   },
 ];
-
-const editRecord = (record) => {
-  console.log("Edit", record);
-};
-
-const deleteRecord = (record) => {
-  console.log("Delete", record);
-};
 </script>
