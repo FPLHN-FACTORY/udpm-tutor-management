@@ -1,8 +1,12 @@
 package udpm.hn.server.infrastructure.constant;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public enum Role {
 
-    BAN_DAO_TAO,
+    ADMIN,
 
     TRUONG_MON,
 
@@ -10,6 +14,12 @@ public enum Role {
 
     SINH_VIEN,
 
-    CHU_NHIEM_BO_MON
+    CHU_NHIEM_BO_MON;
+
+    public static List<String> getAllRoles() {
+        return Arrays.stream(Role.values())
+                .map(Enum::name)
+                .collect(Collectors.toList());
+    }
 
 }

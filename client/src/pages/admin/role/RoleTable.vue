@@ -11,7 +11,10 @@
         :columns="columnsRole"
         :data-source="dataSource"
         :loading="loading"
-        :pagination-params="paginationParams || {}"
+        :pagination-params="paginationParams || {
+          page: 1,
+          size: 10,
+        }"
         :total-pages="totalPages || 0"
         @update:pagination-params="
           $emit('handlePaginationChange:paginationParams', $event)

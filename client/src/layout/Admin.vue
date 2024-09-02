@@ -85,8 +85,17 @@ const selectedKeys = computed(() => {
     <a-layout>
       <a-layout-header class="bg-white">
         <div class="user-info flex items-center justify-end">
-          <user-outlined />
-          <span class="ml-2">Admin</span>
+          <a-dropdown placement="bottomRight" arrow>
+            <div class="flex items-center cursor-pointer">
+              <user-outlined />
+              <span class="ml-2">Admin</span>
+            </div>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item key="logout"> Đăng xuất </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
         </div>
       </a-layout-header>
       <a-layout-content class="mx-4">

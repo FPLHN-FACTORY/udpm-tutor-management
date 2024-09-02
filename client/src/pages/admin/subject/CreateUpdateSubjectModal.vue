@@ -61,7 +61,7 @@ import { toast } from "vue3-toastify";
 interface SubjectForm {
   subjectCode: string;
   subjectName: string;
-  departmentId: string;
+  departmentId: string | null;
   subjectType: string;
   startDate: dayjs.Dayjs | null;
 }
@@ -88,7 +88,7 @@ const departmentOptions = computed(() =>
 const modelRef = reactive<SubjectForm>({
   subjectCode: "",
   subjectName: "",
-  departmentId: departmentOptions.value?.[0]?.value || "",
+  departmentId: null,
   subjectType: "TRADITIONAL",
   startDate: dayjs(),
 });
@@ -107,7 +107,7 @@ const rulesRef = reactive({
     { required: true, message: "Vui lòng chọn loại môn học", trigger: "blur" },
   ],
   startDate: [
-    { required: true, message: "Vui lòng chọn ngày tạo", trigger: "blur" },
+    { required: true, message: "Vui lòng chọn ngày bắt đầu", trigger: "blur" },
   ],
 });
 
@@ -183,7 +183,6 @@ const formFields = computed(() => [
     props: {
       placeholder: "Chọn ngày tạo",
       class: "w-full",
-      disabled: true,
       format: "DD/MM/YYYY",
     },
   },
@@ -199,8 +198,10 @@ const handleAddOrUpdate = async () => {
     props.subjectDetail
       ? updateSubject({
           subjectId: props.subjectDetail.subjectId,
+          // @ts-ignore
           params: payload,
         })
+        // @ts-ignore
       : createSubject(payload);
     toast.success(
       props.subjectDetail

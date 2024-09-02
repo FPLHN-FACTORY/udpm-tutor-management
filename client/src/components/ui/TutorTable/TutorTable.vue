@@ -139,7 +139,7 @@ const tableWrapper = ref<HTMLElement | null>(null);
 const tableHeight = useTableHeight(tableWrapper, 210);
 
 const computedScroll = computed(() => {
-  const y = tableHeight.value;
+  const y = tableHeight.value || 0;
   const isScrollable =
     props.dataSource.length > 1 &&
     tableWrapper.value &&
