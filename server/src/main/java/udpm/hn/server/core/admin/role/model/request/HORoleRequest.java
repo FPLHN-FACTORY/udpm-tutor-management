@@ -11,4 +11,5 @@ public class HORoleRequest extends PageableRequest {
     private String roleName;
 
     private String idFacility;
+
 }

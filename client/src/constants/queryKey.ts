@@ -7,5 +7,9 @@ export const queryKey = {
       subjectList: "subjectListKey",
       subjectDetail: "subjectDetailKey",
     },
+    role: {
+      roleList: "roleListKey",
+      roleDetail: "roleDetailKey",
+    },
   },
 };

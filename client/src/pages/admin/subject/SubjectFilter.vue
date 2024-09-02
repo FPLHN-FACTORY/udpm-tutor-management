@@ -6,7 +6,7 @@
     </h2>
     <a-form
       layout="vertical"
-      class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+      class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 p-5"
     >
       <a-form-item
         label="Mã môn học"
@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import debounce from "lodash/debounce";
+import { debounce } from "lodash";
 import { defineEmits, ref, watch } from "vue";
 
 const subjectTypeOptions = [
@@ -78,7 +78,7 @@ const emit = defineEmits(["filter"]);
 
 const debouncedEmit = debounce(() => {
   emit("filter", params.value);
-}, 3000);
+}, 2000);
 
 function onChange(key: keyof ParamsFilterSubjects, event: Event) {
   const target = event.target as HTMLInputElement;
@@ -93,5 +93,3 @@ watch(
   { deep: true }
 );
 </script>
-
-<style scoped></style>
