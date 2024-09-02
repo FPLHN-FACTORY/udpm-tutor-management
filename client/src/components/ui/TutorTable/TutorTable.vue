@@ -1,16 +1,14 @@
 <template>
-  <div class="h-0 flex-1 overflow-hidden" ref="tableWrapper">
+  <div class="h-0 flex-1" ref="tableWrapper">
     <a-table
+      class="overflow-hidden"
       :class="className"
       :title="title"
       :columns="columns"
       :data-source="dataSource || []"
       :loading="loading"
       :table-layout="tableLayout || 'auto'"
-      :scroll="{
-        y: tableHeight ? `${tableHeight}px` : scroll?.y || 'none',
-        x: scroll?.x || 'none',
-      }"
+      :scroll="computedScroll"
       :size="size || 'small'"
       :sticky="true"
       :show-sorter-tooltip="false"
@@ -18,13 +16,15 @@
       :pagination="false"
       v-bind="$attrs"
     >
-      <template
-        v-for="(column, index) in columns"
-        #bodyCell="{ text, record, column }"
-      >
+      <template #bodyCell="{ text, record, column }">
         <slot name="bodyCell" :column="column" :record="record">
           {{ text }}
         </slot>
+      </template>
+      <template #emptyText>
+        <div class="flex justify-center items-center h-full">
+          <a-empty description="Không có dữ liệu" />
+        </div>
       </template>
     </a-table>
   </div>
@@ -60,8 +60,8 @@
 </template>
 
 <script setup lang="ts">
-import { useTableHeight } from '@/composable/useTableHeight';
-import { defineEmits, defineProps, ref } from 'vue';
+import { useTableHeight } from "@/composable/useTableHeight";
+import { computed, defineEmits, defineProps, ref } from "vue";
 
 const props = defineProps({
   title: [String, Function],
@@ -136,6 +136,17 @@ const totalFormatter = (total: number, range: [number, number]) => {
 };
 
 const tableWrapper = ref<HTMLElement | null>(null);
+const tableHeight = useTableHeight(tableWrapper, 210);
 
-const tableHeight = useTableHeight(tableWrapper, 310);
+const computedScroll = computed(() => {
+  const y = tableHeight.value || 0;
+  const isScrollable =
+    props.dataSource.length > 1 &&
+    tableWrapper.value &&
+    tableWrapper.value.scrollHeight > y;
+
+  return isScrollable
+    ? { y: props.scroll?.y || y, x: props.scroll?.x || "none" }
+    : { x: props.scroll?.x || "none" };
+});
 </script>

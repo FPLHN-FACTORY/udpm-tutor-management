@@ -3,13 +3,13 @@
     <div class="flex justify-between items-center">
       <h2 class="p-4 flex items-center text-primary text-3xl font-semibold">
         <v-icon name="hi-office-building" scale="2" />
-        <span class="m-2 text-3xl">Quản lý cơ sở</span>
+        <span class="m-2 text-3xl">Quản lý môn học</span>
       </h2>
     </div>
     <subject-filter @filter="handleFilter" />
     <subject-table
       :data-source="subjectData"
-      :loading="isLoading"
+      :loading="isLoading || isFetching"
       :pagination-params="params"
       :total-pages="totalPages"
       @update:pagination-params="handlePaginationChange"
@@ -47,7 +47,7 @@ const open = ref(false);
 
 const subjectId = ref<string | null>(null);
 
-const { data, isLoading } = useGetSubject(params, {
+const { data, isLoading, isFetching } = useGetSubject(params, {
   refetchOnWindowFocus: false,
   placeholderData: keepPreviousData,
 });

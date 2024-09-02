@@ -3,6 +3,7 @@ package udpm.hn.server.core.admin.role.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import udpm.hn.server.utils.Helper;
 @RestController
 @RequestMapping(MappingConstants.API_HEAD_OFFICE_ROLE)
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class HORoleRestController {
 
     private final HORoleService roleService;

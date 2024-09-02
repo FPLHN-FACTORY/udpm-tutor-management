@@ -1,12 +1,13 @@
 package udpm.hn.server.core.admin.role.model.response;
 
-public interface HORoleResponse {
+import udpm.hn.server.core.common.base.HasOrderNumber;
+import udpm.hn.server.core.common.base.IsIdentify;
 
-    String getRoleName();
-
-    String getIdRole();
+public interface HORoleResponse extends IsIdentify, HasOrderNumber {
 
     String getRoleCode();
+
+    String getRoleName();
 
     String getFacilityName();
 

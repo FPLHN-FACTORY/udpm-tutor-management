@@ -7,13 +7,3 @@
 * {
   font-family: "Roboto", sans-serif;
 }
-
-/* Custom Ant Design Table Scroll */
-.ant-table-body{
-  overflow-y: hidden!important;
-}
-
-.ant-table-body:hover{
-  overflow-y: scroll!important;
-}
-/* Custom Ant Design Table Scroll */

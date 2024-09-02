@@ -1,7 +1,46 @@
-<script setup lang="ts"></script>
-
 <template>
-  <div> Role </div>
+  <div class="mt-4">
+    <div class="flex justify-between items-center">
+      <h2 class="p-4 flex items-center text-primary text-3xl font-semibold">
+        <v-icon name="hi-office-building" scale="2" />
+        <span class="m-2 text-3xl">Quản lý chức vụ</span>
+      </h2>
+    </div>
+    <role-table
+      :data-source="roles"
+      :loading="isLoading || isFetching"
+      :pagination-params="params"
+      :total-pages="totalPages"
+      @handlePaginationChange="handlePaginationChange"
+    />
+  </div>
 </template>
 
-<style scoped></style>
+<script lang="ts" setup>
+import { ParamsGetRoles } from "@/services/api/role.api";
+import { useGetRoles } from "@/services/service/role.action";
+import RoleTable from "@/pages/admin/role/RoleTable.vue";
+import { keepPreviousData } from "@tanstack/vue-query";
+import { computed, ref } from "vue";
+
+const params = ref<ParamsGetRoles>({
+  page: 1,
+  size: 10,
+});
+
+const {
+  data: roleData,
+  isLoading,
+  isFetching,
+} = useGetRoles(params, {
+  refetchOnWindowFocus: false,
+  placeholderData: keepPreviousData,
+});
+
+const handlePaginationChange = (paginationParams: ParamsGetRoles) => {
+  params.value = paginationParams;
+};
+
+const roles = computed(() => roleData?.value?.data?.data || []);
+const totalPages = computed(() => roleData?.value?.data?.totalPages || 0);
+</script>

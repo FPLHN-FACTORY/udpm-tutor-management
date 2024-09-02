@@ -10,6 +10,7 @@ import udpm.hn.server.core.admin.role.repository.HORoleFacilityRepository;
 import udpm.hn.server.core.admin.role.repository.HORoleRepository;
 import udpm.hn.server.core.admin.role.repository.HORoleStaffRepository;
 import udpm.hn.server.core.admin.role.service.HORoleService;
+import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.entity.Facility;
 import udpm.hn.server.entity.Role;
@@ -34,8 +35,8 @@ public class HORoleServiceImpl implements HORoleService {
 
     @Override
     public ResponseObject<?> getAllRole(HORoleRequest roleRequest) {
-        Pageable page = Helper.createPageable(roleRequest, "createdDate");
-        return new ResponseObject<>(roleRepository.getAllRole(page, roleRequest),
+        Pageable page = Helper.createPageable(roleRequest);
+        return new ResponseObject<>(PageableObject.of(roleRepository.getAllRole(page, roleRequest)),
                 HttpStatus.OK,
                 "Get all role successfully");
     }
