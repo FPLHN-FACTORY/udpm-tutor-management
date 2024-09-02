@@ -68,7 +68,7 @@ interface SubjectForm {
 
 const props = defineProps({
   open: Boolean,
-  subjectDetail: Object,
+  subjectDetail: Object as () => any | null,
   isLoadingDetail: Boolean,
 });
 

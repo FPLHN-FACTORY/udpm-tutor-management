@@ -1,5 +1,5 @@
 <template>
-  <div :class="['flex-1', wrapperClassName]">
+  <div class="h-0 flex-1 overflow-hidden" ref="tableWrapper">
     <a-table
       :class="className"
       :title="title"
@@ -8,7 +8,7 @@
       :loading="loading"
       :table-layout="tableLayout || 'auto'"
       :scroll="{
-        y: scroll?.y || calcTableScroll?.y,
+        y: tableHeight ? `${tableHeight}px` : scroll?.y || 'none',
         x: scroll?.x || 'none',
       }"
       :size="size || 'small'"
@@ -20,7 +20,6 @@
     >
       <template
         v-for="(column, index) in columns"
-        :key="index"
         #bodyCell="{ text, record, column }"
       >
         <slot name="bodyCell" :column="column" :record="record">
@@ -55,14 +54,14 @@
       }"
       :show-total="showTotal ? totalFormatter : undefined"
       responsive
-      @change="(page, pageSize) => onPaginationChange(page, pageSize)"
+      @change="(page: number, pageSize: number) => onPaginationChange(page, pageSize)"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useCalcTableScroll } from "@/composable/useCalcTableScroll";
-import { defineEmits, defineProps } from "vue";
+import { useTableHeight } from '@/composable/useTableHeight';
+import { defineEmits, defineProps, ref } from 'vue';
 
 const props = defineProps({
   title: [String, Function],
@@ -136,7 +135,7 @@ const totalFormatter = (total: number, range: [number, number]) => {
     : "";
 };
 
-const { scroll: calcTableScroll } = useCalcTableScroll({
-  className: props.wrapperClassName,
-});
+const tableWrapper = ref<HTMLElement | null>(null);
+
+const tableHeight = useTableHeight(tableWrapper, 310);
 </script>
