@@ -6,3 +6,5 @@ export const PREFIX_API_COMMON = `${API_URL}/common` as string;
 
 // ADMIN API
 export const PREFIX_API_SUBJECT_ADMIN = `${API_URL}/admin/subjects` as string;
+
+export const PREFIX_API_ROLE_ADMIN = `${API_URL}/admin/roles` as string; 

@@ -2,7 +2,7 @@
   <div class="shadow-md p-3 rounded-md m-3">
     <h2 className="p-4 flex items-center text-primary text-3xl font-semibold">
       <v-icon name="co-filter" scale="2" />
-      <span className="ml-2 text-xl">Bộ lọc</span>
+      <span className="ml-2 text-2xl">Bộ lọc</span>
     </h2>
     <a-form
       layout="vertical"

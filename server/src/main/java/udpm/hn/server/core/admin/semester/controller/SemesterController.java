@@ -22,11 +22,6 @@ public class SemesterController {
 
     private final SemesterService semesterService;
 
-    @GetMapping
-    public String viewRole() {
-        return "admin/semester/semester";
-    }
-
     @PostMapping("/all")
     public ResponseEntity<?> getAllSemesters(@RequestBody SemesterRequest request) {
         return ResponseEntity.ok(semesterService.getAllSemester(request));

@@ -3,12 +3,11 @@
     <div class="flex justify-between items-center">
       <h2 class="p-4 flex items-center text-primary text-3xl font-semibold">
         <v-icon name="hi-office-building" scale="2" />
-        <span class="ml-2 text-2xl">Quản lý cơ sở</span>
+        <span class="m-2 text-3xl">Quản lý cơ sở</span>
       </h2>
     </div>
     <subject-filter @filter="handleFilter" />
     <subject-table
-      class="p-4"
       :data-source="subjectData"
       :loading="isLoading"
       :pagination-params="params"
