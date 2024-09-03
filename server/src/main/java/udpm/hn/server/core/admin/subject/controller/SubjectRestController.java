@@ -17,7 +17,7 @@ import udpm.hn.server.infrastructure.constant.MappingConstants;
 import udpm.hn.server.utils.Helper;
 
 @RestController
-@RequestMapping(MappingConstants.API_HEAD_OFFICE_SUBJECT)
+@RequestMapping(MappingConstants.API_ADMIN_SUBJECT)
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class SubjectRestController {

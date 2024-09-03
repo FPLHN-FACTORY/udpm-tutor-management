@@ -15,7 +15,7 @@ import { useRoute } from "vue-router";
 const collapsed = ref<boolean>(false);
 const route = useRoute();
 
-const itemsAdmin = [
+const itemsAdmin = computed(() => [
   {
     key: "1",
     icon: CalendarOutlined,
@@ -52,11 +52,11 @@ const itemsAdmin = [
     text: "Quản lý bộ môn",
     path: "/admin/department",
   },
-];
+]);
 
 const selectedKeys = computed(() => {
   const currentPath = route.path;
-  const selectedItem = itemsAdmin.find((item) =>
+  const selectedItem = itemsAdmin.value.find((item) =>
     item.path.includes(currentPath)
   );
   return selectedItem ? [selectedItem.key] : [];

@@ -1,30 +1,50 @@
-type StorageType = 'localStorage' | 'sessionStorage'
+export const localStorageAction = {
+  get: (key: string, defaultValue = null) => {
+    const value = localStorage.getItem(key);
 
-export default class Storage<T = unknown> {
-  private readonly key: string
-  private readonly storageType: StorageType
+    return value ? JSON.parse(value) : defaultValue;
+  },
+  set: (key: string, value: any) =>
+    localStorage.setItem(key, JSON.stringify(value)),
+  remove: (key: string) => localStorage.removeItem(key),
+  clear: () => localStorage.clear(),
+};
 
-  constructor(key: string, storageType: StorageType = 'localStorage') {
-    this.key = key
-    this.storageType = storageType
-  }
+export const sessionStorageAction = {
+  get: (key: string, defaultValue = null) => {
+    const value = sessionStorage.getItem(key);
 
-  get(): T | null {
-    try {
-      const value = window[this.storageType].getItem(this.key) ?? ''
-      return JSON.parse(value) as T
+    return value ? JSON.parse(value) : defaultValue;
+  },
+  set: (key: string, value: any) =>
+    sessionStorage.setItem(key, JSON.stringify(value)),
+  remove: (key: string) => sessionStorage.removeItem(key),
+  clear: () => sessionStorage.clear(),
+};
+
+export const cookieStorageAction = {
+  get(key: string): string {
+    const cookieArr = document.cookie.split("; ");
+    for (let i = 0, length = cookieArr.length; i < length; i++) {
+      const kv = cookieArr[i].split("=");
+      if (kv[0] === key) {
+        return kv[1];
+      }
     }
-    catch {
-      return null
+    return "";
+  },
+  set: (key: string, value: any, expire: number | null = 60 * 60 * 0.5) => {
+    document.cookie = `${key}=${value}; Max-Age=${expire}`;
+  },
+  remove: (key: string) => {
+    document.cookie = `${key}=${1}; Max-Age=${-1}`;
+  },
+  clear: () => {
+    const keys = document.cookie.match(/[^ =;]+(?==)/g);
+    if (keys) {
+      for (let i = keys.length; i--; ) {
+        document.cookie = `${keys[i]}=0;expire=${new Date(0).toUTCString()}`;
+      }
     }
-  }
-
-  set(value: T): void {
-    const strValue = JSON.stringify(value)
-    window[this.storageType].setItem(this.key, strValue)
-  }
-
-  remove(): void {
-    window[this.storageType].removeItem(this.key)
-  }
-}
+  },
+};

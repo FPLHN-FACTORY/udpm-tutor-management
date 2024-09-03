@@ -17,7 +17,7 @@ export const routes: RouteRecordRaw[] = [
   {
     path: "/admin",
     redirect: "/admin/semester",
-    component: () => import("./layout/Admin.vue"),
+    component: () => import("@/layout/Admin.vue"),
     children: [
       {
         path: "subject",
@@ -54,7 +54,7 @@ export const routes: RouteRecordRaw[] = [
   {
     path: "/head-department",
     redirect: "/head-department/manage-head-subject",
-    component: () => import("./layout/HeadDepartment.vue"),
+    component: () => import("@/layout/HeadDepartment.vue"),
     children: [
       {
         path: "manage-head-subject",

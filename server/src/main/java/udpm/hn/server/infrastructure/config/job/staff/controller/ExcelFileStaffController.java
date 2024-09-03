@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(MappingConstants.API_HEAD_OFFICE_STAFF)
+@RequestMapping(MappingConstants.API_ADMIN_STAFF)
 public class ExcelFileStaffController {
 
     private final UploadStaffService storageService;

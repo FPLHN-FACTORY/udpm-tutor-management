@@ -16,6 +16,7 @@
     "ant-design-vue": "^4.2.3",
     "axios": "^1.7.5",
     "dayjs": "^1.11.13",
+    "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "oh-vue-icons": "^1.0.0-rc3",
     "pinia": "^2.2.2",

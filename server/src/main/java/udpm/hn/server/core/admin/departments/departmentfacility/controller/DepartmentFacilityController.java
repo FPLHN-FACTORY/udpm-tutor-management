@@ -16,7 +16,7 @@ import udpm.hn.server.infrastructure.constant.MappingConstants;
 import udpm.hn.server.utils.Helper;
 
 @Controller
-@RequestMapping(MappingConstants.REDIRECT_ADMIN_DEPARTMENT_FACILITY)
+@RequestMapping(MappingConstants.API_ADMIN_DEPARTMENT_FACILITY)
 @RequiredArgsConstructor
 public class DepartmentFacilityController {
 

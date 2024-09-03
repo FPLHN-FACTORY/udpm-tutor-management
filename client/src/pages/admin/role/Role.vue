@@ -6,6 +6,7 @@
         <span class="m-2 text-3xl">Quản lý chức vụ</span>
       </h2>
     </div>
+    <role-filter :params="params" @filter="handleFilterChange" />
     <role-table
       :data-source="roles"
       :loading="isLoading || isFetching"
@@ -20,6 +21,7 @@
 import { ParamsGetRoles } from "@/services/api/role.api";
 import { useGetRoles } from "@/services/service/role.action";
 import RoleTable from "@/pages/admin/role/RoleTable.vue";
+import RoleFilter from "@/pages/admin/role/RoleFilter.vue";
 import { keepPreviousData } from "@tanstack/vue-query";
 import { computed, ref } from "vue";
 
@@ -39,6 +41,10 @@ const {
 
 const handlePaginationChange = (paginationParams: ParamsGetRoles) => {
   params.value = paginationParams;
+};
+
+const handleFilterChange = (filterParams: ParamsGetRoles) => {
+  params.value = { ...params.value, ...filterParams };
 };
 
 const roles = computed(() => roleData?.value?.data?.data || []);
