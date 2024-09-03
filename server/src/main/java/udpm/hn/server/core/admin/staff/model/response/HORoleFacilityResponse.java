@@ -1,4 +1,4 @@
-package udpm.hn.server.core.admin.role.model.response;
+package udpm.hn.server.core.admin.staff.model.response;
 
 public interface HORoleFacilityResponse {
 

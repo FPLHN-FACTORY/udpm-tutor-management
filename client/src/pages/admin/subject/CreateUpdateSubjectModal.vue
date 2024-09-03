@@ -53,6 +53,7 @@ import {
   useCreateSubject,
   useUpdateSubject,
 } from "@/services/service/subject.action";
+import { filterOption } from "@/utils/common.helper";
 import { Form } from "ant-design-vue";
 import dayjs from "dayjs";
 import { computed, reactive, watch } from "vue";
@@ -79,9 +80,9 @@ const { mutate: updateSubject } = useUpdateSubject();
 const { data: departmentOptionsData } = useGetDepartmentOptions();
 
 const departmentOptions = computed(() =>
-  departmentOptionsData?.value?.data.map((dept: any) => ({
-    value: dept.departmentId,
-    label: dept.departmentName,
+  departmentOptionsData?.value?.data.map((dept) => ({
+    value: dept.id,
+    label: dept.name,
   }))
 );
 
@@ -162,6 +163,8 @@ const formFields = computed(() => [
     props: {
       placeholder: "Chọn bộ môn",
       loading: false,
+      showSearch: true,
+      filterOption: filterOption,
     },
     options: departmentOptions.value,
   },
@@ -201,8 +204,8 @@ const handleAddOrUpdate = async () => {
           // @ts-ignore
           params: payload,
         })
-        // @ts-ignore
-      : createSubject(payload);
+      : // @ts-ignore
+        createSubject(payload);
     toast.success(
       props.subjectDetail
         ? "Cập nhật môn học thành công"

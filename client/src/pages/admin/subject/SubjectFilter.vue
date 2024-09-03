@@ -1,8 +1,8 @@
 <template>
   <div class="shadow-md p-3 rounded-md m-3">
-    <h2 className="p-4 flex items-center text-primary text-3xl font-semibold">
+    <h2 class="p-4 flex items-center text-primary text-3xl font-semibold">
       <v-icon name="co-filter" scale="2" />
-      <span className="ml-2 text-2xl">Bộ lọc</span>
+      <span class="ml-2 text-2xl">Bộ lọc</span>
     </h2>
     <a-form
       layout="vertical"
@@ -14,7 +14,7 @@
       >
         <a-input
           :value="params.subjectCode"
-          @change="onChange('subjectCode', $event)"
+          @input="onChange('subjectCode', $event)"
           placeholder="Mã môn học"
           allowClear
         />
@@ -25,7 +25,7 @@
       >
         <a-input
           :value="params.subjectName"
-          @change="onChange('subjectName', $event)"
+          @input="onChange('subjectName', $event)"
           placeholder="Tên môn học"
           allowClear
         />
@@ -36,7 +36,7 @@
       >
         <a-select
           :value="params.subjectType"
-          @change="onChange('subjectType', $event)"
+          @change="onSelectChange('subjectType', $event)"
           placeholder="Loại môn học"
           allowClear
         >
@@ -44,8 +44,9 @@
             v-for="option in subjectTypeOptions"
             :key="option.value"
             :value="option.value"
-            :label="option.label"
-          />
+          >
+            {{ option.label }}
+          </a-select-option>
         </a-select>
       </a-form-item>
     </a-form>
@@ -81,8 +82,20 @@ const debouncedEmit = debounce(() => {
 }, 2000);
 
 function onChange(key: keyof ParamsFilterSubjects, event: Event) {
-  const target = event.target as HTMLInputElement;
-  params.value[key] = target.value;
+  if (
+    event &&
+    event.target &&
+    (event.target as HTMLInputElement).value !== undefined
+  ) {
+    params.value[key] = (event.target as HTMLInputElement).value;
+  } else if (event && typeof event === "string") {
+    params.value[key] = event;
+  }
+}
+
+function onSelectChange(key: keyof ParamsFilterSubjects, value: string) {
+  params.value[key] = value;
+  emit("filter", params.value);
 }
 
 watch(

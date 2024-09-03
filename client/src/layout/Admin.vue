@@ -5,6 +5,8 @@ import {
   CalendarOutlined,
   HomeOutlined,
   IdcardOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
   UserOutlined,
 } from "@ant-design/icons-vue";
 import { computed, ref } from "vue";
@@ -73,18 +75,33 @@ const selectedKeys = computed(() => {
           />
         </a>
       </div>
-      <a-menu v-model:selectedKeys="selectedKeys" theme="light" mode="inline">
-        <a-menu-item v-for="item in itemsAdmin" :key="item.key">
-          <component :is="item.icon" />
-          <router-link :to="item.path" class="ml-2 text-sm">
-            {{ item.text }}
+      <a-menu
+        v-model:selectedKeys="selectedKeys"
+        theme="light"
+        mode="inline"
+        :trigger="null"
+      >
+        <a-menu-item
+          v-for="item in itemsAdmin"
+          :key="item.key"
+          :title="item.text"
+        >
+          <component :is="item.icon" class="text-xl" />
+          <router-link :to="item.path" class="ml-3 text-sm inline">
+            {{ collapsed ? "" : item.text }}
           </router-link>
         </a-menu-item>
       </a-menu>
     </a-layout-sider>
     <a-layout>
-      <a-layout-header class="bg-white">
-        <div class="user-info flex items-center justify-end">
+      <a-layout-header class="bg-white pl-3 mt-1">
+        <div class="user-info flex items-center justify-between">
+          <div class="cursor-pointer" @click="collapsed = !collapsed">
+            <component
+              :is="collapsed ? MenuUnfoldOutlined : MenuFoldOutlined"
+              class="text-xl"
+            />
+          </div>
           <a-dropdown placement="bottomRight" arrow>
             <div class="flex items-center cursor-pointer">
               <user-outlined />

@@ -22,3 +22,7 @@ export function sortAlphaText(arr: string[], type?: "asc" | "desc") {
 export const getDateFormat = (unix: number, showTime: boolean) => {
   return dayjs(unix).format(showTime ? "DD/MM/YYYY HH:mm:ss" : "DD/MM/YYYY");
 };
+
+export const filterOption = (input: string, option: any) => {
+  return option.value.toLowerCase().includes(input.toLowerCase());
+};

@@ -3,16 +3,31 @@ import request from "@/services/request";
 import { DefaultResponse } from "@/types/api.common";
 import { AxiosResponse } from "axios";
 
-export type DepartmentOptions = {
-  departmentId: string;
-  departmentName: string;
+export type CommonOptionsResponse = {
+  id: string;
+  name: string;
 };
 
-export const getDepartmentOptions = async () => {
+export const getDepartmentOptions = async (query?: string) => {
   const res = (await request({
     url: `${PREFIX_API_COMMON}/department`,
+    params: {
+      query,
+    },
     method: "GET",
-  })) as AxiosResponse<DefaultResponse<Array<DepartmentOptions>>>;
+  })) as AxiosResponse<DefaultResponse<Array<CommonOptionsResponse>>>;
+
+  return res.data;
+};
+
+export const getFacilityOptions = async (query?: string) => {
+  const res = (await request({
+    url: `${PREFIX_API_COMMON}/facility`,
+    params: {
+      query,
+    },
+    method: "GET",
+  })) as AxiosResponse<DefaultResponse<Array<CommonOptionsResponse>>>;
 
   return res.data;
 };

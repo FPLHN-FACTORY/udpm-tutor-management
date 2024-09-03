@@ -32,11 +32,6 @@ public class HORoleRestController {
         return Helper.createResponseEntity(roleService.getAllRole(hoRoleRequest));
     }
 
-    @GetMapping("/facilities")
-    public ResponseEntity<?> getFacilities() {
-        return Helper.createResponseEntity(roleService.getFacilities());
-    }
-
     @PostMapping
     public ResponseEntity<?> addRole(@Valid @RequestBody HOSaveRoleRequest hoRoleRequest) {
         return Helper.createResponseEntity(roleService.saveRole(hoRoleRequest));
@@ -56,4 +51,5 @@ public class HORoleRestController {
     public ResponseEntity<?> deleteRole(@RequestParam(value = "id") String id) {
         return Helper.createResponseEntity(roleService.deleteRole(id));
     }
+
 }

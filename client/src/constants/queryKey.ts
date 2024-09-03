@@ -1,6 +1,7 @@
 export const queryKey = {
   common: {
     departmentOptions: "departmentOptionsKey",
+    facilityOptions: "facilityOptionsKey",
   },
   admin: {
     subject: {
