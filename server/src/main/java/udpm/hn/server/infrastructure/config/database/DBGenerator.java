@@ -4,6 +4,12 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import udpm.hn.server.entity.Block;
+import udpm.hn.server.entity.Facility;
+import udpm.hn.server.entity.Role;
+import udpm.hn.server.entity.Semester;
+import udpm.hn.server.entity.Staff;
+import udpm.hn.server.entity.StaffRole;
 import udpm.hn.server.infrastructure.config.database.repository.DBGenBlockRepository;
 import udpm.hn.server.infrastructure.config.database.repository.DBGenFacilityRepository;
 import udpm.hn.server.infrastructure.config.database.repository.DBGenRoleRepository;
@@ -13,16 +19,9 @@ import udpm.hn.server.infrastructure.config.database.repository.DBGenStaffRoleRe
 import udpm.hn.server.infrastructure.constant.BlockName;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
 import udpm.hn.server.infrastructure.constant.SemesterName;
-import udpm.hn.server.entity.Block;
-import udpm.hn.server.entity.Facility;
-import udpm.hn.server.entity.Role;
-import udpm.hn.server.entity.Semester;
-import udpm.hn.server.entity.Staff;
-import udpm.hn.server.entity.StaffRole;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-
 
 @Component
 @RequiredArgsConstructor
@@ -45,33 +44,15 @@ public class DBGenerator {
 
     @PostConstruct
     public void init() {
-        if (isGenerated.equals("true")) generateData();
+        if ("true".equals(isGenerated)) generateData();
     }
 
     private void generateData() {
-        Semester semester = new Semester();
-        semester.setSemesterName(SemesterName.SPRING);
-        semester.setYear(getCurrentYear());
-        semester.setStartTime(getStartTime(SemesterName.SPRING, getCurrentYear()));
-        semester.setEndTime(getEndTime(SemesterName.SPRING, getCurrentYear()));
-        semester.setStatus(EntityStatus.ACTIVE);
-        Semester semesterSaved = semesterRepository.save(semester);
+        Semester semester = createSemester(SemesterName.SPRING, getCurrentYear());
+        semesterRepository.save(semester);
 
-        Block blockOne = new Block();
-        blockOne.setName(BlockName.BLOCK_1);
-        blockOne.setStartTime(getStartTime(SemesterName.SPRING, getCurrentYear()));
-        blockOne.setEndTime(getEndTime(SemesterName.SPRING, getCurrentYear()));
-        blockOne.setSemester(semesterSaved);
-        blockOne.setStatus(EntityStatus.ACTIVE);
-        blockRepository.save(blockOne);
-
-        Block blockTwo = new Block();
-        blockTwo.setName(BlockName.BLOCK_2);
-        blockTwo.setStartTime(getStartTime(SemesterName.SUMMER, getCurrentYear()));
-        blockTwo.setEndTime(getEndTime(SemesterName.SUMMER, getCurrentYear()));
-        blockTwo.setSemester(semesterSaved);
-        blockTwo.setStatus(EntityStatus.ACTIVE);
-        blockRepository.save(blockTwo);
+        createAndSaveBlock(BlockName.BLOCK_1, SemesterName.SPRING, semester);
+        createAndSaveBlock(BlockName.BLOCK_2, SemesterName.SUMMER, semester);
 
         Facility facility = new Facility();
         facility.setCode("HA_NOI");
@@ -79,26 +60,61 @@ public class DBGenerator {
         facility.setStatus(EntityStatus.ACTIVE);
         facilityRepository.save(facility);
 
-        Role admin = new Role();
-        admin.setCode(udpm.hn.server.infrastructure.constant.Role.ADMIN.name());
-        admin.setName("Admin");
-        admin.setStatus(EntityStatus.ACTIVE);
-        Role roleSaved = roleRepository.save(admin);
+        Role roleSaved = roleRepository.findByCodeAndNameAndFacility("ADMIN", "Admin", facility)
+                .orElseGet(() -> {
+                    Role admin = new Role();
+                    admin.setCode(udpm.hn.server.infrastructure.constant.Role.ADMIN.name());
+                    admin.setName("Admin");
+                    admin.setStatus(EntityStatus.ACTIVE);
+                    return roleRepository.save(admin);
+                });
 
+        Staff[] staffArray = {
+                createStaff("Nguyễn Minh Hiếu", "PH42056", "hieunmph42056@fe.edu.vn", "hieunmph42056@fpt.edu.vn"),
+                createStaff("Nguyễn Phi Hùng", "PH42118", "hungnpph42118@fe.edu.vn", "hungnpph42118@fpt.edu.vn"),
+                createStaff("Đỗ Văn Công", "PH31357", "congdvph31357@fe.edu.vn", "congdvph31357@fpt.edu.vn"),
+                createStaff("Lê Bá Minh", "PH43017", "minhlbph43017@fe.edu.vn", "minhlbph43017fpt.eduv.vn"),
+                createStaff("Nguyễn Thị Vân", "PH43399", "vanntph43399@fe.edu.vn", "vanntph43399@fpt.edu.vn")
+        };
+
+        for (Staff staff : staffArray) {
+            Staff savedStaff = staffRepository.save(staff);
+            StaffRole staffRole = new StaffRole();
+            staffRole.setRole(roleSaved);
+            staffRole.setStaff(savedStaff);
+            staffRole.setStatus(EntityStatus.ACTIVE);
+            staffRoleRepository.save(staffRole);
+        }
+    }
+
+    private Semester createSemester(SemesterName semesterName, int year) {
+        Semester semester = new Semester();
+        semester.setSemesterName(semesterName);
+        semester.setYear(year);
+        semester.setStartTime(getStartTime(semesterName, year));
+        semester.setEndTime(getEndTime(semesterName, year));
+        semester.setStatus(EntityStatus.ACTIVE);
+        return semester;
+    }
+
+    private void createAndSaveBlock(BlockName blockName, SemesterName semesterName, Semester semester) {
+        Block block = new Block();
+        block.setName(blockName);
+        block.setStartTime(getStartTime(semesterName, getCurrentYear()));
+        block.setEndTime(getEndTime(semesterName, getCurrentYear()));
+        block.setSemester(semester);
+        block.setStatus(EntityStatus.ACTIVE);
+        blockRepository.save(block);
+    }
+
+    private Staff createStaff(String name, String staffCode, String emailFe, String emailFpt) {
         Staff staff = new Staff();
-        staff.setName("Nguyễn Minh Hiếu");
-        staff.setStaffCode("PH42056");
-        staff.setEmailFe("hieunmph42056@fe.edu.vn");
-        staff.setEmailFpt("hieunmph42056@fpt.edu.vn");
+        staff.setName(name);
+        staff.setStaffCode(staffCode);
+        staff.setEmailFe(emailFe);
+        staff.setEmailFpt(emailFpt);
         staff.setStatus(EntityStatus.ACTIVE);
-        Staff staffSaved = staffRepository.save(staff);
-
-        StaffRole staffRole = new StaffRole();
-        staffRole.setRole(roleSaved);
-        staffRole.setStaff(staffSaved);
-        staffRole.setStatus(EntityStatus.ACTIVE);
-        staffRoleRepository.save(staffRole);
-
+        return staff;
     }
 
     private static long getStartTime(SemesterName semesterName, int year) {
@@ -106,7 +122,6 @@ public class DBGenerator {
             case SPRING -> LocalDate.of(year, 1, 15);
             case SUMMER -> LocalDate.of(year, 5, 15);
             case FALL -> LocalDate.of(year, 9, 1);
-            default -> throw new IllegalArgumentException("Unknown semester: " + semesterName);
         };
         return startDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
@@ -116,12 +131,11 @@ public class DBGenerator {
             case SPRING -> LocalDate.of(year, 5, 1);
             case SUMMER -> LocalDate.of(year, 8, 31);
             case FALL -> LocalDate.of(year, 12, 15);
-            default -> throw new IllegalArgumentException("Unknown semester: " + semesterName);
         };
         return endDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
-    private Integer getCurrentYear() {
+    private int getCurrentYear() {
         return java.time.Year.now().getValue();
     }
 

@@ -1,32 +1,56 @@
 <template>
-  <div>
-    <p>Redirecting...</p>
+  <div class="redirect-container">
+    <p class="redirect-message">Redirecting...</p>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/auth";
 import { getUserInformation } from "@/utils/token.helper";
+import { onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
+
 const router = useRouter();
+
 const authStore = useAuthStore();
 
-const state = route.query.state;
-if (state) {
-  const decodedState = atob(state as string);
-  const { accessToken, refreshToken } = JSON.parse(decodedState);
+const { state } = route.query;
 
-  const userData = getUserInformation(accessToken);
+onMounted(() => {
+  if (state) {
+    const decodedState = atob(state as string);
 
-  authStore.login(userData, {
-    accessToken,
-    refreshToken,
-  });
+    const { accessToken, refreshToken } = JSON.parse(decodedState);
 
-  router.push({ name: "Dashboard" });
-} else {
-  router.push({ name: "Login" });
-}
+    const user = getUserInformation(accessToken);
+
+    authStore.login({
+      user,
+      accessToken,
+      refreshToken,
+    });
+
+    router.push({ name: "role-switch" });
+    return;
+  }
+  router.push({ name: "login" });
+});
 </script>
+
+<style scoped>
+.redirect-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f0f0;
+}
+
+.redirect-message {
+  font-size: 1.5rem;
+  color: #333;
+  font-weight: bold;
+}
+</style>

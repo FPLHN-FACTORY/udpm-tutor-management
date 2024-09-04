@@ -86,7 +86,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     }
 
     private String buildSuccessUrl(String targetUrl, String token) throws MalformedURLException, URISyntaxException {
-        return targetUrl + "?token=" + token;
+        return targetUrl + "?state=" + token;
     }
 
 }

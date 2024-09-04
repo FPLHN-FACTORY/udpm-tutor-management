@@ -30,7 +30,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private CustomUserDetailsService customUserDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
         try {
             String jwt = getJwtFromRequest(request);
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {

@@ -7,6 +7,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import udpm.hn.server.entity.DepartmentFacility;
 import udpm.hn.server.entity.Facility;
-import udpm.hn.server.entity.Major;
 import udpm.hn.server.entity.MajorFacility;
 import udpm.hn.server.entity.Staff;
 import udpm.hn.server.entity.StaffMajorFacility;
@@ -84,7 +84,8 @@ public class TokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(new java.util.Date(System.currentTimeMillis()))
                 .setExpiration(new java.util.Date(TOKEN_EXP))
-                .signWith(io.jsonwebtoken.security.Keys.hmacShaKeyFor(tokenSecret.getBytes()))
+                .setIssuer("udpm.hn")
+                .signWith(Keys.hmacShaKeyFor(tokenSecret.getBytes()))
                 .compact();
     }
 
@@ -96,7 +97,6 @@ public class TokenProvider {
         response.setPictureUrl(staff.getPicture());
         response.setEmailFpt(staff.getEmailFpt() != null ? staff.getEmailFpt() : "");
         response.setEmailFe(staff.getEmailFe() != null ? staff.getEmailFe() : "");
-        //còn thiếu: facilityCode, departmentCode, facilityId, facilityName, departmentName
         List<String> rolesCode = staffRoleAuthRepository.getRoleCodesByStaffId(staff.getId());
         if (rolesCode.isEmpty()) {
             response.setRolesCode(Collections.singletonList("GIANG_VIEN"));
@@ -138,46 +138,32 @@ public class TokenProvider {
         return claims;
     }
 
-    public Long getUserIdFromToken(String token) {
+    public String getUserIdFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(tokenSecret)
+                .setSigningKey(Keys.hmacShaKeyFor(tokenSecret.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return Long.parseLong(claims.get("userId").toString());
+        return String.valueOf(claims.get("userId").toString());
     }
 
     public String getEmailFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(tokenSecret)
+                .setSigningKey(Keys.hmacShaKeyFor(tokenSecret.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return claims.get("email").toString();
-    }
-
-    public String getHostFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(tokenSecret)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        ObjectMapper objectMapper = new ObjectMapper();
-        TokenSubjectResponse tokenSubjectResponse = null;
-        try {
-            tokenSubjectResponse = objectMapper.readValue(claims.getSubject(), TokenSubjectResponse.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace(System.out
-            );
+        String emailFpt = claims.get("emailFpt", String.class);
+        if (emailFpt != null && !emailFpt.isEmpty()) {
+            return emailFpt;
         }
-        assert tokenSubjectResponse != null;
-        return tokenSubjectResponse.getHost();
+        return claims.get("emailFe", String.class);
     }
 
     public boolean validateToken(String authToken) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(tokenSecret)
+                    .setSigningKey(Keys.hmacShaKeyFor(tokenSecret.getBytes()))
                     .build()
                     .parseClaimsJws(authToken);
             return true;

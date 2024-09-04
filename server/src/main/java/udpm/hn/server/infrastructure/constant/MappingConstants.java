@@ -18,7 +18,7 @@ public final class MappingConstants {
     public static final String API_TEACHER_PREFIX = API_VERSION_PREFIX + TEACHER;
     public static final String API_STUDENT_PREFIX = API_VERSION_PREFIX + STUDENT;
 
-    public static final String API_ADMIN_SUBJECT = API_ADMIN_PREFIX + "/subjects";
+        public static final String API_ADMIN_SUBJECT = API_ADMIN_PREFIX + "/subjects";
     public static final String API_ADMIN_DEPARTMENT = API_ADMIN_PREFIX + "/departments";
     public static final String API_ADMIN_MAJOR = API_ADMIN_PREFIX + "/majors";
     public static final String API_ADMIN_SEMESTER = API_ADMIN_PREFIX + "/semesters";

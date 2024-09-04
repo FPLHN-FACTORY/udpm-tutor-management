@@ -23,6 +23,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import udpm.hn.server.infrastructure.constant.MappingConstants;
+import udpm.hn.server.infrastructure.constant.Role;
 import udpm.hn.server.infrastructure.security.exception.RestAuthenticationEntryPoint;
 import udpm.hn.server.infrastructure.security.filter.TokenAuthenticationFilter;
 import udpm.hn.server.infrastructure.security.oauth2.CustomOAuth2UserService;
@@ -121,6 +122,22 @@ public class SecurityConfig {
                         )
                         .permitAll()
         );
+        http.authorizeHttpRequests(
+                auth -> auth.requestMatchers(
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_DEPARTMENT),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_SUBJECT),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_MAJOR),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_SEMESTER),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_BLOCK),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_MAJOR_FACILITY),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_DEPARTMENT_FACILITY),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_STAFF),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_ROLE),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_FACILITY)
+                        )
+                        .hasAnyAuthority(Role.ADMIN.name())
+        );
+        http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
         http.oauth2Login(oauth2 -> oauth2.authorizationEndpoint(a -> a.baseUri("/oauth2/authorize"))
                 .redirectionEndpoint(r -> r.baseUri("/oauth2/callback/**"))
                 .userInfoEndpoint(u -> u.userService(customOAuth2UserService))

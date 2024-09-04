@@ -19,7 +19,8 @@ export interface UserInformation {
   fullName: string;
   userId: string;
   userCode: string;
-  rolesName: string;
+  rolesNames: string[] | string;
+  rolesCodes: string[] | string;
   emailFpt: string;
   emailFe: string;
   pictureUrl: string;
