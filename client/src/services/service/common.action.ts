@@ -1,5 +1,8 @@
 import { queryKey } from "@/constants/queryKey";
-import { getDepartmentOptions } from "@/services/api/common.api";
+import {
+  getDepartmentOptions,
+  getFacilityOptions,
+} from "@/services/api/common.api";
 import { UseQueryReturnType, useQuery } from "@tanstack/vue-query";
 
 export const useGetDepartmentOptions = (
@@ -20,12 +23,12 @@ export const useGetFacilityOptions = (
   query?: string,
   options?: any
 ): UseQueryReturnType<
-  Awaited<ReturnType<typeof getDepartmentOptions>>,
+  Awaited<ReturnType<typeof getFacilityOptions>>,
   Error
 > => {
   return useQuery({
     queryKey: [queryKey.common.facilityOptions],
-    queryFn: () => getDepartmentOptions(query),
+    queryFn: () => getFacilityOptions(query),
     ...options,
   });
 };

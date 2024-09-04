@@ -21,12 +21,7 @@
               class="mt-5 flex justify-center items-center p-3"
               :disabled="isLoginProcessing"
             >
-              <v-icon
-                name="fc-google"
-                v-if="urlRedirect === '' || isLoginProcessing"
-                class="mr-2"
-              />
-              <FcGoogle v-else class="mr-2" />
+              <v-icon name="fc-google" class="mr-2" />
               <span>Đăng nhập với Google</span>
             </button>
           </div>
@@ -36,37 +31,30 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { URL_FRONTEND, URL_OAUTH2_GOOGLE } from "@/constants/url";
+import { computed, ref } from "vue";
 import backgroundImage from "/images/bg-simple.jpg";
-import logo from "/images/Logo_FPT.png";
 import logoUDPM from "/images/logo-udpm-dark.png";
-export default {
-  data() {
-    return {
-      backgroundImage,
-      logo,
-      logoUDPM,
-      urlRedirect: "",
-      isLoginProcessing: false,
-    };
-  },
-  methods: {
-    handleLogin() {
-      // Hàm xử lý đăng nhập
-    },
-  },
-  computed: {
-    buttonStyleLogin() {
-      return {
-        backgroundColor: "#253741",
-        color: "#fff",
-        borderRadius: "5px",
-        fontSize: "16px",
-        boxShadow: "0 0 4px #253741",
-      };
-    },
-  },
+import logo from "/images/Logo_FPT.png";
+
+const isLoginProcessing = ref(false);
+
+const handleLogin = () => {
+  console.log(
+    "URL_OAUTH2_GOOGLE + URL_FRONTEND",
+    URL_OAUTH2_GOOGLE + URL_FRONTEND
+  );
+  window.location.href = URL_OAUTH2_GOOGLE + URL_FRONTEND;
 };
+
+const buttonStyleLogin = computed(() => ({
+  backgroundColor: "#253741",
+  color: "#fff",
+  borderRadius: "5px",
+  fontSize: "16px",
+  boxShadow: "0 0 4px #253741",
+}));
 </script>
 
 <style scoped></style>

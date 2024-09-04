@@ -15,4 +15,6 @@ public interface DBGenRoleRepository extends RoleRepository {
 
     List<Role> findAllByFacility(Facility facility);
 
+    Optional<Role> findByCodeAndFacility(String code, Facility facility);
+
 }

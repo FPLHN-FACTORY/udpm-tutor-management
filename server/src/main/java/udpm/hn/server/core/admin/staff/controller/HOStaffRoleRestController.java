@@ -20,7 +20,7 @@ import udpm.hn.server.infrastructure.constant.MappingConstants;
 import udpm.hn.server.utils.Helper;
 
 @RestController
-@RequestMapping(MappingConstants.API_HEAD_OFFICE_STAFF)
+@RequestMapping(MappingConstants.API_ADMIN_STAFF)
 @RequiredArgsConstructor
 public class HOStaffRoleRestController {
 

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { useAuthStore } from "@/stores/auth";
 import {
   BookOutlined,
   BuildOutlined,
@@ -10,12 +11,17 @@ import {
   UserOutlined,
 } from "@ant-design/icons-vue";
 import { computed, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+
+const auth = useAuthStore();
 
 const collapsed = ref<boolean>(false);
+
 const route = useRoute();
 
-const itemsAdmin = [
+const router = useRouter();
+
+const itemsAdmin = computed(() => [
   {
     key: "1",
     icon: CalendarOutlined,
@@ -52,15 +58,22 @@ const itemsAdmin = [
     text: "Quản lý bộ môn",
     path: "/admin/department",
   },
-];
+]);
+
+const userInfo = computed(() => auth.user);
 
 const selectedKeys = computed(() => {
   const currentPath = route.path;
-  const selectedItem = itemsAdmin.find((item) =>
+  const selectedItem = itemsAdmin.value.find((item) =>
     item.path.includes(currentPath)
   );
   return selectedItem ? [selectedItem.key] : [];
 });
+
+const handleLogout = () => {
+  auth.logout();
+  router.push("/login");
+};
 </script>
 
 <template>
@@ -104,12 +117,22 @@ const selectedKeys = computed(() => {
           </div>
           <a-dropdown placement="bottomRight" arrow>
             <div class="flex items-center cursor-pointer">
-              <user-outlined />
-              <span class="ml-2">Admin</span>
+              <a-avatar
+                v-if="userInfo?.pictureUrl"
+                :src="userInfo?.pictureUrl"
+                size="large"
+              >
+                {{ userInfo?.fullName[0] }}
+              </a-avatar>
+              <span class="ml-2 truncate">
+                {{ userInfo?.fullName }}
+              </span>
             </div>
             <template #overlay>
               <a-menu>
-                <a-menu-item key="logout"> Đăng xuất </a-menu-item>
+                <a-menu-item key="logout" @click="handleLogout">
+                  Đăng xuất
+                </a-menu-item>
               </a-menu>
             </template>
           </a-dropdown>
@@ -126,5 +149,3 @@ const selectedKeys = computed(() => {
     </a-layout>
   </a-layout>
 </template>
-
-<style scoped></style>
