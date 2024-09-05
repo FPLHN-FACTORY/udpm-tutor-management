@@ -89,6 +89,42 @@ public class TokenProvider {
                 .compact();
     }
 
+    public String createToken(String userId) throws BadRequestException, JsonProcessingException {
+        Staff user = staffRepository.findById(userId).orElse(null);
+        if (user == null) throw new BadRequestException("User not found");
+
+        TokenSubjectResponse tokenSubjectResponse = getTokenSubjectResponse(user);
+        String subject = new ObjectMapper().writeValueAsString(tokenSubjectResponse);
+        Map<String, Object> claims = getBodyClaims(tokenSubjectResponse);
+
+        Optional<StaffMajorFacility> staffMajorFacility = staffMajorFacilityAuthRepository.findByStaffId(user.getId());
+        if (staffMajorFacility.isPresent()) {
+            MajorFacility majorFacility = staffMajorFacility.get().getMajorFacility();
+            Facility facility = majorFacility.getDepartmentFacility().getFacility();
+            DepartmentFacility departmentFacility = majorFacility.getDepartmentFacility();
+            tokenSubjectResponse.setFacilityCode(facility.getCode());
+            tokenSubjectResponse.setDepartmentCode(departmentFacility.getDepartment().getCode());
+            tokenSubjectResponse.setFacilityId(facility.getId());
+            tokenSubjectResponse.setFacilityName(facility.getName());
+            tokenSubjectResponse.setDepartmentName(departmentFacility.getDepartment().getName());
+        } else {
+            tokenSubjectResponse.setFacilityCode("");
+            tokenSubjectResponse.setDepartmentCode("");
+            tokenSubjectResponse.setFacilityId("");
+            tokenSubjectResponse.setFacilityName("");
+            tokenSubjectResponse.setDepartmentName("");
+        }
+
+        return Jwts.builder()
+                .setSubject(subject)
+                .setClaims(claims)
+                .setIssuedAt(new java.util.Date(System.currentTimeMillis()))
+                .setExpiration(new java.util.Date(TOKEN_EXP))
+                .setIssuer("udpm.hn")
+                .signWith(Keys.hmacShaKeyFor(tokenSecret.getBytes()))
+                .compact();
+    }
+
     private TokenSubjectResponse getTokenSubjectResponse(Staff staff) {
         TokenSubjectResponse response = new TokenSubjectResponse();
         response.setFullName(staff.getName());
