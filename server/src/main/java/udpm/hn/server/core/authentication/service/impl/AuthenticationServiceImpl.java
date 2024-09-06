@@ -28,21 +28,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final ARefreshTokenExtendRepository aRefreshTokenExtendRepository;
 
     @Override
-    public ResponseObject<?> getRefreshToken(@Valid RefreshRequest request) throws BadRequestException, JsonProcessingException {
-        String refreshToken = request.getRefreshToken();
+    public ResponseObject<?> getRefreshToken(@Valid RefreshRequest request) {
+        try {
+            String refreshToken = request.getRefreshToken();
 
-        Optional<RefreshToken> refreshTokenOptional = aRefreshTokenExtendRepository.findByRefreshToken(refreshToken);
-        if (refreshTokenOptional.isEmpty()) {
-            return ResponseObject.errorForward("Refresh token not found", HttpStatus.NOT_FOUND);
+            Optional<RefreshToken> refreshTokenOptional = aRefreshTokenExtendRepository.findByRefreshToken(refreshToken);
+            if (refreshTokenOptional.isEmpty()) {
+                return ResponseObject.errorForward("Refresh token not found", HttpStatus.NOT_FOUND);
+            }
+
+            RefreshToken refreshTokenEntity = refreshTokenOptional.get();
+            if (refreshTokenEntity.getRevokedAt() != null) {
+                return ResponseObject.errorForward("Refresh token has been revoked", HttpStatus.BAD_REQUEST);
+            }
+
+            String accessToken = tokenProvider.createToken(refreshTokenEntity.getUserId());
+            return ResponseObject.successForward(new RefreshResponse(accessToken, refreshToken), "Get refresh token successfully");
+        } catch (Exception e) {
+            return ResponseObject.errorForward("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        RefreshToken refreshTokenEntity = refreshTokenOptional.get();
-        if (refreshTokenEntity.getRevokedAt() != null) {
-            return ResponseObject.errorForward("Refresh token has been revoked", HttpStatus.BAD_REQUEST);
-        }
-
-        String accessToken = tokenProvider.createToken(refreshTokenEntity.getUserId());
-        return ResponseObject.successForward(new RefreshResponse(accessToken, refreshToken), "Get refresh token successfully");
     }
 
     @Override
