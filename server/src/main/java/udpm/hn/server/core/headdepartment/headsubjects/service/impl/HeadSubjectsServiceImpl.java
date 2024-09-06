@@ -52,11 +52,7 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
 
     @Override
     public ResponseObject<?> getAllHeadSubjects(HeadSubjectRequest request) {
-        if (request.getCurrentSemesterId() == null) request.setCurrentSemesterId(sessionHelper.getCurrentSemesterId());
-        request.setCurrentUserId(sessionHelper.getCurrentUserId());
-        request.setCurrentFacilityId(sessionHelper.getCurrentUserFacilityId());
         request.setHeadSubjectRoleCode(Role.TRUONG_MON.name());
-        request.setCurrentDepartmentFacilityId(sessionHelper.getCurrentUserDepartmentFacilityId());
         return new ResponseObject<>(
                 PageableObject.of(
                         hdhsHeadSubjectBySemesterRepository.getAllHeadSubjectsBySemester(
@@ -72,7 +68,6 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
     @Override
     public ResponseObject<?> getSubjectsByHeadSubject(String headSubjectId, SubjectByHeadSubjectRequest request) {
         request.setHeadSubjectId(headSubjectId);
-        if (request.getCurrentSemesterId() == null) request.setCurrentSemesterId(sessionHelper.getCurrentSemesterId());
         return new ResponseObject<>(
                 PageableObject.of(
                         hdhsSubjectRepository.getSubjectByHeadSubject(
@@ -88,9 +83,6 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
     @Override
     public ResponseObject<?> getSubjectsWithAssign(String headSubjectId, SubjectByHeadSubjectRequest request) {
         request.setHeadSubjectId(headSubjectId);
-        if (request.getCurrentSemesterId() == null) request.setCurrentSemesterId(sessionHelper.getCurrentSemesterId());
-        request.setDepartmentFacilityId(sessionHelper.getCurrentUserDepartmentFacilityId());
-        request.setFacilityId(sessionHelper.getCurrentUserFacilityId());
         return new ResponseObject<>(
                 PageableObject.of(
                         hdhsSubjectRepository.getSubjectAssign(
@@ -230,10 +222,6 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
 
     @Override
     public ResponseObject<?> searchStaff(HeadSubjectSearchRequest request) {
-        request.setCurrentDepartmentFacilityId(sessionHelper.getCurrentUserDepartmentFacilityId());
-        request.setCurrentSemesterId(sessionHelper.getCurrentSemesterId());
-        request.setCurrentUserId(sessionHelper.getCurrentUserId());
-        request.setCurrentFacilityId(sessionHelper.getCurrentUserFacilityId());
         return new ResponseObject<>(
                 hdhsHeadSubjectBySemesterRepository.getHeadSubjects(request, "TRUONG_MON"),
                 HttpStatus.OK,

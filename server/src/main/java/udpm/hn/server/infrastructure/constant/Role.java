@@ -14,7 +14,9 @@ public enum Role {
 
     SINH_VIEN,
 
-    CHU_NHIEM_BO_MON;
+    CHU_NHIEM_BO_MON,
+
+    NGUOI_LAP_KE_HOACH;
 
     public static List<String> getAllRoles() {
         return Arrays.stream(Role.values())
@@ -25,7 +27,7 @@ public enum Role {
     public static String getAllRolesString() {
         return Arrays.stream(Role.values())
                 .map(Enum::name)
-                .collect(Collectors.joining(","));
+                .collect(Collectors.joining(", "));
     }
 
 }

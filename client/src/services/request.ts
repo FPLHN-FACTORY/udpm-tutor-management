@@ -5,8 +5,10 @@ import {
   USER_INFO_STORAGE_KEY,
 } from "@/constants/storageKey";
 import { API_URL, PREFIX_API_AUTH } from "@/constants/url";
+import { DefaultResponse } from "@/types/api.common";
 import { localStorageAction } from "@/utils/storage";
-import axios from "axios";
+import { getUserInformation } from "@/utils/token.helper";
+import axios, { AxiosResponse } from "axios";
 
 const request = axios.create({
   baseURL: `${API_URL}/api/`,
@@ -39,10 +41,13 @@ request.interceptors.response.use(
       if (refreshToken) {
         try {
           const response = await axios.post(`${PREFIX_API_AUTH}/refresh`, {
-            refresh: refreshToken,
-          });
-          const newAccessToken = response.data.access_token;
+            refreshToken,
+          }) as AxiosResponse<DefaultResponse<{ accessToken: string; refreshToken: string }>>;
+          const newAccessToken = response.data.data.accessToken;
+          const newRefreshToken = response.data.data.refreshToken;
           localStorageAction.set(ACCESS_TOKEN_STORAGE_KEY, newAccessToken);
+          localStorageAction.set(REFRESH_TOKEN_STORAGE_KEY, newRefreshToken);
+          localStorageAction.set(USER_INFO_STORAGE_KEY, getUserInformation(newAccessToken));
           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
           return request(originalRequest);
         } catch (refreshError) {
