@@ -2,6 +2,7 @@ package udpm.hn.server.infrastructure.config.database;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import udpm.hn.server.entity.Facility;
 import udpm.hn.server.infrastructure.config.database.repository.DBGenFacilityRepository;
@@ -12,6 +13,7 @@ import udpm.hn.server.infrastructure.constant.Role;
 import java.util.List;
 
 @Component
+@Order(1)
 @RequiredArgsConstructor
 public class RoleGenerator {
 
@@ -28,7 +30,7 @@ public class RoleGenerator {
                 List<String> roleCodes = Role.getAllRoles();
                 List<String> roleNames = List.of("Admin", "Trưởng Môn", "Giảng Viên", "Sinh Viên", "Chủ Nhiệm Bộ Môn");
                 for (int i = 0; i < roleCodes.size(); i++) {
-                    if (roleRepository.findByCodeAndNameAndFacility(
+                    if (!"Admin".equals(roleNames.get(i)) && roleRepository.findByCodeAndNameAndFacility(
                             roleCodes.get(i),
                             roleNames.get(i),
                             facility

@@ -18,6 +18,9 @@ export const URL_OAUTH2_GOOGLE =
 // COMMON API
 export const PREFIX_API_COMMON = `${API_URL}/common` as string;
 
+// AUTH API
+export const PREFIX_API_AUTH = `${API_URL}/auth` as string;
+
 // ADMIN API
 export const PREFIX_API_SUBJECT_ADMIN = `${API_URL}/admin/subjects` as string;
 

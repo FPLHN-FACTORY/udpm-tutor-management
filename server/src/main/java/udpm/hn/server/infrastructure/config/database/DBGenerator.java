@@ -3,6 +3,7 @@ package udpm.hn.server.infrastructure.config.database;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import udpm.hn.server.entity.Block;
 import udpm.hn.server.entity.Facility;
@@ -24,6 +25,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 
 @Component
+@Order(2)
 @RequiredArgsConstructor
 public class DBGenerator {
 
@@ -54,17 +56,21 @@ public class DBGenerator {
         createAndSaveBlock(BlockName.BLOCK_1, SemesterName.SPRING, semester);
         createAndSaveBlock(BlockName.BLOCK_2, SemesterName.SUMMER, semester);
 
-        Facility facility = new Facility();
-        facility.setCode("HA_NOI");
-        facility.setName("Hà Nội");
-        facility.setStatus(EntityStatus.ACTIVE);
-        facilityRepository.save(facility);
+        Facility facility = facilityRepository.findByCode("HA_NOI")
+                .orElseGet(() -> {
+                    Facility fe = new Facility();
+                    fe.setCode("HA_NOI");
+                    fe.setName("Hà Nội");
+                    fe.setStatus(EntityStatus.ACTIVE);
+                    return facilityRepository.save(fe);
+                });
 
         Role roleSaved = roleRepository.findByCodeAndNameAndFacility("ADMIN", "Admin", facility)
                 .orElseGet(() -> {
                     Role admin = new Role();
                     admin.setCode(udpm.hn.server.infrastructure.constant.Role.ADMIN.name());
                     admin.setName("Admin");
+                    admin.setFacility(facility);
                     admin.setStatus(EntityStatus.ACTIVE);
                     return roleRepository.save(admin);
                 });
