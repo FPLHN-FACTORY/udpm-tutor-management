@@ -4,7 +4,7 @@ import {
   REFRESH_TOKEN_STORAGE_KEY,
   USER_INFO_STORAGE_KEY,
 } from "@/constants/storageKey";
-import { API_URL } from "@/constants/url";
+import { API_URL, PREFIX_API_AUTH } from "@/constants/url";
 import { localStorageAction } from "@/utils/storage";
 import axios from "axios";
 
@@ -38,15 +38,15 @@ request.interceptors.response.use(
       const refreshToken = localStorageAction.get(REFRESH_TOKEN_STORAGE_KEY);
       if (refreshToken) {
         try {
-          const response = await axios.post(`${API_URL}/auth/refresh`, {
+          const response = await axios.post(`${PREFIX_API_AUTH}/refresh`, {
             refresh: refreshToken,
           });
           const newAccessToken = response.data.access_token;
           localStorageAction.set(ACCESS_TOKEN_STORAGE_KEY, newAccessToken);
-          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
           return request(originalRequest);
         } catch (refreshError) {
-          console.error("Token refresh failed", refreshError);
+          console.log("🚀 ~ refreshError:", refreshError)
         }
       }
 

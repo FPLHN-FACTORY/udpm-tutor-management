@@ -116,11 +116,15 @@ public class SecurityConfig {
                 .permitAll());
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
-                                "/auth/**",
                                 Helper.appendWildcard(MappingConstants.API_AUTH_PREFIX),
                                 "/oauth2/**"
                         )
                         .permitAll()
+        );
+        http.authorizeHttpRequests(
+                auth -> auth.requestMatchers(
+                                Helper.appendWildcard(MappingConstants.API_COMMON))
+                        .hasAnyAuthority(Role.getAllRolesString())
         );
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
