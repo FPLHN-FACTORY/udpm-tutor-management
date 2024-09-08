@@ -97,7 +97,6 @@ public class SecurityConfig {
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(c -> c.configurationSource(corsConfigurationSource()));
-        http.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.formLogin(AbstractHttpConfigurer::disable);
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.exceptionHandling(e -> e.authenticationEntryPoint(new RestAuthenticationEntryPoint()));
@@ -116,11 +115,22 @@ public class SecurityConfig {
                 .permitAll());
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
-                                "/auth/**",
                                 Helper.appendWildcard(MappingConstants.API_AUTH_PREFIX),
-                                "/oauth2/**"
+                                Helper.appendWildcard(MappingConstants.PATH_OAUTH2)
                         )
                         .permitAll()
+        );
+        http.authorizeHttpRequests(
+                auth -> auth.requestMatchers(
+                                Helper.appendWildcard(MappingConstants.API_COMMON))
+                        .hasAnyAuthority(
+                                Role.ADMIN.name(),
+                                Role.TRUONG_MON.name(),
+                                Role.GIANG_VIEN.name(),
+                                Role.SINH_VIEN.name(),
+                                Role.CHU_NHIEM_BO_MON.name(),
+                                Role.NGUOI_LAP_KE_HOACH.name()
+                        )
         );
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
@@ -138,8 +148,13 @@ public class SecurityConfig {
                         .hasAnyAuthority(Role.ADMIN.name())
         );
         http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
-        http.oauth2Login(oauth2 -> oauth2.authorizationEndpoint(a -> a.baseUri("/oauth2/authorize"))
-                .redirectionEndpoint(r -> r.baseUri("/oauth2/callback/**"))
+        http.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
+        http.oauth2Login(oauth2 -> oauth2.authorizationEndpoint(
+                        a -> a.baseUri(MappingConstants.PATH_OAUTH2 + "/authorize")
+                )
+                .redirectionEndpoint(
+                        r -> r.baseUri(Helper.appendWildcard(MappingConstants.PATH_OAUTH2 + "/callback"))
+                )
                 .userInfoEndpoint(u -> u.userService(customOAuth2UserService))
                 .authorizationEndpoint(a -> a.authorizationRequestRepository(cookieAuthorizationRequestRepository()))
                 .successHandler(oAuth2AuthenticationSuccessHandler)

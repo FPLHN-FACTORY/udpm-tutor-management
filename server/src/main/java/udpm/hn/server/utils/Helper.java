@@ -29,10 +29,10 @@ public class Helper {
                 Sort.by(
                         (Sort.Direction.fromString(
                                 request.getOrderBy()) == Sort.Direction.DESC ||
-                                request.getOrderBy() == null
+                         request.getOrderBy() == null
                         ) ? Sort.Direction.DESC : Sort.Direction.ASC,
                         (request.getSortBy() == null
-                                || request.getSortBy().isEmpty()
+                         || request.getSortBy().isEmpty()
                         ) ? defaultSortBy : request.getSortBy()
                 ));
     }
@@ -67,12 +67,10 @@ public class Helper {
     }
 
     public static String replaceManySpaceToOneSpace(String name) {
-        // Thay thế tất cả khoảng trắng liên tiếp bằng dấu gạch dưới
         return name.replaceAll("\\s+", " ");
     }
 
     public static String replaceSpaceToEmpty(String name) {
-        // Thay thế tất cả khoảng trắng liên tiếp bằng dấu gạch dưới
         return name.replaceAll("\\s+", "");
     }
 
@@ -119,10 +117,8 @@ public class Helper {
     }
 
     public static String generateCodeFromName(String name) {
-        // Chuyển role name chuỗi thành chữ hoa
         String upperCaseString = name.toUpperCase();
 
-        // Thay thế các ký tự đặc biệt
         StringBuilder stringBuilder = new StringBuilder();
         for (char c : upperCaseString.toCharArray()) {
             if (SPECIAL_CHAR_MAP.containsKey(c)) {
@@ -133,11 +129,9 @@ public class Helper {
         }
         String replacedString = stringBuilder.toString();
 
-        // Loại bỏ dấu
         String normalizedString = Normalizer.normalize(replacedString, Normalizer.Form.NFD);
         String withoutAccentString = normalizedString.replaceAll("\\p{M}", "");
 
-        // Thay thế tất cả khoảng trắng liên tiếp bằng dấu gạch dưới
         return withoutAccentString.replaceAll("\\s+", "_");
     }
 

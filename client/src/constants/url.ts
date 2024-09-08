@@ -18,7 +18,13 @@ export const URL_FRONTEND = `${DOMAIN_FRONTEND}/redirect`;
 // COMMON API
 export const PREFIX_API_COMMON = `${API_URL}/common` as string;
 
+// AUTH API
+export const PREFIX_API_AUTH = `${API_URL}/auth` as string;
+
 // ADMIN API
 export const PREFIX_API_SUBJECT_ADMIN = `${API_URL}/admin/subjects` as string;
+
+export const PREFIX_API_DEPARTMENT_ADMIN =
+  `${API_URL}/admin/departments` as string;
 
 export const PREFIX_API_ROLE_ADMIN = `${API_URL}/admin/roles` as string;
