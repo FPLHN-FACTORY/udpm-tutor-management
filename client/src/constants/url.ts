@@ -11,9 +11,9 @@ export const DOMAIN_BACKEND = `${VITE_BASE_URL_SERVER}` as string;
 export const DOMAIN_FRONTEND = `${VITE_BASE_URL_CLIENT}` as string;
 
 export const URL_OAUTH2_GOOGLE =
-  `${DOMAIN_BACKEND}/oauth2/authorize/google?redirect_uri=` as string;
+    `${DOMAIN_BACKEND}/oauth2/authorize/google?redirect_uri=` as string;
 
-  export const URL_FRONTEND = `${DOMAIN_FRONTEND}/redirect`;
+export const URL_FRONTEND = `${DOMAIN_FRONTEND}/redirect`;
 
 // COMMON API
 export const PREFIX_API_COMMON = `${API_URL}/common` as string;
