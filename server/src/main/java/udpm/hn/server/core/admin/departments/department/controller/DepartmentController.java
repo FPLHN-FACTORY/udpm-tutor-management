@@ -23,38 +23,28 @@ public class DepartmentController {
     private final DepartmentService departmentService;
 
     @GetMapping
-    public String viewDepartment() {
-        return "admin/department/departments";
-    }
-
-    @GetMapping("/get-all-department")
     public ResponseEntity<?> getAllDepartment(FindDepartmentsRequest request) {
         return Helper.createResponseEntity(departmentService.getAllDepartment(request));
     }
 
-    @GetMapping("/get-department/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getDetailDepartment(@PathVariable String id) {
         return Helper.createResponseEntity(departmentService.getDetailDepartment(id));
     }
 
-    @PostMapping("/add-department")
+    @PostMapping
     public ResponseEntity<?> addDepartment(@RequestBody CreateUpdateDepartmentRequest request) {
         return Helper.createResponseEntity(departmentService.addDepartment(request));
     }
 
-    @PutMapping("/update-department/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateDepartment(@RequestBody CreateUpdateDepartmentRequest request, @PathVariable String id) {
         return Helper.createResponseEntity(departmentService.updateDepartment(request, id));
     }
 
-    @PutMapping("/delete-department/{id}")
-    public ResponseEntity<?> deleteDepartment(@PathVariable String id) {
+    @PutMapping("/status/{id}")
+    public ResponseEntity<?> updateStatusDepartment(@PathVariable String id) {
         return Helper.createResponseEntity(departmentService.deleteDepartment(id));
-    }
-
-    @GetMapping("/get-list-department")
-    public ResponseEntity<?> getListDepartment() {
-        return Helper.createResponseEntity(departmentService.getListDepartment());
     }
 
 }

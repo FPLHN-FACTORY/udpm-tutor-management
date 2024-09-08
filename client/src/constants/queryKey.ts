@@ -12,5 +12,29 @@ export const queryKey = {
       roleList: "roleListKey",
       roleDetail: "roleDetailKey",
     },
+    department: {
+      departmentList: "departmentListKey",
+      departmentDetail: "departmentDetailKey",
+    },
+    departmentFacility: {
+      departmentFacilityList: "departmentFacilityListKey",
+      departmentFacilityDetail: "departmentFacilityDetailKey",
+    },
+    facility: {
+      facilityList: "facilityListKey",
+      facilityDetail: "facilityDetailKey",
+    },
+    semester: {
+      semesterList: "semesterListKey",
+      semesterDetail: "semesterDetailKey",
+    },
+    block: {
+      blockList: "blockListKey",
+      blockDetail: "blockDetailKey",
+    },
+    staff: {
+      staffList: "staffListKey",
+      staffDetail: "staffDetailKey",
+    },
   },
 };
