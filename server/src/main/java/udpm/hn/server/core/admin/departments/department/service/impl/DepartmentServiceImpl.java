@@ -115,9 +115,4 @@ public class DepartmentServiceImpl implements DepartmentService {
         return new ResponseObject<>(null, HttpStatus.OK, "Xóa bộ môn thành công");
     }
 
-    @Override
-    public ResponseObject<?> getListDepartment() {
-        return new ResponseObject<>(departmentExtendRepository.getListDepartment(), HttpStatus.OK, "Lấy thành công danh sách bộ môn");
-    }
-
 }
