@@ -22,8 +22,9 @@ public class SemesterController {
 
     private final SemesterService semesterService;
 
-    @PostMapping("/all")
-    public ResponseEntity<?> getAllSemesters(@RequestBody SemesterRequest request) {
+
+    @GetMapping
+    public ResponseEntity<?> getAllSemesters( SemesterRequest request) {
         return ResponseEntity.ok(semesterService.getAllSemester(request));
     }
 
