@@ -11,6 +11,4 @@ public interface SemesterResponse extends IsIdentify, HasOrderNumber {
 
     Long getStartTime();
 
-    Integer getSemesterStatus();
-
 }
