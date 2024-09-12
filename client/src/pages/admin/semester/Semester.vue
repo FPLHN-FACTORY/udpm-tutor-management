@@ -14,7 +14,6 @@
       @update:pagination-params="handlePaginationChange"
       @handleOpenModalUpdate="handleOpenModalUpdate"
     />
-
   </div>
 </template>
 
@@ -46,7 +45,7 @@ const { data, isLoading, isFetching } = useGetSemester(params, {
 });
 
 const { data: dataDetail, isLoading: isLoadingDetail } = useDetailSemester(
-    semesterId,
+  semesterId,
   {
     refetchOnWindowFocus: false,
     enabled: () => !!semesterId.value,
@@ -66,8 +65,6 @@ const handleClose = () => {
   semesterId.value = null;
 };
 
-
-
 const handleOpenModalUpdate = (record: SemesterResponse) => {
   semesterId.value = record.id;
   open.value = true;
@@ -84,4 +81,3 @@ const semesterDetail = computed(() =>
     : null
 );
 </script>
-

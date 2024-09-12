@@ -19,7 +19,7 @@ export function sortAlphaText(arr: string[], type?: "asc" | "desc") {
   });
 }
 
-export const getDateFormat = (unix: number, showTime: boolean) => {
+export const getDateFormat = (unix: number, showTime: boolean = false) => {
   return dayjs(unix).format(showTime ? "DD/MM/YYYY HH:mm:ss" : "DD/MM/YYYY");
 };
 
