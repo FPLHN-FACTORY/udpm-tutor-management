@@ -116,7 +116,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
                                 Helper.appendWildcard(MappingConstants.API_AUTH_PREFIX),
-                                Helper.appendWildcard(MappingConstants.PATH_OAUTH2)
+                                Helper.appendWildcard(MappingConstants.PATH_OAUTH2),
+                                Helper.appendWildcard(MappingConstants.VERSION)
                         )
                         .permitAll()
         );

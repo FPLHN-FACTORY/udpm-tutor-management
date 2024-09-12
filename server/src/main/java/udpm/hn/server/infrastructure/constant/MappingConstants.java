@@ -2,6 +2,8 @@ package udpm.hn.server.infrastructure.constant;
 
 public final class MappingConstants {
 
+    public static final String VERSION = "/api/version";
+
     public static final String HEAD_SUBJECT = "/head-subject";
     public static final String ADMIN = "/admin";
     public static final String HEAD_DEPARTMENT = "/head-department";
