@@ -17,14 +17,8 @@
         @update:pagination-params="$emit('update:paginationParams', $event)"
       >
         <template #bodyCell="{ column, record }">
-          <div v-if="column.key === 'action'" class="space-x-2 text-center">
-            <a-tooltip title="Chi tiết học kỳ" color="#FFC26E">
-              <a-button
-                type="primary"
-                size="large"
-                :icon="h(EyeOutlined)"
-              />
-            </a-tooltip>
+          <div v-if="column.key === 'startTime'" class="space-x-2">
+            <span>{{ getDateFormat(record?.startTime) }}</span>
           </div>
         </template>
       </tutor-table>
@@ -32,30 +26,26 @@
   </div>
 </template>
 
-<script  lang="ts" setup>
+<script lang="ts" setup>
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
 import { SemesterResponse } from "@/services/api/semester.api";
-import {EditOutlined, EyeOutlined} from "@ant-design/icons-vue";
+import { getDateFormat } from "@/utils/common.helper";
 import { ColumnType } from "ant-design-vue/es/table";
-import { h } from "vue";
 
 defineProps({
-  dataSource: Array<DepartmentResponse>,
+  dataSource: Array<SemesterResponse>,
   loading: Boolean,
   paginationParams: Object,
   totalPages: Number,
 });
 
-defineEmits([
-  "update:paginationParams",
-  
-]);
+defineEmits(["update:paginationParams"]);
 
 const columnsSemester: ColumnType[] = [
   {
     title: "STT",
     dataIndex: "orderNumber",
-    key: "index",
+    key: "orderNumber",
     ellipsis: true,
   },
   {
@@ -70,17 +60,11 @@ const columnsSemester: ColumnType[] = [
     key: "semesterYear",
     ellipsis: true,
   },
-   {
+  {
     title: "Ngày bắt đầu",
     dataIndex: "startTime",
     key: "startTime",
     ellipsis: true,
-  },
-  {
-    title: "Hành động",
-    key: "action",
-    align: "center",
-    width: "150px",
   },
 ];
 </script>

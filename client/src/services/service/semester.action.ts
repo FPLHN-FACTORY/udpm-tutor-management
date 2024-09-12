@@ -1,8 +1,11 @@
 import { Ref } from "vue";
-import { getDetailSemester, getSemesters, ParamsGetSemester } from "../api/semester.api";
+import {
+  getDetailSemester,
+  getSemesters,
+  ParamsGetSemester,
+} from "../api/semester.api";
 import { useQuery, UseQueryReturnType } from "@tanstack/vue-query";
 import { queryKey } from "@/constants/queryKey";
-
 
 export const useGetSemester = (
   params: Ref<ParamsGetSemester>,
@@ -15,14 +18,10 @@ export const useGetSemester = (
   });
 };
 
-
 export const useDetailSemester = (
   semesterId: Ref<string | null>,
   options?: any
-): UseQueryReturnType<
-  Awaited<ReturnType<typeof getDetailSemester>>,
-  Error
-> => {
+): UseQueryReturnType<Awaited<ReturnType<typeof getDetailSemester>>, Error> => {
   return useQuery({
     queryKey: [queryKey.admin.semester.semesterDetail, semesterId],
     queryFn: () => getDetailSemester(semesterId.value),
