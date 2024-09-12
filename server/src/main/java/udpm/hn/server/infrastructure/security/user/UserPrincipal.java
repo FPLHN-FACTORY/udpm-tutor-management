@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import udpm.hn.server.entity.Staff;
+import udpm.hn.server.infrastructure.constant.Role;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +39,7 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
     public static UserPrincipal create(Staff staff) {
         List<GrantedAuthority> authorities = Collections.
-                singletonList(new SimpleGrantedAuthority("GIANG_VIEN"));
+                singletonList(new SimpleGrantedAuthority(Role.GIANG_VIEN.name()));
 
         return new UserPrincipal(
                 staff.getId(),
@@ -51,7 +52,6 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         List<SimpleGrantedAuthority> authorities = roles.stream()
                 .map(SimpleGrantedAuthority::new)
                 .toList();
-        log.info("authorities: {}", authorities);
         return new UserPrincipal(
                 staff.getId(),
                 staff.getEmailFpt(),
