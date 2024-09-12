@@ -79,7 +79,7 @@ public class DBGenerator {
                 createStaff("Nguyễn Minh Hiếu", "PH42056", "hieunmph42056@fe.edu.vn", "hieunmph42056@fpt.edu.vn"),
                 createStaff("Nguyễn Phi Hùng", "PH42118", "hungnpph42118@fe.edu.vn", "hungnpph42118@fpt.edu.vn"),
                 createStaff("Đỗ Văn Công", "PH31357", "congdvph31357@fe.edu.vn", "congdvph31357@fpt.edu.vn"),
-                createStaff("Lê Bá Minh", "PH43017", "minhlbph43017@fe.edu.vn", "minhlbph43017fpt.eduv.vn"),
+                createStaff("Lê Bá Minh", "PH43017", "minhlbph43017@fe.edu.vn", "minhlbph43017@fpt.edu.vn"),
                 createStaff("Nguyễn Thị Vân", "PH43399", "vanntph43399@fe.edu.vn", "vanntph43399@fpt.edu.vn")
         };
 
