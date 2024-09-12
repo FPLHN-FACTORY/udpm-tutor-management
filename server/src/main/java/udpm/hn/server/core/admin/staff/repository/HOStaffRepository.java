@@ -19,11 +19,15 @@ public interface HOStaffRepository extends StaffRepository {
 
     @Query(
             value = """
-                    SELECT  s.id AS id,
-                            s.name AS name,
+                    SELECT  
+                            ROW_NUMBER() OVER(
+            	            ORDER BY s.id DESC) AS orderNumber,
+                            s.id AS id,
+                            s.name AS staffName,
                             s.staff_code AS staffCode,
                             s.email_fe AS emailFE,
-                            s.email_fpt AS emailFpt
+                            s.email_fpt AS emailFpt,
+                            s.created_date AS createdDate
                     FROM staff s
                     WHERE s.status = 0
                     AND (:#{#req.searchQuery} IS NULL 
@@ -49,7 +53,7 @@ public interface HOStaffRepository extends StaffRepository {
 
     @Query(value = """
             SELECT  s.id AS id,
-                    s.name AS name,
+                    s.name AS staffName,
                     s.staff_code AS staffCode,
                     s.email_fe AS emailFE,
                     s.email_fpt AS emailFpt

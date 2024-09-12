@@ -31,6 +31,10 @@ export const ROUTES_CONSTANTS = {
         path: "staff",
         name: "staff",
       },
+      STAFF_DETAIL: {
+        path: "staff/:staffId",
+        name: "DetailStaff",
+      },
     },
   },
   ROLE_SWITCH: {

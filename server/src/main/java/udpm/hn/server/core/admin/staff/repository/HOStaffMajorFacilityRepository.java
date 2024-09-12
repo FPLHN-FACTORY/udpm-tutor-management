@@ -15,10 +15,13 @@ import java.util.List;
 public interface HOStaffMajorFacilityRepository extends MajorFacilityRepository {
 
     @Query(value = """
-            SELECT f.name AS facilityName,
+            SELECT 
+                   ROW_NUMBER() OVER(
+            	            ORDER BY smf.id DESC) AS orderNumber,
+                   f.name AS facilityName,
             	   d.name AS departmentName,
             	   m.name AS majorName,
-            	   smf.id AS staffMajorFacilityId
+            	   smf.id AS id
             FROM staff_major_facility smf
             JOIN major_facility mf ON mf.id = smf.id_major_facility
             JOIN major m ON m.id = mf.id_major

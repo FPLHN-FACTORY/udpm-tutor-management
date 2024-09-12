@@ -86,6 +86,15 @@ export const routes: RouteRecordRaw[] = [
           requiresAuth: true,
         },
       },
+      {
+        path: ROUTES_CONSTANTS.ADMIN.children.STAFF_DETAIL.path,
+        name: ROUTES_CONSTANTS.ADMIN.children.STAFF_DETAIL.name,
+        component: () => import("@/pages/admin/staff/StaffDetail.vue"),
+        meta: {
+          requiresRole: ROLES.ADMIN,
+          requiresAuth: true,
+        },
+      },
     ],
   },
   {

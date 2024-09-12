@@ -3,21 +3,20 @@
     <div class="flex justify-between items-center min-h-36">
       <h2 class="p-4 flex items-center text-primary text-3xl font-semibold">
         <v-icon name="bi-list-ul" scale="2" />
-        <span class="ml-2 text-2xl">Danh sách bộ môn</span>
+        <span class="ml-2 text-2xl">Danh sách nhân viên</span>
       </h2>
       <a-button
           type="primary"
-          @click="$emit('handleOpenModalAdd')"
           size="large"
           class="m-4"
       >
-        Tạo bộ môn
+        Đồng bộ
       </a-button>
     </div>
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
           wrapperClassName="min-h-[410px]"
-          :columns="columnsDepartment"
+          :columns="columnsStaff"
           :data-source="dataSource"
           :loading="loading"
           :pagination-params="paginationParams || {}"
@@ -25,31 +24,40 @@
           @update:pagination-params="$emit('update:paginationParams', $event)"
       >
         <template #bodyCell="{ column, record }">
-          <div v-if="column.key === 'action'" class="space-x-2 text-center">
-            <a-tooltip title="Chỉnh sửa môn học" color="#FFC26E">
+          <div v-if="column.key === 'action'" class="space-x-2 text-center flex items-center justify-center">
+            <a-tooltip title="Chi tiết nhân viên" color="#FFC26E">
               <a-button
+                  class="flex items-center justify-center"
                   type="primary"
                   size="large"
-                  @click="$emit('handleOpenModalUpdate', record)"
-                  :icon="h(EditOutlined)"
+                  :icon="h(EyeOutlined)"
+                  @click="goToDetail(record.id)"
               />
             </a-tooltip>
           </div>
         </template>
       </tutor-table>
     </div>
+    <router-view />
   </div>
 </template>
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
-import { DepartmentResponse } from "@/services/api/department.api";
-import { EditOutlined } from "@ant-design/icons-vue";
-import { ColumnType } from "ant-design-vue/es/table";
-import { h } from "vue";
+import {StaffResponse} from "@/services/api/staff.api.ts";
+import {ColumnType} from "ant-design-vue/es/table";
+import {EyeOutlined} from "@ant-design/icons-vue";
+import {h} from "vue";
+import {useRouter} from "vue-router";
+
+const router = useRouter();
+
+function goToDetail(staffId: string) {
+  router.push({ name: 'DetailStaff', params: { staffId } });
+}
 
 defineProps({
-  dataSource: Array<DepartmentResponse>,
+  dataSource: Array<StaffResponse>,
   loading: Boolean,
   paginationParams: Object,
   totalPages: Number,
@@ -57,11 +65,9 @@ defineProps({
 
 defineEmits([
   "update:paginationParams",
-  "handleOpenModalUpdate",
-  "handleOpenModalAdd",
 ]);
 
-const columnsDepartment: ColumnType[] = [
+const columnsStaff: ColumnType[] = [
   {
     title: "STT",
     dataIndex: "orderNumber",
@@ -69,15 +75,27 @@ const columnsDepartment: ColumnType[] = [
     ellipsis: true,
   },
   {
-    title: "Mã bộ môn",
-    dataIndex: "departmentCode",
-    key: "departmentCode",
+    title: "Mã nhân viên",
+    dataIndex: "staffCode",
+    key: "staffCode",
     ellipsis: true,
   },
   {
-    title: "Tên bộ môn",
-    dataIndex: "departmentName",
-    key: "departmentName",
+    title: "Tên nhân viên",
+    dataIndex: "staffName",
+    key: "staffName",
+    ellipsis: true,
+  },
+  {
+    title: "Email FPT",
+    dataIndex: "emailFpt",
+    key: "emailFpt",
+    ellipsis: true,
+  },
+  {
+    title: "Email FE",
+    dataIndex: "emailFe",
+    key: "emailFe",
     ellipsis: true,
   },
   {
