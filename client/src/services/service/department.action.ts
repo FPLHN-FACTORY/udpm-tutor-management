@@ -16,8 +16,8 @@ import {
 import { Ref } from "vue";
 
 export const useGetDepartment = (
-  params: Ref<ParamsGetDepartment>,
-  options?: any
+    params: Ref<ParamsGetDepartment>,
+    options?: any
 ): UseQueryReturnType<Awaited<ReturnType<typeof getDepartments>>, Error> => {
   return useQuery({
     queryKey: [queryKey.admin.department.departmentList, params],
@@ -31,7 +31,7 @@ export const useCreateDepartment = () => {
 
   return useMutation({
     mutationFn: (params: CreateUpdateDepartmentParams) =>
-      createDepartment(params),
+        createDepartment(params),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [queryKey.admin.department.departmentList],
@@ -48,9 +48,9 @@ export const useUpdateDepartment = () => {
 
   return useMutation({
     mutationFn: ({
-      departmentId,
-      params,
-    }: {
+                   departmentId,
+                   params,
+                 }: {
       departmentId: string;
       params: CreateUpdateDepartmentParams;
     }) => updateDepartment(departmentId, params),
@@ -66,11 +66,11 @@ export const useUpdateDepartment = () => {
 };
 
 export const useDetailDepartment = (
-  departmentId: Ref<string | null>,
-  options?: any
+    departmentId: Ref<string | null>,
+    options?: any
 ): UseQueryReturnType<
-  Awaited<ReturnType<typeof getDetailDepartment>>,
-  Error
+    Awaited<ReturnType<typeof getDetailDepartment>>,
+    Error
 > => {
   return useQuery({
     queryKey: [queryKey.admin.department.departmentDetail, departmentId],

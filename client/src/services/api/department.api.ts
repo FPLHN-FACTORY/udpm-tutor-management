@@ -32,7 +32,7 @@ export const getDepartments = async (params: Ref<ParamsGetDepartment>) => {
     method: "GET",
     params: params.value,
   })) as AxiosResponse<
-    DefaultResponse<PaginationResponse<Array<DepartmentResponse>>>
+      DefaultResponse<PaginationResponse<Array<DepartmentResponse>>>
   >;
 
   return res.data;
@@ -53,7 +53,7 @@ export interface CreateUpdateDepartmentParams {
 }
 
 export const createDepartment = async (
-  params: CreateUpdateDepartmentParams
+    params: CreateUpdateDepartmentParams
 ) => {
   const res = (await request({
     url: `${PREFIX_API_DEPARTMENT_ADMIN}`,
@@ -65,8 +65,8 @@ export const createDepartment = async (
 };
 
 export const updateDepartment = async (
-  id: string,
-  params: CreateUpdateDepartmentParams
+    id: string,
+    params: CreateUpdateDepartmentParams
 ) => {
   const res = (await request({
     url: `${PREFIX_API_DEPARTMENT_ADMIN}/${id}`,

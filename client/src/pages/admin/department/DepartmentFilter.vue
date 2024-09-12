@@ -5,29 +5,29 @@
       <span class="ml-2 text-2xl">Bộ lọc</span>
     </h2>
     <a-form
-      layout="vertical"
-      class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 p-5"
+        layout="vertical"
+        class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 p-5"
     >
       <a-form-item
-        label="Mã bộ môn"
-        class="col-span-1 md:col-span-2 lg:col-span-1"
+          label="Mã bộ môn"
+          class="col-span-1 md:col-span-2 lg:col-span-1"
       >
         <a-input
-          :value="params.departmentCode"
-          @input="onChange('departmentCode', $event)"
-          placeholder="Mã bộ môn"
-          allowClear
+            :value="params.departmentCode"
+            @input="onChange('departmentCode', $event)"
+            placeholder="Mã bộ môn"
+            allowClear
         />
       </a-form-item>
       <a-form-item
-        label="Tên bộ môn"
-        class="col-span-1 md:col-span-2 lg:col-span-1"
+          label="Tên bộ môn"
+          class="col-span-1 md:col-span-2 lg:col-span-1"
       >
         <a-input
-          :value="params.departmentName"
-          @input="onChange('departmentName', $event)"
-          placeholder="Tên bộ môn"
-          allowClear
+            :value="params.departmentName"
+            @input="onChange('departmentName', $event)"
+            placeholder="Tên bộ môn"
+            allowClear
         />
       </a-form-item>
     </a-form>
@@ -56,9 +56,9 @@ const debouncedEmit = debounce(() => {
 
 function onChange(key: keyof ParamsFilterDepartments, event: Event) {
   if (
-    event &&
-    event.target &&
-    (event.target as HTMLInputElement).value !== undefined
+      event &&
+      event.target &&
+      (event.target as HTMLInputElement).value !== undefined
   ) {
     params.value[key] = (event.target as HTMLInputElement).value;
   } else if (event && typeof event === "string") {
@@ -67,10 +67,10 @@ function onChange(key: keyof ParamsFilterDepartments, event: Event) {
 }
 
 watch(
-  params,
-  () => {
-    debouncedEmit();
-  },
-  { deep: true }
+    params,
+    () => {
+      debouncedEmit();
+    },
+    { deep: true }
 );
 </script>

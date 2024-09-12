@@ -1,3 +1,5 @@
+import {getStaffDepartmentMajorStaff} from "@/services/api/staff.api.ts";
+
 export const queryKey = {
   common: {
     departmentOptions: "departmentOptionsKey",
@@ -39,6 +41,8 @@ export const queryKey = {
     staff: {
       staffList: "staffListKey",
       staffDetail: "staffDetailKey",
+      staffRole: "staffRole",
+      staffDepartmentMajor: "staffDepartmentMajor",
     },
   },
 };

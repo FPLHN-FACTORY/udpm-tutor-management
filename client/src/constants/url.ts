@@ -32,3 +32,5 @@ export const PREFIX_API_DEPARTMENT_ADMIN = `${API_URL}/admin/departments` as str
 export const PREFIX_API_ROLE_ADMIN = `${API_URL}/admin/roles` as string;
 
 export const PREFIX_API_SEMESTER_ADMIN = `${API_URL}/admin/semesters` as string;
+
+export const PREFIX_API_STAFF_ADMIN = `${API_URL}/admin/staffs` as string;

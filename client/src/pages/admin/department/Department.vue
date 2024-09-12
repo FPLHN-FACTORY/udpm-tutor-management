@@ -8,20 +8,20 @@
     </div>
     <department-filter @filter="handleFilter" />
     <department-table
-      :data-source="departmentData"
-      :loading="isLoading || isFetching"
-      :pagination-params="params"
-      :total-pages="totalPages"
-      @update:pagination-params="handlePaginationChange"
-      @handleOpenModalUpdate="handleOpenModalUpdate"
-      @handleOpenModalAdd="handleOpenModalAdd"
+        :data-source="departmentData"
+        :loading="isLoading || isFetching"
+        :pagination-params="params"
+        :total-pages="totalPages"
+        @update:pagination-params="handlePaginationChange"
+        @handleOpenModalUpdate="handleOpenModalUpdate"
+        @handleOpenModalAdd="handleOpenModalAdd"
     />
     <create-update-department-modal
-      :open="open"
-      @handleClose="handleClose"
-      @cancel="open = false"
-      :department-detail="departmentDetail || null"
-      :is-loading-detail="isLoadingDetail || false"
+        :open="open"
+        @handleClose="handleClose"
+        @cancel="open = false"
+        :department-detail="departmentDetail || null"
+        :is-loading-detail="isLoadingDetail || false"
     />
   </div>
 </template>
@@ -56,11 +56,11 @@ const { data, isLoading, isFetching } = useGetDepartment(params, {
 });
 
 const { data: dataDetail, isLoading: isLoadingDetail } = useDetailDepartment(
-  departmentId,
-  {
-    refetchOnWindowFocus: false,
-    enabled: () => !!departmentId.value,
-  }
+    departmentId,
+    {
+      refetchOnWindowFocus: false,
+      enabled: () => !!departmentId.value,
+    }
 );
 
 const handlePaginationChange = (newParams: ParamsGetDepartment) => {
@@ -89,11 +89,11 @@ const handleOpenModalUpdate = (record: DepartmentResponse) => {
 const departmentData = computed(() => data?.value?.data?.data || []);
 const totalPages = computed(() => data?.value?.data?.totalPages || 0);
 const departmentDetail = computed(() =>
-  dataDetail.value?.data
-    ? {
-        ...dataDetail.value?.data,
-        departmentId: departmentId?.value,
-      }
-    : null
+    dataDetail.value?.data
+        ? {
+          ...dataDetail.value?.data,
+          departmentId: departmentId?.value,
+        }
+        : null
 );
 </script>

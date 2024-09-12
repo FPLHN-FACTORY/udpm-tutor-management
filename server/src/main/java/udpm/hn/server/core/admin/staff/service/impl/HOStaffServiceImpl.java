@@ -11,6 +11,7 @@ import udpm.hn.server.core.admin.staff.repository.HOStaffDepartmentFacilityRepos
 import udpm.hn.server.core.admin.staff.repository.HOStaffRepository;
 import udpm.hn.server.core.admin.staff.repository.HOStaffRoleRepository;
 import udpm.hn.server.core.admin.staff.service.HOStaffService;
+import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.entity.Staff;
 import udpm.hn.server.entity.StaffRole;
@@ -34,7 +35,10 @@ public class HOStaffServiceImpl implements HOStaffService {
     @Override
     public ResponseObject<?> getStaffByRole(HOStaffRequest hoRoleStaffRequest) {
         Pageable page = Helper.createPageable(hoRoleStaffRequest, "createdDate");
-        return new ResponseObject<>(staffRepo.getStaffs(page, hoRoleStaffRequest), HttpStatus.OK, "get staffs successfully");
+        return new ResponseObject<>(
+                        PageableObject.of(staffRepo.getStaffs(page, hoRoleStaffRequest)),
+                        HttpStatus.OK,
+                "get staffs successfully");
     }
 
     @Override

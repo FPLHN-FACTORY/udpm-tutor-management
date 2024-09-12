@@ -17,9 +17,12 @@ import java.util.List;
 public interface HOStaffRoleRepository extends StaffRoleRepository {
 
     @Query(value = """
-            SELECT r.name AS roleName,
+            SELECT 
+                   ROW_NUMBER() OVER(
+            	            ORDER BY r.id DESC) AS orderNumber,
+                   r.name AS roleName,
                    r.name AS roleCode,
-                   r.id AS idRole,
+                   r.id AS roleId,
                    f.name AS facilityName
             FROM staff_role sr
             LEFT JOIN role r ON sr.id_role = r.id

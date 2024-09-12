@@ -1,10 +1,11 @@
 package udpm.hn.server.core.admin.staff.model.response;
 
-public interface HOStaffResonpse {
+import udpm.hn.server.core.common.base.HasOrderNumber;
+import udpm.hn.server.core.common.base.IsIdentify;
 
-    String getId();
+public interface HOStaffResonpse extends IsIdentify, HasOrderNumber {
 
-    String getName();
+    String getStaffName();
 
     String getStaffCode();
 
@@ -12,6 +13,6 @@ public interface HOStaffResonpse {
 
     String getEmailFpt();
 
-    String getDepartmentFacilityName();
+    Long getCreatedDate();
 
 }

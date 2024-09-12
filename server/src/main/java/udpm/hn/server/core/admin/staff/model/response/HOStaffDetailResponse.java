@@ -4,7 +4,7 @@ public interface HOStaffDetailResponse {
 
     String getId();
 
-    String getName();
+    String getStaffName();
 
     String getStaffCode();
 

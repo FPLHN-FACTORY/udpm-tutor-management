@@ -10,8 +10,8 @@
       centered
     >
       <div
-        v-if="props.isLoadingDetail"
-        class="flex justify-center items-center"
+          v-if="props.isLoadingDetail"
+          class="flex justify-center items-center"
       >
         <a-spin />
       </div>
@@ -19,14 +19,14 @@
         <a-form layout="vertical">
           <template v-for="field in formFields">
             <a-form-item
-              :label="field.label"
-              :name="field.name"
-              v-bind="validateInfos[field.name]"
+                :label="field.label"
+                :name="field.name"
+                v-bind="validateInfos[field.name]"
             >
               <component
-                :is="field.component"
-                v-bind="field.props"
-                v-model:value="modelRef[field.name]"
+                  :is="field.component"
+                  v-bind="field.props"
+                  v-model:value="modelRef[field.name]"
               >
               </component>
             </a-form-item>
