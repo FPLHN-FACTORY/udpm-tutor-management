@@ -1,5 +1,5 @@
 <template>
-  <div class="h-0 flex-1" ref="tableWrapper">
+  <div class="flex-1" ref="tableWrapper">
     <a-table
       class="overflow-hidden"
       :class="className"
