@@ -24,6 +24,10 @@ export const queryKey = {
       facilityList: "facilityListKey",
       facilityDetail: "facilityDetailKey",
     },
+    facilityChild: {
+      facilityChildList: "facilityChildListKey",
+      facilityChildDetail: "facilityChildDetailKey",
+    },
     semester: {
       semesterList: "semesterListKey",
       semesterDetail: "semesterDetailKey",

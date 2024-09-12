@@ -10,8 +10,7 @@ export const DOMAIN_BACKEND = `${VITE_BASE_URL_SERVER}` as string;
 
 export const DOMAIN_FRONTEND = `${VITE_BASE_URL_CLIENT}` as string;
 
-export const URL_OAUTH2_GOOGLE =
-    `${DOMAIN_BACKEND}/oauth2/authorize/google?redirect_uri=` as string;
+export const URL_OAUTH2_GOOGLE = `${DOMAIN_BACKEND}/oauth2/authorize/google?redirect_uri=` as string;
 
 export const URL_FRONTEND = `${DOMAIN_FRONTEND}/redirect`;
 
@@ -24,7 +23,12 @@ export const PREFIX_API_AUTH = `${API_URL}/auth` as string;
 // ADMIN API
 export const PREFIX_API_SUBJECT_ADMIN = `${API_URL}/admin/subjects` as string;
 
-export const PREFIX_API_DEPARTMENT_ADMIN =
-  `${API_URL}/admin/departments` as string;
+export const PREFIX_API_FACILITY_ADMIN =  `${API_URL}/admin/facilities` as string;
+
+export const PREFIX_API_FACILITY_CHILD_ADMIN =  `${API_URL}/admin/facility-child` as string;
+
+export const PREFIX_API_DEPARTMENT_ADMIN = `${API_URL}/admin/departments` as string;
 
 export const PREFIX_API_ROLE_ADMIN = `${API_URL}/admin/roles` as string;
+
+export const PREFIX_API_SEMESTER_ADMIN = `${API_URL}/admin/semesters` as string;

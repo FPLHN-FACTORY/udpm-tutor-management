@@ -25,6 +25,7 @@ server/*.ipr
 server/out/
 server/!**/src/main/**/out/
 server/!**/src/test/**/out/
+.idea/
 
 ### VS Code ###
 client/.vscode/
