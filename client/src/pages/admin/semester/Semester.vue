@@ -6,27 +6,30 @@
         <span class="m-2 text-3xl">Quản lý học kỳ</span>
       </h2>
     </div>
+    <semester-filter :params="params" @filter="handleFilterChange" />
     <semester-table
       :data-source="semesterData"
       :loading="isLoading || isFetching"
       :pagination-params="params"
       :total-pages="totalPages"
       @update:pagination-params="handlePaginationChange"
-      @handleOpenModalUpdate="handleOpenModalUpdate"
+      @handleOpenModalDetail="handleOpenModalDetail"
+    />
+    <detail-semester-modal
+      :open="open"
+      :semester-detail="semesterDetail || null"
+      :loading="isLoadingDetail"
+      @handleCloseModal="handleCloseModal"
     />
   </div>
 </template>
 
 <script lang="ts" setup>
 import SemesterTable from "@/pages/admin/semester/SemesterTable.vue";
-import {
-  SemesterResponse,
-  ParamsGetSemester,
-} from "@/services/api/semester.api";
-import {
-  useDetailSemester,
-  useGetSemester,
-} from "@/services/service/semester.action";
+import DetailSemesterModal from "@/pages/admin/semester/DetailSemesterModal.vue";
+import SemesterFilter from "@/pages/admin/semester/SemesterFilter.vue";
+import { SemesterResponse, ParamsGetSemester} from "@/services/api/semester.api";
+import { useDetailSemester, useGetSemester} from "@/services/service/semester.action";
 import { keepPreviousData } from "@tanstack/vue-query";
 import { computed, ref } from "vue";
 
@@ -56,28 +59,21 @@ const handlePaginationChange = (newParams: ParamsGetSemester) => {
   params.value = { ...params.value, ...newParams };
 };
 
-const handleFilter = (newParams: ParamsGetSemester) => {
+const handleFilterChange = (newParams: ParamsGetSemester) => {
   params.value = { ...params.value, ...newParams };
 };
 
-const handleClose = () => {
+const handleCloseModal = () => {
   open.value = false;
   semesterId.value = null;
 };
 
-const handleOpenModalUpdate = (record: SemesterResponse) => {
+const handleOpenModalDetail = (record: SemesterResponse) => {
   semesterId.value = record.id;
   open.value = true;
 };
 
 const semesterData = computed(() => data?.value?.data?.data || []);
 const totalPages = computed(() => data?.value?.data?.totalPages || 0);
-const semesterDetail = computed(() =>
-  dataDetail.value?.data
-    ? {
-        ...dataDetail.value?.data,
-        semesterId: semesterId?.value,
-      }
-    : null
-);
+const semesterDetail = computed(() => dataDetail.value?.data || null);
 </script>

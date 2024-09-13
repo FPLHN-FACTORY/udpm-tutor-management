@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import udpm.hn.server.core.admin.semester.model.request.SemesterRequest;
+import udpm.hn.server.core.admin.semester.model.response.DetailSemesterResponse;
 import udpm.hn.server.core.admin.semester.model.response.SemesterResponse;
 import udpm.hn.server.entity.Semester;
 import udpm.hn.server.repository.SemesterRepository;
@@ -17,28 +18,33 @@ public interface SemesterExtendRepository extends SemesterRepository {
     @Query(
             value = """
                     SELECT
-                        ROW_NUMBER() OVER (ORDER BY s.id DESC ) as orderNumber,
-                        s.id as id,
-                        s.name as semesterName,
-                        s.year as semesterYear,
-                        s.status as semesterStatus,
-                        s.start_time as startTime
+                    s.id AS id,
+                    ROW_NUMBER() over (ORDER BY s.id DESC) AS orderNumber,
+                    s.name AS semesterName,
+                    s.year AS semesterYear,
+                    s.start_time AS startTime,
+                    s.end_time AS endTime,
+                    MAX(CASE WHEN b.name = 'BLOCK_1' THEN b.start_time END) AS startTimeFirstBlock,
+               		MAX(CASE WHEN b.name = 'BLOCK_1' THEN b.end_time END) AS endTimeFirstBlock,
+               		MAX(CASE WHEN b.name = 'BLOCK_2' THEN b.start_time END) AS startTimeSecondBlock,
+               		MAX(CASE WHEN b.name = 'BLOCK_2' THEN b.end_time END) AS endTimeSecondBlock
                     FROM
                         semester s
+                        JOIN block b ON b.semester_id = s.id
                     WHERE
-                        (:#{#request.semesterName} IS NULL OR s.name LIKE CONCAT('%',:#{#request.semesterName},'%'))
+                         (:#{#request.semesterName} IS NULL OR s.name LIKE %:#{#request.semesterName}%)
                         AND (:#{#request.semesterYear} IS NULL OR s.year = :#{#request.semesterYear})
-                        AND (:#{#request.startDate} IS NULL OR s.start_time >= :#{#request.startDate})
+                    GROUP BY
+               			s.id, s.name, s.start_time, s.end_time
                     """,
             countQuery = """
-                    SELECT
-                        COUNT(DISTINCT s.id)
-                    FROM
-                        semester s
-                    WHERE
-                        (:#{#request.semesterName} IS NULL OR s.name LIKE CONCAT('%',:#{#request.semesterName},'%'))
-                        AND (:#{#request.semesterYear} IS NULL OR s.year = :#{#request.semesterYear})
-                        AND (:#{#request.startDate} IS NULL OR s.start_time >= :#{#request.startDate})
+                        SELECT
+                            COUNT(s.id)
+                        FROM
+                            semester s
+                        WHERE
+                             (:#{#request.semesterName} IS NULL OR s.name LIKE %:#{#request.semesterName}%)
+                            AND (:#{#request.semesterYear} IS NULL OR s.year <= :#{#request.semesterYear})
                     """,
             nativeQuery = true
     )
@@ -47,37 +53,25 @@ public interface SemesterExtendRepository extends SemesterRepository {
     @Query(
             value = """
                     SELECT
-                        s.id,
-                        s.name,
-                        s.year,
-                        s.status,
-                        s.start_time,
-                        s.created_date,
-                        s.last_modified_date
+                        s.id AS id,
+                        s.name AS semesterName,
+                        s.year AS semesterYear,
+                        s.start_time AS startTime,
+                        s.end_time AS endTime,
+                        MAX(CASE WHEN b.name = 'BLOCK_1' THEN b.start_time END) AS startTimeFirstBlock,
+                        MAX(CASE WHEN b.name = 'BLOCK_1' THEN b.end_time END) AS endTimeFirstBlock,
+                        MAX(CASE WHEN b.name = 'BLOCK_2' THEN b.start_time END) AS startTimeSecondBlock,
+                        MAX(CASE WHEN b.name = 'BLOCK_2' THEN b.end_time END) AS endTimeSecondBlock
                     FROM
                         semester s
+                    JOIN block b ON b.semester_id = s.id
                     WHERE
-                        s.name = :semesterName
-                    AND s.year = :semesterYear
-                    AND s.status = 'ACTIVE'
-                    """, nativeQuery = true
+                        s.id = :id
+                    GROUP BY
+               			s.id, s.name, s.start_time, s.end_time
+                    """,
+            nativeQuery = true
     )
-    Optional<Semester> existingBySemesterNameAndSemesterYear(String semesterName, Integer semesterYear);
-
-    @Query(
-            value = """
-                    SELECT
-                        s.id as id,
-                        s.name as semesterName,
-                        s.year as semesterYear,
-                        s.status as semesterStatus,
-                        s.start_time as startTime
-                    FROM
-                        semester s
-                    WHERE
-                        s.id = :semesterId
-                    """, nativeQuery = true
-    )
-    Optional<SemesterResponse> getDetailSemesterById(String semesterId);
+    Optional<DetailSemesterResponse> getDetailSemesterById(String id);
 
 }

@@ -12,6 +12,4 @@ public class SemesterRequest extends PageableRequest {
 
     private Long semesterYear;
 
-    private Long startDate;
-
 }

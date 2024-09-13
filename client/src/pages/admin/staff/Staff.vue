@@ -22,7 +22,7 @@ import StaffTable from "@/pages/admin/staff/StaffTable.vue";
 import StaffFilter from "@/pages/admin/staff/StaffFilter.vue";
 import {computed, ref} from "vue";
 import {ParamsGetStaff} from "@/services/api/staff.api.ts";
-import {useDetailStaff, useGetStaff} from "@/services/service/staff.action.ts";
+import {useGetStaff} from "@/services/service/staff.action.ts";
 import {keepPreviousData} from "@tanstack/vue-query";
 import {ParamsGetDepartment} from "@/services/api/department.api.ts";
 
@@ -31,20 +31,10 @@ const params = ref<ParamsGetStaff>({
   size: 10,
 });
 
-const staffId = ref<string | null>(null);
-
 const { data, isLoading, isFetching } = useGetStaff(params, {
   refetchOnWindowFocus: false,
   placeholderData: keepPreviousData,
 });
-
-const { data: dataDetail, isLoading: isLoadingDetail } = useDetailStaff(
-    staffId,
-    {
-      refetchOnWindowFocus: false,
-      enabled: () => !!staffId.value,
-    }
-);
 
 const handlePaginationChange = (newParams: ParamsGetStaff) => {
   params.value = { ...params.value, ...newParams };
@@ -57,12 +47,4 @@ const handleFilter = (newParams: ParamsGetDepartment) => {
 
 const staffData = computed(() => data?.value?.data?.data || []);
 const totalPages = computed(() => data?.value?.data?.totalPages || 0);
-const staffDetail = computed(() =>
-    dataDetail.value?.data
-        ? {
-          ...dataDetail.value?.data,
-          staffId: staffId?.value,
-        }
-        : null
-);
 </script>

@@ -11,12 +11,18 @@ import request from "@/services/request";
 
 export interface ParamsGetSemester extends PaginationParams {
   semesterName?: string | null;
+  semesterYear?: number | null;
 }
 
 export type SemesterResponse = ResponseList & {
   semesterName: string;
   semesterYear: number;
   startTime: number;
+  endTime: number;
+  startTimeFirstBlock: number;
+  endTimeFirstBlock: number;
+  startTimeSecondBlock: number;
+  endTimeSecondBlock: number;
 };
 
 export type DetailSemesterResponse = {
@@ -24,6 +30,11 @@ export type DetailSemesterResponse = {
   semesterName: string;
   semesterYear: number;
   startTime: number;
+  endTime: number;
+  startTimeFirstBlock: number;
+  endTimeFirstBlock: number;
+  startTimeSecondBlock: number;
+  endTimeSecondBlock: number;
 };
 
 export const getSemesters = async (params: Ref<ParamsGetSemester>) => {

@@ -9,9 +9,9 @@ public interface SemesterService {
 
     ResponseObject<?> getAllSemester(SemesterRequest request);
 
-    ResponseObject<?> createSemester(@Valid CreateUpdateSemesterRequest createUpdateSemesterRequest);
-
-    ResponseObject<?> updateSemester(String semesterId, @Valid CreateUpdateSemesterRequest createUpdateSemesterRequest);
+//    ResponseObject<?> createSemester(@Valid CreateUpdateSemesterRequest createUpdateSemesterRequest);
+//
+//    ResponseObject<?> updateSemester(String semesterId, @Valid CreateUpdateSemesterRequest createUpdateSemesterRequest);
 
     ResponseObject<?> getSemesterById(String semesterId);
 
