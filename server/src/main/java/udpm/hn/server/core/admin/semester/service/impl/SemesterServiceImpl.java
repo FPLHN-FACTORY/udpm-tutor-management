@@ -45,64 +45,64 @@ public class SemesterServiceImpl implements SemesterService {
         );
     }
 
-    @Override
-    public ResponseObject<?> createSemester(@Valid CreateUpdateSemesterRequest createUpdateSemesterRequest) {
-        String name = SemesterName.valueOf(createUpdateSemesterRequest.getSemesterName()).toString();
-        Integer year = createUpdateSemesterRequest.getSemesterYear();
-        Long startDate = createUpdateSemesterRequest.getStartTime();
+//    @Override
+//    public ResponseObject<?> createSemester(@Valid CreateUpdateSemesterRequest createUpdateSemesterRequest) {
+//        String name = SemesterName.valueOf(createUpdateSemesterRequest.getSemesterName()).toString();
+//        Integer year = createUpdateSemesterRequest.getSemesterYear();
+//        Long startDate = createUpdateSemesterRequest.getStartTime();
+//
+//        Optional<Semester> existingHocKy = semesterExtendRepository.existingBySemesterNameAndSemesterYear(name, year);
+//        if (existingHocKy.isPresent()) {
+//            return new ResponseObject<>(null, HttpStatus.CONFLICT, "Học kỳ đã tồn tại!");
+//        }
+//
+//        LocalDate localDate = LocalDate.ofInstant(Instant.ofEpochMilli(startDate), ZoneId.systemDefault());
+//        Integer yearStartDate = localDate.getYear();
+//        if (yearStartDate.compareTo(year) != 0) {
+//            return new ResponseObject<>(null, HttpStatus.CONFLICT,
+//                    "Thời gian bắt đầu phải trùng với năm học!");
+//        }
+//
+//        Semester semester = new Semester();
+//        semester.setSemesterName(SemesterName.valueOf(name));
+//        semester.setYear(year);
+//        semester.setStartTime(startDate);
+//        semester.setStatus(EntityStatus.ACTIVE);
+//        semesterExtendRepository.save(semester);
+//
+//        return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm học kỳ thành công!");
+//    }
 
-        Optional<Semester> existingHocKy = semesterExtendRepository.existingBySemesterNameAndSemesterYear(name, year);
-        if (existingHocKy.isPresent()) {
-            return new ResponseObject<>(null, HttpStatus.CONFLICT, "Học kỳ đã tồn tại!");
-        }
-
-        LocalDate localDate = LocalDate.ofInstant(Instant.ofEpochMilli(startDate), ZoneId.systemDefault());
-        Integer yearStartDate = localDate.getYear();
-        if (yearStartDate.compareTo(year) != 0) {
-            return new ResponseObject<>(null, HttpStatus.CONFLICT,
-                    "Thời gian bắt đầu phải trùng với năm học!");
-        }
-
-        Semester semester = new Semester();
-        semester.setSemesterName(SemesterName.valueOf(name));
-        semester.setYear(year);
-        semester.setStartTime(startDate);
-        semester.setStatus(EntityStatus.ACTIVE);
-        semesterExtendRepository.save(semester);
-
-        return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm học kỳ thành công!");
-    }
-
-    @Override
-    public ResponseObject<?> updateSemester(String semesterId, CreateUpdateSemesterRequest createUpdateSemesterRequest) {
-        Optional<Semester> existingSemester = semesterExtendRepository.findById(semesterId);
-        if (existingSemester.isPresent()) {
-            Semester semester = existingSemester.get();
-            String name = SemesterName.valueOf(createUpdateSemesterRequest.getSemesterName()).toString();
-            Integer year = createUpdateSemesterRequest.getSemesterYear();
-            Long startTime = createUpdateSemesterRequest.getStartTime();
-
-            Optional<Semester> existingByHocKyAndYear = semesterExtendRepository.existingBySemesterNameAndSemesterYear(name, year);
-            if (existingByHocKyAndYear.isPresent() && !existingByHocKyAndYear.get().equals(semester)) {
-                return new ResponseObject<>(null, HttpStatus.CONFLICT,
-                        "Học kỳ đã tồn tại!");
-            }
-
-            LocalDate localDate = LocalDate.ofInstant(Instant.ofEpochMilli(startTime), ZoneId.systemDefault());
-            Integer yearStartTime = localDate.getYear();
-            if (yearStartTime.compareTo(year) != 0) {
-                return new ResponseObject<>(null, HttpStatus.CONFLICT,
-                        "Thời gian bắt đầu phải trùng với năm học!");
-            }
-
-            semester.setSemesterName(SemesterName.valueOf(createUpdateSemesterRequest.getSemesterName()));
-            semester.setYear(year);
-            semester.setStartTime(startTime);
-            semesterExtendRepository.save(semester);
-            return new ResponseObject<>(null, HttpStatus.OK, "Cập nhật học kỳ thành công!");
-        }
-        return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Học kỳ không tồn tại!");
-    }
+//    @Override
+//    public ResponseObject<?> updateSemester(String semesterId, CreateUpdateSemesterRequest createUpdateSemesterRequest) {
+//        Optional<Semester> existingSemester = semesterExtendRepository.findById(semesterId);
+//        if (existingSemester.isPresent()) {
+//            Semester semester = existingSemester.get();
+//            String name = SemesterName.valueOf(createUpdateSemesterRequest.getSemesterName()).toString();
+//            Integer year = createUpdateSemesterRequest.getSemesterYear();
+//            Long startTime = createUpdateSemesterRequest.getStartTime();
+//
+//            Optional<Semester> existingByHocKyAndYear = semesterExtendRepository.existingBySemesterNameAndSemesterYear(name, year);
+//            if (existingByHocKyAndYear.isPresent() && !existingByHocKyAndYear.get().equals(semester)) {
+//                return new ResponseObject<>(null, HttpStatus.CONFLICT,
+//                        "Học kỳ đã tồn tại!");
+//            }
+//
+//            LocalDate localDate = LocalDate.ofInstant(Instant.ofEpochMilli(startTime), ZoneId.systemDefault());
+//            Integer yearStartTime = localDate.getYear();
+//            if (yearStartTime.compareTo(year) != 0) {
+//                return new ResponseObject<>(null, HttpStatus.CONFLICT,
+//                        "Thời gian bắt đầu phải trùng với năm học!");
+//            }
+//
+//            semester.setSemesterName(SemesterName.valueOf(createUpdateSemesterRequest.getSemesterName()));
+//            semester.setYear(year);
+//            semester.setStartTime(startTime);
+//            semesterExtendRepository.save(semester);
+//            return new ResponseObject<>(null, HttpStatus.OK, "Cập nhật học kỳ thành công!");
+//        }
+//        return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Học kỳ không tồn tại!");
+//    }
 
     @Override
     public ResponseObject<?> getSemesterById(String semesterId) {

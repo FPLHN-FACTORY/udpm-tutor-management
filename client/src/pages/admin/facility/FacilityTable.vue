@@ -15,9 +15,9 @@
                 @update:pagination-params="$emit('update:paginationParams', $event)"
             >
                 <template #bodyCell="{ column, record }">
-                    <div v-if="column.key === 'action'" class="space-x-2 text-center">
+                    <div v-if="column.key === 'action'" class="space-x-2 flex items-center justify-center">
                         <a-tooltip title="Chỉnh sửa cơ sở" color="#FFC26E">
-                            <a-button type="primary" size="large" :icon="h(EditOutlined)"
+                            <a-button type="primary" size="large" class="flex items-center justify-center" :icon="h(EditOutlined)"
                                 @click="$emit('handleOpenModalUpdate', record)" />
                         </a-tooltip>
                     </div>

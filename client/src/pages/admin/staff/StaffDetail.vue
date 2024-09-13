@@ -28,7 +28,7 @@
           >
             <a-input
                 :value="staffDetail?.staffCode"
-                :disabled="true"
+                :readonly="true"
             />
           </a-form-item>
           <a-form-item
@@ -37,7 +37,7 @@
           >
             <a-input
                 :value="staffDetail?.staffName"
-                :disabled="true"
+                :readonly="true"
             />
           </a-form-item>
           <a-form-item
@@ -46,7 +46,7 @@
           >
             <a-input
                 :value="staffDetail?.emailFpt"
-                :disabled="true"
+                :readonly="true"
             />
           </a-form-item>
           <a-form-item
@@ -55,7 +55,7 @@
           >
             <a-input
                 :value="staffDetail?.emailFe"
-                :disabled="true"
+                :readonly="true"
             />
           </a-form-item>
         </a-form>

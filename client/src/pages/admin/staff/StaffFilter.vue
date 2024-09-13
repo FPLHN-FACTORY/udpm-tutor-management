@@ -24,7 +24,6 @@
 </template>
 
 <script setup lang="ts">
-
 import {ref, watch} from "vue";
 import {debounce} from "lodash";
 
@@ -39,6 +38,7 @@ const params = ref<ParamsFilterStaffs>({
 const emit = defineEmits(["filter"]);
 
 const debouncedEmit = debounce(() => {
+  params.value["page"] = 1;
   emit("filter", params.value);
 }, 2000);
 
