@@ -11,4 +11,6 @@ public interface MajorFacilityResponse extends IsIdentify, HasOrderNumber {
 
     FacilityDepartmentInfoResponse getFacilityDepartmentInfo();
 
+    String getStatus();
+
 }

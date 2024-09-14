@@ -3,6 +3,7 @@ package udpm.hn.server.core.admin.departments.departmentfacility.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import udpm.hn.server.core.admin.departments.departmentfacility.model.request.MajorFacilityRequest;
 import udpm.hn.server.core.admin.departments.departmentfacility.model.response.FacilityDepartmentInfoResponse;
@@ -18,44 +19,42 @@ public interface MajorFacilityExtendRepository extends MajorFacilityRepository {
 
     @Query(
             value = """
-                    SELECT
-                        ROW_NUMBER() OVER(
-                        ORDER BY mf.id DESC) AS orderNumber,
-                        mf.id as id,
-                        m.name as majorName,
-                        CONCAT(s.staff_code, ' - ', s.name) as headMajorCodeName
-                    FROM
-                        major_facility mf
-                    LEFT JOIN major m ON mf.id_major = m.id
-                    LEFT JOIN department_facility df ON mf.id_department_facility = df.id
-                    LEFT JOIN staff s ON mf.id_staff = s.id
-                    LEFT JOIN facility f ON df.id_facility = f.id
-                    LEFT JOIN department d ON df.id_department = d.id
-                    WHERE
-                        df.id = :#{#request.departmentFacilityId}
-                    AND (:#{#request.majorName} IS NULL OR m.name LIKE CONCAT('%', :#{#request.majorName}, '%'))
-                    AND (:#{#request.headMajorName} IS NULL OR s.name LIKE CONCAT('%', :#{#request.headMajorName}, '%'))
-                    AND (:#{#request.headMajorCode} IS NULL OR s.staff_code LIKE CONCAT('%', :#{#request.headMajorCode}, '%'))
-                    """,
+                SELECT
+                    ROW_NUMBER() OVER(
+                    ORDER BY mf.id DESC) AS orderNumber,
+                    mf.id as id,
+                    CONCAT(m.code, ' - ', m.name) as majorName,
+                    CONCAT(s.staff_code, ' - ', s.name) as headMajorCodeName,
+                    mf.status as status
+                FROM
+                    major_facility mf
+                LEFT JOIN major m ON mf.id_major = m.id
+                LEFT JOIN department_facility df ON mf.id_department_facility = df.id
+                LEFT JOIN staff s ON mf.id_staff = s.id
+                LEFT JOIN facility f ON df.id_facility = f.id
+                LEFT JOIN department d ON df.id_department = d.id
+                WHERE
+                    df.id = :#{#request.departmentFacilityId}
+                AND (:#{#request.majorCodeOrName} IS NULL OR m.name LIKE CONCAT('%', :#{#request.majorCodeOrName}, '%') OR m.code LIKE CONCAT('%', :#{#request.majorCodeOrName}, '%'))
+                AND (:#{#request.staffCodeOrName} IS NULL OR s.name LIKE CONCAT('%', :#{#request.staffCodeOrName}, '%') OR s.staff_code LIKE CONCAT('%', :#{#request.staffCodeOrName}, '%'))
+                """,
             countQuery = """
-                    SELECT
-                        COUNT(mf.id)
-                    FROM
-                        major_facility mf
-                    LEFT JOIN major m ON mf.id_major = m.id
-                    LEFT JOIN department_facility df ON mf.id_department_facility = df.id
-                    LEFT JOIN staff s ON mf.id_staff = s.id
-                    LEFT JOIN facility f ON df.id_facility = f.id
-                    WHERE
-                        df.id = :#{#request.departmentFacilityId}
-                    AND (:#{#request.majorName} IS NULL OR m.name LIKE CONCAT('%', :#{#request.majorName}, '%'))
-                    AND (:#{#request.headMajorName} IS NULL OR s.name LIKE CONCAT('%', :#{#request.headMajorName}, '%'))
-                    AND (:#{#request.headMajorCode} IS NULL OR s.staff_code LIKE CONCAT('%', :#{#request.headMajorCode}, '%'))
-                    """,
+                SELECT
+                    COUNT(mf.id)
+                FROM
+                    major_facility mf
+                LEFT JOIN major m ON mf.id_major = m.id
+                LEFT JOIN department_facility df ON mf.id_department_facility = df.id
+                LEFT JOIN staff s ON mf.id_staff = s.id
+                LEFT JOIN facility f ON df.id_facility = f.id
+                WHERE
+                    df.id = :#{#request.departmentFacilityId}
+                AND (:#{#request.majorCodeOrName} IS NULL OR m.name LIKE CONCAT('%', :#{#request.majorCodeOrName}, '%') OR m.code LIKE CONCAT('%', :#{#request.majorCodeOrName}, '%'))
+                AND (:#{#request.staffCodeOrName} IS NULL OR s.name LIKE CONCAT('%', :#{#request.staffCodeOrName}, '%') OR s.staff_code LIKE CONCAT('%', :#{#request.staffCodeOrName}, '%'))
+                """,
             nativeQuery = true
     )
-    Page<MajorFacilityResponse> findAllMajorFacilities(MajorFacilityRequest request, Pageable pageable);
-
+    Page<MajorFacilityResponse> findAllMajorFacilities(@Param("request") MajorFacilityRequest request, Pageable pageable);
     @Query(
             value = """
                     SELECT

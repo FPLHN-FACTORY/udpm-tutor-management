@@ -1,4 +1,4 @@
-import { PREFIX_API_DEPARTMENT_ADMIN } from "@/constants/url";
+import { PREFIX_API_DEPARTMENT_ADMIN, PREFIX_API_DEPARTMENT_FACILITY_ADMIN } from "@/constants/url";
 import request from "@/services/request";
 import {
   DefaultResponse,
@@ -8,9 +8,16 @@ import {
 } from "@/types/api.common";
 import { AxiosResponse } from "axios";
 import { Ref } from "vue";
+import { MajorFacilityResponse } from "./major.api";
 
 export interface ParamsGetDepartment extends PaginationParams {
+  departmentCode?: string | null;
   departmentName?: string | null;
+}
+
+export interface ParamsGetDepartmentFacility extends PaginationParams {
+  facilityName?: string | null;
+  staffCodeOrEmail?: string | null;
 }
 
 export type DepartmentResponse = ResponseList & {
@@ -20,11 +27,27 @@ export type DepartmentResponse = ResponseList & {
   createdDate: number;
 };
 
+export type DepartmentFacilityResponse = ResponseList & {
+  departmentFacilityId: string;
+  facilityId: string;
+  headOfDepartmentId: string;
+  facilityName: string;
+  headOfDepartmentName: string;
+  headOfDepartmentCode: string;
+  departmentFacilityStatus: string;
+  createdDate: string;
+  profileStaff: string,
+  departmentName: string; 
+  departmentCode: string;
+};
+
 export type DetailDepartmentResponse = {
   id: string;
   departmentName: string;
   departmentCode: string;
 };
+
+export type FacilityResponse = DepartmentFacilityResponse | MajorFacilityResponse;
 
 export const getDepartments = async (params: Ref<ParamsGetDepartment>) => {
   const res = (await request({
@@ -38,7 +61,19 @@ export const getDepartments = async (params: Ref<ParamsGetDepartment>) => {
   return res.data;
 };
 
-export const getDetailDepartment = async (id: string | null) => {
+export const getDepartmentFacility = async (departmentId: Ref<string | null>, params: Ref<ParamsGetDepartmentFacility>) => {
+  const res = (await request({
+    url: `${PREFIX_API_DEPARTMENT_FACILITY_ADMIN}/${departmentId.value}`,
+    method: "GET",
+    params: params.value,
+  })) as AxiosResponse<
+    DefaultResponse<PaginationResponse<Array<DepartmentFacilityResponse>>>
+  >;
+
+  return res.data;
+};
+
+export const getDetailDepartment = async (id: String | null) => {
   const res = (await request({
     url: `${PREFIX_API_DEPARTMENT_ADMIN}/${id}`,
     method: "GET",
@@ -46,6 +81,7 @@ export const getDetailDepartment = async (id: string | null) => {
 
   return res.data;
 };
+
 
 export interface CreateUpdateDepartmentParams {
   departmentName: string;

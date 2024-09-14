@@ -11,4 +11,6 @@ public class FindMajorRequest extends PageableRequest {
 
     private String majorName;
 
+    private String majorCode;
+
 }

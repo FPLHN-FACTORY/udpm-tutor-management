@@ -2,9 +2,11 @@ import { queryKey } from "@/constants/queryKey";
 import {
   createDepartment,
   CreateUpdateDepartmentParams,
+  getDepartmentFacility,
   getDepartments,
   getDetailDepartment,
   ParamsGetDepartment,
+  ParamsGetDepartmentFacility,
   updateDepartment,
 } from "@/services/api/department.api";
 import {
@@ -25,6 +27,19 @@ export const useGetDepartment = (
     ...options,
   });
 };
+
+export const useGetDepartmentFacility = (
+  departmentId: Ref<string | null>,
+  params: Ref<ParamsGetDepartmentFacility>,
+  options?: any
+): UseQueryReturnType<Awaited<ReturnType<typeof getDepartmentFacility>>, Error> => {
+  return useQuery({
+    queryKey: [queryKey.admin.major.majorList, departmentId, params],
+    queryFn: () => getDepartmentFacility(departmentId, params),
+    ...options,
+  });
+};
+
 
 export const useCreateDepartment = () => {
   const queryClient = useQueryClient();

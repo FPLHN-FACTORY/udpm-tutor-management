@@ -5,6 +5,7 @@
         <v-icon name="bi-list-ul" scale="2" />
         <span class="ml-2 text-2xl">Danh sách bộ môn</span>
       </h2>
+      <!--
       <a-button
           type="primary"
           @click="$emit('handleOpenModalAdd')"
@@ -13,6 +14,7 @@
       >
         Tạo bộ môn
       </a-button>
+      -->
     </div>
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
@@ -25,16 +27,35 @@
           @update:pagination-params="$emit('update:paginationParams', $event)"
       >
         <template #bodyCell="{ column, record }">
-          <div v-if="column.key === 'action'" class="space-x-2 flex items-center justify-center">
-            <a-tooltip title="Chỉnh sửa môn học" color="#FFC26E">
+          <div v-if="column.key === 'action'" class="space-x-2 text-center">
+            <a-tooltip title="Chi tiết chuyên ngành thuộc bộ môn" color="#FFC26E">
               <a-button
-                  class="flex items-center justify-center"
-                  type="primary"
-                  size="large"
-                  @click="$emit('handleOpenModalUpdate', record)"
-                  :icon="h(EditOutlined)"
+                type="primary"
+                size="regular"
+                @click="$emit('handleOpenMajorListModal', record)"
+                :icon="h(BookOutlined)"
               />
             </a-tooltip>
+            <a-tooltip title="Chi tiết bộ môn" color="#FFC26E">
+              <a-button
+                type="primary"
+                size="regular"
+                @click="$emit('handleOpenDepartmentDetailModal', record)"
+                :icon="h(EyeOutlined)"
+              />
+            </a-tooltip>
+            <a-tooltip title="Chi tiết bộ môn theo cơ sở" color="#FFC26E">
+              <a-button
+                type="primary"
+                size="regular"
+                @click="$emit('handleOpenDepartmentsFacilityListModal', record)"
+                :icon="h(GoldOutlined)"
+              />
+            </a-tooltip>
+          </div>
+          <div v-else-if="column.key === 'departmentStatus'" class="text-center">
+            <a-tag v-if="record.departmentStatus === 0" color="success">Hoạt động</a-tag>
+            <a-tag v-else-if="record.departmentStatus === 1" color="error">Không hoạt động</a-tag>
           </div>
         </template>
       </tutor-table>
@@ -45,21 +66,23 @@
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
 import { DepartmentResponse } from "@/services/api/department.api";
-import { EditOutlined } from "@ant-design/icons-vue";
+import { BookOutlined, EyeOutlined, GoldOutlined } from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { h } from "vue";
 
-defineProps({
-  dataSource: Array<DepartmentResponse>,
+const props = defineProps({
+  dataSource: Array as () => DepartmentResponse[],
   loading: Boolean,
-  paginationParams: Object,
+  paginationParams: Object as () => any,
   totalPages: Number,
 });
 
-defineEmits([
+const emit = defineEmits([
   "update:paginationParams",
-  "handleOpenModalUpdate",
+  "handleOpenDepartmentDetailModal",
   "handleOpenModalAdd",
+  "handleOpenMajorListModal",
+  "handleOpenDepartmentsFacilityListModal",
 ]);
 
 const columnsDepartment: ColumnType[] = [
@@ -79,6 +102,12 @@ const columnsDepartment: ColumnType[] = [
     title: "Tên bộ môn",
     dataIndex: "departmentName",
     key: "departmentName",
+    ellipsis: true,
+  },
+  {
+    title: "Trạng thái",
+    dataIndex: "departmentStatus",
+    key: "departmentStatus",
     ellipsis: true,
   },
   {

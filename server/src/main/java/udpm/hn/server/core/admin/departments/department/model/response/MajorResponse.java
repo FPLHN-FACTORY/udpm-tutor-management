@@ -8,6 +8,8 @@ public interface MajorResponse extends HasOrderNumber {
 
     String getMajorName();
 
+    String getMajorCode();
+
     Long getMajorStatus();
 
     Long getCreatedDate();

@@ -29,6 +29,14 @@ export const PREFIX_API_FACILITY_CHILD_ADMIN =  `${API_URL}/admin/facility-child
 
 export const PREFIX_API_DEPARTMENT_ADMIN = `${API_URL}/admin/departments` as string;
 
+export const PREFIX_API_DEPARTMENT_FACILITY_ADMIN =
+  `${API_URL}/admin/departments-facility` as string;
+
+export const PREFIX_API_MAJOR_FACILITY_ADMIN =
+  `${API_URL}/admin/majors-facility` as string;
+
+export const PREFIX_API_MAJOR_ADMIN = `${API_URL}/admin/majors` as string;
+
 export const PREFIX_API_ROLE_ADMIN = `${API_URL}/admin/roles` as string;
 
 export const PREFIX_API_SEMESTER_ADMIN = `${API_URL}/admin/semesters` as string;

@@ -28,15 +28,14 @@ public interface DepartmentExtendRepository extends DepartmentRepository {
             FROM
             	department d
             WHERE
-                :#{#req.departmentName} IS NULL OR
-                d.name LIKE :#{"%" + #req.departmentName + "%"} OR
-                d.code LIKE :#{"%" + #req.departmentName + "%"} 
+                (:#{#req.departmentName} IS NULL OR d.name LIKE %:#{#req.departmentName}%)
+                AND (:#{#req.departmentCode} IS NULL OR d.code LIKE %:#{#req.departmentCode}%)
             """, countQuery = """
             SELECT
                 COUNT(d.id) FROM department d
             WHERE
-                :#{#req.departmentName} IS NULL OR
-                d.name LIKE :#{"%" + #req.departmentName + "%"}
+                (:#{#req.departmentName} IS NULL OR d.name LIKE %:#{#req.departmentName}%)
+                AND (:#{#req.departmentCode} IS NULL OR d.code LIKE %:#{#req.departmentCode}%)
             """, nativeQuery = true)
     Page<DepartmentResponse> getAllDepartmentByFilter(Pageable pageable, @Param("req") FindDepartmentsRequest req);
 

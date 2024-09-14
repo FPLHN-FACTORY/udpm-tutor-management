@@ -28,7 +28,7 @@ public class RoleGenerator {
             List<udpm.hn.server.entity.Role> isHasRole = roleRepository.findAllByFacility(facility);
             if (isHasRole.isEmpty()) {
                 List<String> roleCodes = Role.getAllRoles();
-                List<String> roleNames = List.of("Admin", "Trưởng Môn", "Giảng Viên", "Sinh Viên", "Chủ Nhiệm Bộ Môn");
+                List<String> roleNames = List.of("Admin", "Trưởng Môn", "Giảng Viên", "Sinh Viên", "Chủ Nhiệm Bộ Môn", "Người Lập Kế Hoạch");
                 for (int i = 0; i < roleCodes.size(); i++) {
                     if (!"Admin".equals(roleNames.get(i)) && roleRepository.findByCodeAndNameAndFacility(
                             roleCodes.get(i),

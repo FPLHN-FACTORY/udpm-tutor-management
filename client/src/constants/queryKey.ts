@@ -18,6 +18,10 @@ export const queryKey = {
       departmentList: "departmentListKey",
       departmentDetail: "departmentDetailKey",
     },
+    major: {
+      majorList: "majorListKey",
+      majorDetail: "majorDetailKey",
+    },
     departmentFacility: {
       departmentFacilityList: "departmentFacilityListKey",
       departmentFacilityDetail: "departmentFacilityDetailKey",

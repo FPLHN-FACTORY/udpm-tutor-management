@@ -27,6 +27,9 @@ public class Major extends PrimaryEntity implements Serializable {
     @Nationalized
     private String name;
 
+    @Column(name = "code", length = EntityProperties.LENGTH_NAME)
+    private String code;
+
     @ManyToOne
     @JoinColumn(name = "id_department")
     private Department department;

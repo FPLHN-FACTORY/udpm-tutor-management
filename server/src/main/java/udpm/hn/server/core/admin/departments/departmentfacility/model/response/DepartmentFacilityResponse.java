@@ -8,6 +8,8 @@ public interface DepartmentFacilityResponse extends HasOrderNumber {
 
     String getFacilityId();
 
+    String getFacilityCode();
+
     String getHeadOfDepartmentId();
 
     String getFacilityName();
@@ -19,5 +21,7 @@ public interface DepartmentFacilityResponse extends HasOrderNumber {
     Long getDepartmentFacilityStatus();
 
     Long getCreatedDate();
+
+    String getProfileStaff();
 
 }

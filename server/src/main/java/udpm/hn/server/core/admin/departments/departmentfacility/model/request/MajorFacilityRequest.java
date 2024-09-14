@@ -9,11 +9,9 @@ import udpm.hn.server.core.common.base.PageableRequest;
 @Setter
 public class MajorFacilityRequest extends PageableRequest {
 
-    private String headMajorName;
+    private String staffCodeOrName;
 
-    private String majorName;
-
-    private String headMajorCode;
+    private String majorCodeOrName;
 
     @NotNull
     private String departmentFacilityId;

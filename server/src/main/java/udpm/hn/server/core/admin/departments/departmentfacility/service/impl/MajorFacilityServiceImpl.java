@@ -46,15 +46,20 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
     public ResponseObject<?> getAllMajorFacilities(@Valid MajorFacilityRequest request) {
         Pageable pageable = Helper.createPageable(request, "id");
 
-        PageableObject<?> listMajorFacility = PageableObject.of(majorFacilityExtendRepository.findAllMajorFacilities(request, pageable));
-        FacilityDepartmentInfoResponse facilityDepartmentInfo = majorFacilityExtendRepository.getFacilityDepartmentInfo(request.getDepartmentFacilityId());
-        MajorFacilitiesResponse majorFacilitiesResponse = new MajorFacilitiesResponse();
-        majorFacilitiesResponse.setMajorFacilities(listMajorFacility);
-        majorFacilitiesResponse.setFacilityDepartmentInfo(facilityDepartmentInfo);
-        return ResponseObject.successForward(
-                majorFacilitiesResponse,
-                "Lấy danh sách chuyên ngành theo cơ sở thành công"
-        );
+        try {
+            PageableObject<?> listMajorFacility = PageableObject.of(majorFacilityExtendRepository.findAllMajorFacilities(request, pageable));
+            FacilityDepartmentInfoResponse facilityDepartmentInfo = majorFacilityExtendRepository.getFacilityDepartmentInfo(request.getDepartmentFacilityId());
+            MajorFacilitiesResponse majorFacilitiesResponse = new MajorFacilitiesResponse();
+            majorFacilitiesResponse.setMajorFacilities(listMajorFacility);
+            majorFacilitiesResponse.setFacilityDepartmentInfo(facilityDepartmentInfo);
+            return ResponseObject.successForward(
+                    majorFacilitiesResponse,
+                    "Lấy danh sách chuyên ngành theo cơ sở thành công"
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error executing query", e);
+        }
     }
 
     @Override

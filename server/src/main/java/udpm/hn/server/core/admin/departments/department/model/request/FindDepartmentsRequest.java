@@ -16,4 +16,6 @@ public class FindDepartmentsRequest extends PageableRequest {
 
     private String departmentName;
 
+    private String departmentCode;
+
 }
