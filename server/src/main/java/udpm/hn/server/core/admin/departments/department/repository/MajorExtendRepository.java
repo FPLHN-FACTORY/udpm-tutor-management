@@ -17,29 +17,36 @@ public interface MajorExtendRepository extends MajorRepository {
 
     @Query(
             value = """
-                    SELECT
-                    	ROW_NUMBER() OVER(
-                    	ORDER BY mj.id DESC) AS orderNumber,
-                    	mj.id AS majorId,
-                    	mj.name AS majorName,
-                    	mj.status AS majorStatus,
-                    	mj.created_date AS createdDate
-                    FROM
-                    	major mj
-                    WHERE
-                        mj.id_department = :id
-                        AND ( :#{#req.majorName} IS NULL
-                     	OR mj.name LIKE :#{"%" + #req.majorName + "%"})
-                    """, countQuery = """
-            SELECT
-            	COUNT(mj.id)
-            FROM
-            	major mj
-            WHERE
-                mj.id_department = :id
-                AND ( :#{#req.majorName} IS NULL
-             	OR mj.name LIKE :#{"%" + #req.majorName + "%"})
-            """, nativeQuery = true)
+                        SELECT
+                            ROW_NUMBER() OVER (ORDER BY mj.id DESC) AS orderNumber,
+                            mj.id AS majorId,
+                            mj.name AS majorName,
+                            mj.code AS majorCode, 
+                            mj.status AS majorStatus,
+                            mj.created_date AS createdDate
+                        FROM
+                            major mj
+                        WHERE
+                            mj.id_department = :id
+                            AND (:#{#req.majorName} IS NULL
+                                OR mj.name LIKE %:#{#req.majorName}%)
+                            AND (:#{#req.majorCode} IS NULL
+                                OR mj.code LIKE %:#{#req.majorCode}%)
+                    """,
+            countQuery = """
+                        SELECT
+                            COUNT(mj.id)
+                        FROM
+                            major mj
+                        WHERE
+                            mj.id_department = :id
+                            AND (:#{#req.majorName} IS NULL
+                                OR mj.name LIKE %:#{#req.majorName}%)
+                            AND (:#{#req.majorCode} IS NULL
+                                OR mj.code LIKE %:#{#req.majorCode}%)
+                    """,
+            nativeQuery = true
+    )
     Page<MajorResponse> getAllMajorByDepartmentIdFilter(String id, Pageable pageable, @Param("req") FindMajorRequest req);
 
     Optional<Major> findMajorByNameAndDepartmentId(String name, String departmentId);

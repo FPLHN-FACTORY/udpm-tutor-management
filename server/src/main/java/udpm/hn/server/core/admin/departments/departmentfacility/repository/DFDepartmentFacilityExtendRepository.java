@@ -21,39 +21,44 @@ public interface DFDepartmentFacilityExtendRepository extends DepartmentFacility
 
     @Query(value = """
             SELECT
-               	ROW_NUMBER() OVER(
-               	ORDER BY df.id DESC) AS orderNumber,
-               	df.id AS departmentFacilityId,
-               	df.id_facility AS facilityId,
-               	st.id AS headOfDepartmentId,
-               	df.status AS departmentFacilityStatus,
-               	f.name AS facilityName,
-               	st.email_fpt AS headOfDepartmentName,
-               	st.staff_code AS headOfDepartmentCode,
-               	df.created_date AS createdDate
+                ROW_NUMBER() OVER(
+                    ORDER BY df.id DESC
+                ) AS orderNumber,
+                df.id AS departmentFacilityId,
+                df.id_facility AS facilityId,
+                f.code as facilityCode,
+                st.id AS headOfDepartmentId,
+                df.status AS departmentFacilityStatus,
+                f.name AS facilityName,
+                st.email_fpt AS headOfDepartmentName,
+                st.staff_code AS headOfDepartmentCode,
+                CONCAT(st.staff_code, ' - ', st.email_fpt) AS profileStaff,
+                df.created_date AS createdDate
             FROM
-               	department_facility df
-               LEFT JOIN facility f ON
-               	f.id = df.id_facility
-               LEFT JOIN staff st ON
-               	st.id = df.id_staff
+                department_facility df
+            LEFT JOIN facility f ON
+                f.id = df.id_facility
+            LEFT JOIN staff st ON
+                st.id = df.id_staff
             WHERE
-               	(df.id_department = :id) AND
-               	(:#{#req.facilityName} IS NULL OR f.name LIKE :#{ "%" + #req.facilityName + "%"})
+                (df.id_department = :id) AND
+                (:#{#req.facilityName} IS NULL OR f.name LIKE %:#{#req.facilityName}%) AND
+                (:#{#req.staffCodeOrEmail} IS NULL OR st.staff_code LIKE %:#{#req.staffCodeOrEmail}% OR st.email_fpt LIKE %:#{#req.staffCodeOrEmail}%)
             """,
             countQuery = """
-                    SELECT
-                       	COUNT(df.id)
-                    FROM
-                       	department_facility df
-                       LEFT JOIN facility f ON
-                       	f.id = df.id_facility
-                       LEFT JOIN staff st ON
-                       	st.id = df.id_staff
-                    WHERE
-                       	(df.id_department = :id) AND
-                       	(:#{#req.facilityName} IS NULL OR f.name LIKE :#{ "%" + #req.facilityName + "%"})
-                    """,
+            SELECT
+                COUNT(df.id)
+            FROM
+                department_facility df
+            LEFT JOIN facility f ON
+                f.id = df.id_facility
+            LEFT JOIN staff st ON
+                st.id = df.id_staff
+            WHERE
+                (df.id_department = :id) AND
+                (:#{#req.facilityName} IS NULL OR f.name LIKE %:#{#req.facilityName}%) AND
+                (:#{#req.staffCodeOrEmail} IS NULL OR st.staff_code LIKE %:#{#req.staffCodeOrEmail}% OR st.email_fpt LIKE %:#{#req.staffCodeOrEmail}%)
+        """,
             nativeQuery = true)
     Page<DepartmentFacilityResponse> getDepartmentFacilitiesByValueFind(String id, Pageable pageable, @Param("req") FindFacilityDetailRequest req);
 

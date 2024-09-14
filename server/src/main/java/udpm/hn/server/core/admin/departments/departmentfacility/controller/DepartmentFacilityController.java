@@ -23,11 +23,6 @@ public class DepartmentFacilityController {
     private final DepartmentFacilityService departmentFacilityService;
 
     @GetMapping("/{id}")
-    public String viewDepartmentFacility(@PathVariable String id) {
-        return "admin/department/departments-facility";
-    }
-
-    @GetMapping("/get-all-department-facility/{id}")
     public ResponseEntity<?> getAllDepartmentFacility(@PathVariable String id, FindFacilityDetailRequest request) {
         return Helper.createResponseEntity(departmentFacilityService.getAllDepartmentFacility(id, request));
     }

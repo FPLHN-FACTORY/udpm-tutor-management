@@ -3,6 +3,7 @@ package udpm.hn.server.core.admin.departments.department.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,23 +23,23 @@ public class MajorController {
 
     private final MajorService majorService;
 
-    @GetMapping("/get-all-major/{departmentId}")
+    @GetMapping("/{departmentId}")
     public ResponseEntity<?> getAllMajor(@PathVariable String departmentId, FindMajorRequest request) {
         return Helper.createResponseEntity(majorService.getAllMajor(departmentId, request));
     }
 
-    @PostMapping("/add-major")
-    public ResponseEntity<?> addCoSo(@RequestBody CreateOrUpdateMajorRequest request) {
+    @PostMapping
+    public ResponseEntity<?> addMajor(@RequestBody CreateOrUpdateMajorRequest request) {
         return Helper.createResponseEntity(majorService.addMajor(request));
     }
 
-    @PutMapping("/update-major/{id}")
-    public ResponseEntity<?> updateCoSo(@RequestBody CreateOrUpdateMajorRequest request, @PathVariable String id) {
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateMajor(@RequestBody CreateOrUpdateMajorRequest request, @PathVariable String id) {
         return Helper.createResponseEntity(majorService.updateMajor(request, id));
     }
 
-    @PutMapping("/delete-major/{id}")
-    public ResponseEntity<?> deleteCoSo(@PathVariable String id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteMajor(@PathVariable String id) {
         return Helper.createResponseEntity(majorService.deleteMajor(id));
     }
 

@@ -10,4 +10,6 @@ public class FindFacilityDetailRequest extends PageableRequest {
 
     private String facilityName;
 
+    private String staffCodeOrEmail;
+
 }

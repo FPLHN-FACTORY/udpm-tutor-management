@@ -43,7 +43,7 @@
             {{ getDateFormat(record.createdDate, false) }}
           </div>
         </template>
-      </tutor-table>
+       </tutor-table>
       </div>
   </div>
 </template>
