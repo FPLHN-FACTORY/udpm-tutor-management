@@ -14,4 +14,9 @@ public class ReassignHeadSubjectRequest {
     @NotNull(message = "New head subject id is required")
     private String newHeadSubjectId;
 
+    @NotNull(message = "SemesterId is required")
+    private String semesterId;
+
+    @NotNull(message = "FacilityId is required")
+    private String facilityId;
 }

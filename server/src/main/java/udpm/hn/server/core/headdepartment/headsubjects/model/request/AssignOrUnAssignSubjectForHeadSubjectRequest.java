@@ -11,4 +11,10 @@ public class AssignOrUnAssignSubjectForHeadSubjectRequest {
     @NotNull(message = "SubjectId is required")
     private String subjectId;
 
+    @NotNull(message = "SemesterId is required")
+    private String semesterId;
+
+    @NotNull(message = "FacilityId is required")
+    private String facilityId;
+
 }

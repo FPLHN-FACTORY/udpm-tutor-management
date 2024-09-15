@@ -30,8 +30,8 @@ public interface HeadSubjectsService {
 
     ResponseObject<?> searchStaff(HeadSubjectSearchRequest request);
 
-    ResponseObject<?> syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester();
+    ResponseObject<?> syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester(String semesterId);
 
-    ResponseObject<?> checkCurrentSemesterHasHeadSubject();
+    ResponseObject<?> checkCurrentSemesterHasHeadSubject(String semesterId);
 
 }

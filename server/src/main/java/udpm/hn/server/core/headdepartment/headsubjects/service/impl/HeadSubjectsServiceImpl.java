@@ -26,7 +26,6 @@ import udpm.hn.server.entity.Staff;
 import udpm.hn.server.entity.Subject;
 import udpm.hn.server.infrastructure.constant.Role;
 import udpm.hn.server.utils.Helper;
-import udpm.hn.server.utils.SessionHelper;
 
 import java.util.List;
 import java.util.Objects;
@@ -41,8 +40,6 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
     private final HDHSHeadSubjectBySemesterRepository hdhsHeadSubjectBySemesterRepository;
 
     private final HDHSSubjectRepository hdhsSubjectRepository;
-
-    private final SessionHelper sessionHelper;
 
     private final HDHSStaffExtendRepository hdhsStaffExtendRepository;
 
@@ -118,19 +115,19 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
 
         Optional<HeadSubjectBySemester> headSubjectBySemester = hdhsHeadSubjectBySemesterRepository
                 .findBySemester_IdAndSubject_IdAndFacility_Id(
-                        sessionHelper.getCurrentSemesterId(),
+                        request.getSemesterId(),
                         request.getSubjectId(),
-                        sessionHelper.getCurrentUserFacilityId()
+                        request.getFacilityId()
                 );
         if (headSubjectBySemester.isPresent()) {
             headSubjectBySemester.get().setStaff(staff.get());
             hdhsHeadSubjectBySemesterRepository.save(headSubjectBySemester.get());
         } else {
             HeadSubjectBySemester headSubject = new HeadSubjectBySemester();
-            headSubject.setSemester(hdhsSemesterExtendRepository.getReferenceById(sessionHelper.getCurrentSemesterId()));
+            headSubject.setSemester(hdhsSemesterExtendRepository.getReferenceById(request.getSemesterId()));
             headSubject.setSubject(subject.get());
             headSubject.setStaff(staff.get());
-            headSubject.setFacility(hdhsFacilityExtendRepository.getReferenceById(sessionHelper.getCurrentUserFacilityId()));
+            headSubject.setFacility(hdhsFacilityExtendRepository.getReferenceById(request.getFacilityId()));
             hdhsHeadSubjectBySemesterRepository.save(headSubject);
         }
         return ResponseObject.successForward(
@@ -161,9 +158,9 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
 
         Optional<HeadSubjectBySemester> headSubjectBySemester = hdhsHeadSubjectBySemesterRepository
                 .findBySemester_IdAndSubject_IdAndFacility_Id(
-                        sessionHelper.getCurrentSemesterId(),
+                        request.getSemesterId(),
                         request.getSubjectId(),
-                        sessionHelper.getCurrentUserFacilityId()
+                        request.getFacilityId()
                 );
         if (headSubjectBySemester.isPresent()) {
             hdhsHeadSubjectBySemesterRepository.delete(headSubjectBySemester.get());
@@ -194,8 +191,8 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
 
         List<HeadSubjectBySemester> headSubjectBySemesterOlds = hdhsHeadSubjectBySemesterRepository
                 .findBySemester_IdAndFacility_IdAndStaff_Id(
-                        sessionHelper.getCurrentSemesterId(),
-                        sessionHelper.getCurrentUserFacilityId(),
+                        request.getSemesterId(),
+                        request.getFacilityId(),
                         currentHeadSubjectId
                 );
 
@@ -230,8 +227,8 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
     }
 
     @Override
-    public ResponseObject<?> syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester() {
-        String previousSemesterId = getPreviousSemesterId();
+    public ResponseObject<?> syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester(String semesterId) {
+        String previousSemesterId = getPreviousSemesterId(semesterId);
         if (previousSemesterId == null) {
             return ResponseObject.errorForward(
                     "Không tìm thấy học kỳ trước",
@@ -252,13 +249,13 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
         for (HeadSubjectBySemester headSubjectBySemester : headSubjectBySemesters) {
             Optional<HeadSubjectBySemester> headSubjectBySemesterOptional = hdhsHeadSubjectBySemesterRepository
                     .findBySemester_IdAndSubject_IdAndFacility_Id(
-                            sessionHelper.getCurrentSemesterId(),
+                            semesterId,
                             headSubjectBySemester.getSubject().getId(),
                             headSubjectBySemester.getFacility().getId()
                     );
             if (headSubjectBySemesterOptional.isEmpty()) {
                 HeadSubjectBySemester newHeadSubjectBySemester = new HeadSubjectBySemester();
-                newHeadSubjectBySemester.setSemester(hdhsSemesterExtendRepository.getReferenceById(sessionHelper.getCurrentSemesterId()));
+                newHeadSubjectBySemester.setSemester(hdhsSemesterExtendRepository.getReferenceById(semesterId));
                 newHeadSubjectBySemester.setSubject(headSubjectBySemester.getSubject());
                 newHeadSubjectBySemester.setStaff(headSubjectBySemester.getStaff());
                 newHeadSubjectBySemester.setFacility(headSubjectBySemester.getFacility());
@@ -273,9 +270,9 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
     }
 
     @Override
-    public ResponseObject<?> checkCurrentSemesterHasHeadSubject() {
+    public ResponseObject<?> checkCurrentSemesterHasHeadSubject(String semesterId) {
         List<HeadSubjectBySemester> headSubjectBySemesters = hdhsHeadSubjectBySemesterRepository
-                .findBySemester_Id(sessionHelper.getCurrentSemesterId());
+                .findBySemester_Id(semesterId);
         if (headSubjectBySemesters.isEmpty()) {
             return new ResponseObject<>(
                     true,
@@ -290,9 +287,9 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
         );
     }
 
-    private String getPreviousSemesterId() {
+    private String getPreviousSemesterId(String semesterId) {
         Semester currentSemester = hdhsSemesterExtendRepository
-                .getReferenceById(Objects.requireNonNull(sessionHelper.getCurrentSemesterId()));
+                .getReferenceById(Objects.requireNonNull(semesterId));
         List<Semester> semesters = hdhsSemesterExtendRepository.findAll();
         for (Semester semester : semesters) {
             if (semester.getStartTime() <= currentSemester.getStartTime()) {
