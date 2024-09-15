@@ -18,20 +18,8 @@ public class SessionConstant {
 
     public static final String CURRENT_USER_ROLE = "current_user_role";
 
-    public static final String CURRENT_USER_IS_ASSIGN_UPLOADER = "current_user_is_assign_uploader";
-
     public static final String CURRENT_SEMESTER_ID = "current_semester_id";
 
     public static final String CURRENT_BLOCK_ID = "current_block_id";
-
-    public static final String ERROR_LOGIN = "error_login";
-
-    public static final String ROLE_LOGIN = "role_login";
-
-    public static final String REDIRECT_LOGIN = "redirect_login";
-
-    public static final String IS_STUDENT = "is_student";
-
-    public static final String ERROR_MESSAGE = "Tài khoản không được phép đăng nhập vào hệ thống!";
 
 }
