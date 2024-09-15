@@ -21,12 +21,15 @@ import udpm.hn.server.entity.Facility;
 import udpm.hn.server.entity.MajorFacility;
 import udpm.hn.server.entity.Staff;
 import udpm.hn.server.entity.StaffMajorFacility;
+import udpm.hn.server.infrastructure.connection.IdentityValidation;
+import udpm.hn.server.infrastructure.constant.Role;
 import udpm.hn.server.infrastructure.security.repository.StaffAuthRepository;
 import udpm.hn.server.infrastructure.security.repository.StaffMajorFacilityAuthRepository;
 import udpm.hn.server.infrastructure.security.repository.StaffRoleAuthRepository;
 import udpm.hn.server.infrastructure.security.response.TokenSubjectResponse;
 import udpm.hn.server.infrastructure.security.user.UserPrincipal;
 
+import javax.crypto.SecretKey;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +43,18 @@ public class TokenProvider {
     @Value("${jwt.secret}")
     private String tokenSecret;
 
+    @Value("${security.use-identity}")
+    private String useIdentityModule;
+
+    @Value("${identity.client-secret}")
+    private String identityClientSecret;
+
+    @Value("${identity.client-id}")
+    private String identityClientId;
+
     private final long TOKEN_EXP = System.currentTimeMillis() + 2 * 60 * 60 * 1000;
+
+    private static final String ISSUER = "udpm.hn.tutor-api";
 
     @Setter(onMethod_ = @Autowired)
     private StaffAuthRepository staffRepository;
@@ -84,8 +98,8 @@ public class TokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(new java.util.Date(System.currentTimeMillis()))
                 .setExpiration(new java.util.Date(TOKEN_EXP))
-                .setIssuer("udpm.hn")
-                .signWith(Keys.hmacShaKeyFor(tokenSecret.getBytes()))
+                .setIssuer(ISSUER)
+                .signWith(getSecretKey())
                 .compact();
     }
 
@@ -120,8 +134,8 @@ public class TokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(new java.util.Date(System.currentTimeMillis()))
                 .setExpiration(new java.util.Date(TOKEN_EXP))
-                .setIssuer("udpm.hn")
-                .signWith(Keys.hmacShaKeyFor(tokenSecret.getBytes()))
+                .setIssuer(ISSUER)
+                .signWith(getSecretKey())
                 .compact();
     }
 
@@ -135,8 +149,8 @@ public class TokenProvider {
         response.setEmailFe(staff.getEmailFe() != null ? staff.getEmailFe() : "");
         List<String> rolesCode = staffRoleAuthRepository.getRoleCodesByStaffId(staff.getId());
         if (rolesCode.isEmpty()) {
-            response.setRolesCode(Collections.singletonList("GIANG_VIEN"));
-            response.setRolesName(Collections.singletonList("GIANG_VIEN"));
+            response.setRolesCode(Collections.singletonList(Role.GIANG_VIEN.name()));
+            response.setRolesName(Collections.singletonList(Role.GIANG_VIEN.name()));
         } else {
             response.setRolesCode(rolesCode);
             response.setRolesName(staffRoleAuthRepository.getRoleNamesByStaffId(staff.getId()));
@@ -222,6 +236,14 @@ public class TokenProvider {
         if (staffFPT.isPresent()) return staffFPT.get();
         Optional<Staff> staffFE = staffRepository.findByEmailFe(email);
         return staffFE.orElse(null);
+    }
+
+    private SecretKey getSecretKey() {
+        if (useIdentityModule.equals("true")) {
+            return IdentityValidation.generateJwtSecretKey(identityClientId, identityClientSecret);
+        } else {
+            return Keys.hmacShaKeyFor(tokenSecret.getBytes());
+        }
     }
 
 }

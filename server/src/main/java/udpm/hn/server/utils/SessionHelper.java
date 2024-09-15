@@ -11,10 +11,6 @@ public class SessionHelper {
 
     private final HttpSession httpSession;
 
-    public String getCurrentUserPicture() {
-        return httpSession.getAttribute(SessionConstant.CURRENT_USER_PICTURE).toString();
-    }
-
     public String getCurrentUserEmail() {
         return httpSession.getAttribute(SessionConstant.CURRENT_USER_EMAIL).toString();
     }
@@ -41,10 +37,6 @@ public class SessionHelper {
 
     public String getCurrentUserRole() {
         return httpSession.getAttribute(SessionConstant.CURRENT_USER_ROLE).toString();
-    }
-
-    public String getCurrentUserIsAssignUploader() {
-        return httpSession.getAttribute(SessionConstant.CURRENT_USER_IS_ASSIGN_UPLOADER).toString();
     }
 
     public String getCurrentSemesterId() {

@@ -29,6 +29,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Setter(onMethod_ = @Autowired)
     private CustomUserDetailsService customUserDetailsService;
 
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+
+    private static final String BEARER_TOKEN = "Bearer ";
+
+    private static final int BEAR_TOKEN_INDEX = 7;
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -55,9 +61,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TOKEN)) {
+            return bearerToken.substring(BEAR_TOKEN_INDEX);
         }
         return null;
     }
