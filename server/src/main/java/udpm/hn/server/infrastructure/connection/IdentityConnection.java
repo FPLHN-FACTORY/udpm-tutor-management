@@ -1,8 +1,6 @@
 package udpm.hn.server.infrastructure.connection;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
@@ -18,7 +16,6 @@ import udpm.hn.server.infrastructure.connection.response.DepartmentSingleRespons
 import udpm.hn.server.infrastructure.connection.response.MajorCampusResponse;
 import udpm.hn.server.infrastructure.connection.response.MajorResponse;
 import udpm.hn.server.infrastructure.connection.response.UserInformationResponse;
-import udpm.hn.server.utils.SessionHelper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,9 +24,6 @@ import java.util.Map;
 @Component
 @Slf4j
 public class IdentityConnection {
-
-    @Setter(onMethod_ = @Autowired)
-    private SessionHelper sessionHelper;
 
     @Value("${identity.host}")
     private String domainIdentity;
@@ -46,12 +40,12 @@ public class IdentityConnection {
      * @param userCodes: Truyền một list id của các user cần lấy thông tìn
      * @return Trả về 1 list UserInformationResponse (là các user có id được truyền vào bằng list)
      */
-    public List<UserInformationResponse> handleCallApiGetListUserByListId(List<String> userCodes) {
+    public List<UserInformationResponse> handleCallApiGetListUserByListId(List<String> userCodes, String facilityId, String departmentId) {
         try {
             String apiUrl = domainIdentity + "/api/connector/get-detail-users";
             WebClient webClient = WebClient.create(apiUrl);
 
-            Map<String, Object> requestBody = getCurrentClientAndCampusSubjectAuthorizeProps(EMPTY_ADDITIONAL_PROPS);
+            Map<String, Object> requestBody = getCurrentClientAndCampusSubjectAuthorizeProps(EMPTY_ADDITIONAL_PROPS, facilityId, departmentId);
             requestBody.put("userCodes", userCodes);
 
             Mono<List<UserInformationResponse>> responseMono = webClient
@@ -71,12 +65,12 @@ public class IdentityConnection {
      * @param roleCode: Truyền vào Constants role
      * @return List tất cả các user có role được truyền vào
      */
-    public List<UserInformationResponse> handleCallApiGetUserByRoleAndModule(String roleCode) {
+    public List<UserInformationResponse> handleCallApiGetUserByRoleAndModule(String roleCode, String facilityId, String departmentId) {
         try {
             String apiUrl = domainIdentity + "/api/connector/get-list-user-by-role-code";
             WebClient webClient = WebClient.create(apiUrl);
 
-            Map<String, Object> requestBody = getCurrentClientAndCampusSubjectAuthorizeProps(EMPTY_ADDITIONAL_PROPS);
+            Map<String, Object> requestBody = getCurrentClientAndCampusSubjectAuthorizeProps(EMPTY_ADDITIONAL_PROPS, facilityId, departmentId);
             requestBody.put("roleCode", roleCode);
 
             Mono<List<UserInformationResponse>> responseMono = webClient
@@ -97,12 +91,12 @@ public class IdentityConnection {
      * @param userCode vào id của 1 user cần lấy thông tin
      * @return Trả về thông tin của 1 user
      */
-    public UserInformationResponse getUserByCode(String userCode) {
+    public UserInformationResponse getUserByCode(String userCode, String facilityId, String departmentId) {
         try {
             String apiUrl = domainIdentity + "/api/connector/get-user-by-id";
             WebClient webClient = WebClient.create(apiUrl);
 
-            Map<String, Object> requestBody = getCurrentClientAndCampusSubjectAuthorizeProps(EMPTY_ADDITIONAL_PROPS);
+            Map<String, Object> requestBody = getCurrentClientAndCampusSubjectAuthorizeProps(EMPTY_ADDITIONAL_PROPS, facilityId, departmentId);
             requestBody.put("userCode", userCode);
 
             Mono<UserInformationResponse> responseMono = webClient
@@ -122,13 +116,13 @@ public class IdentityConnection {
     /**
      * @return Trả về list các department
      */
-    public List<DepartmentResponse> getDepartments() {
+    public List<DepartmentResponse> getDepartments(String facilityId, String departmentId) {
         try {
             String apiUrl = domainIdentity + "/api/connector/get-departments";
 
             WebClient webClient = WebClient.create(apiUrl);
 
-            Map<String, Object> requestBody = getCurrentClientAndCampusSubjectAuthorizeProps(EMPTY_ADDITIONAL_PROPS);
+            Map<String, Object> requestBody = getCurrentClientAndCampusSubjectAuthorizeProps(EMPTY_ADDITIONAL_PROPS, facilityId, departmentId);
 
             Mono<List<DepartmentResponse>> responseMono = webClient
                     .post()
@@ -268,12 +262,12 @@ public class IdentityConnection {
         }
     }
 
-    private Map<String, Object> getCurrentClientAndCampusSubjectAuthorizeProps(Map<String, Object> additionalProps) {
+    private Map<String, Object> getCurrentClientAndCampusSubjectAuthorizeProps(Map<String, Object> additionalProps, String facilityId, String departmentId) {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("clientId", clientId);
         requestBody.put("clientSecret", clientSecret);
-        requestBody.put("campusCode", sessionHelper.getCurrentUserFacilityId());
-        requestBody.put("subjectCode", sessionHelper.getCurrentUserDepartmentId());
+        requestBody.put("campusCode", facilityId);
+        requestBody.put("subjectCode", departmentId);
 
         if (additionalProps != null) {
             requestBody.putAll(additionalProps);

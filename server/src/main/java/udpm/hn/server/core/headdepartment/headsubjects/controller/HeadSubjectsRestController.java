@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import udpm.hn.server.core.headdepartment.headsubjects.model.request.AssignOrUnAssignSubjectForHeadSubjectRequest;
 import udpm.hn.server.core.headdepartment.headsubjects.model.request.HeadSubjectRequest;
@@ -75,15 +76,15 @@ public class HeadSubjectsRestController {
     }
 
     @GetMapping("/subjects/sync")
-    public ResponseEntity<?> syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester() {
+    public ResponseEntity<?> syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester(@RequestParam("semesterId") String semesterId) {
         return Helper.createResponseEntity(
-                headSubjectsService.syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester()
+                headSubjectsService.syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester(semesterId)
         );
     }
 
     @GetMapping("/subjects/can-sync")
-    public ResponseEntity<?> checkCurrentSemesterHasHeadSubject() {
-        return Helper.createResponseEntity(headSubjectsService.checkCurrentSemesterHasHeadSubject());
+    public ResponseEntity<?> checkCurrentSemesterHasHeadSubject(String semesterId) {
+        return Helper.createResponseEntity(headSubjectsService.checkCurrentSemesterHasHeadSubject(semesterId));
     }
 
 }

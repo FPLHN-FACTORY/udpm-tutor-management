@@ -11,8 +11,6 @@ import udpm.hn.server.core.common.repository.CMDepartmentExtendRepository;
 import udpm.hn.server.core.common.repository.CMFacilityExtendRepository;
 import udpm.hn.server.core.common.repository.CMSemesterExtendRepository;
 import udpm.hn.server.core.common.repository.CMStaffExtendRepository;
-import udpm.hn.server.utils.SessionHelper;
-
 import java.util.List;
 
 @Component
@@ -27,15 +25,11 @@ public class CommonServiceHelper {
 
     private final CMFacilityExtendRepository facilityExtendRepository;
 
-    private final SessionHelper sessionHelper;
-
-    public ResponseObject<?> getSemesterInfo() {
+    public ResponseObject<?> getSemesterInfo(String semesterId) {
 
         List<SemesterInfoResponse> semesterInfos = cMSemesterExtendRepository.getSemesterInfos();
 
-        String currentSemester = sessionHelper.getCurrentSemesterId();
-
-        if (currentSemester == null) {
+        if (semesterId == null) {
             return new ResponseObject<>(
                     semesterInfos,
                     HttpStatus.OK,
@@ -44,9 +38,9 @@ public class CommonServiceHelper {
         }
 
         semesterInfos.sort((o1, o2) -> {
-            if (o1.getId().equals(currentSemester)) {
+            if (o1.getId().equals(semesterId)) {
                 return -1;
-            } else if (o2.getId().equals(currentSemester)) {
+            } else if (o2.getId().equals(semesterId)) {
                 return 1;
             } else {
                 return o2.getId().compareTo(o1.getId());

@@ -7,7 +7,7 @@ import udpm.hn.server.infrastructure.constant.SessionConstant;
 
 @Component
 @RequiredArgsConstructor
-public class SessionHelper {
+class SessionHelper {
 
     private final HttpSession httpSession;
 

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import udpm.hn.server.core.common.model.request.CMOptionsFilterRequest;
@@ -20,9 +21,9 @@ public class CommonRestController {
 
     private final CommonServiceHelper commonServiceHelper;
 
-    @GetMapping("/semester")
-    public ResponseEntity<?> getSemester() {
-        return Helper.createResponseEntity(commonServiceHelper.getSemesterInfo());
+    @GetMapping("/semester/{id}")
+    public ResponseEntity<?> getSemester(@PathVariable("id") String id) {
+        return Helper.createResponseEntity(commonServiceHelper.getSemesterInfo(id));
     }
 
     @GetMapping("/staff/search")
