@@ -48,4 +48,9 @@ public class SemesterController {
         return Helper.createResponseEntity(semesterService.statusChangeSemester(semesterId));
     }
 
+    @GetMapping("/synchronize")
+    public ResponseEntity<?> synchronize() {
+        return Helper.createResponseEntity(semesterService.synchronize());
+    }
+
 }

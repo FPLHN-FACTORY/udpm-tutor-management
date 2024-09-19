@@ -1,14 +1,13 @@
 package udpm.hn.server.core.admin.semester.service.impl;
 
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import udpm.hn.server.core.admin.block.repository.BlockExtendRepository;
-import udpm.hn.server.core.admin.semester.model.request.CreateUpdateSemesterRequest;
 import udpm.hn.server.core.admin.semester.model.request.SemesterRequest;
 import udpm.hn.server.core.admin.semester.repository.SemesterExtendRepository;
 import udpm.hn.server.core.admin.semester.service.SemesterService;
@@ -16,12 +15,14 @@ import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.entity.Block;
 import udpm.hn.server.entity.Semester;
+import udpm.hn.server.infrastructure.connection.IdentityConnection;
+import udpm.hn.server.infrastructure.connection.response.SemesterResponse;
+import udpm.hn.server.infrastructure.constant.BlockName;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
 import udpm.hn.server.infrastructure.constant.SemesterName;
 import udpm.hn.server.utils.Helper;
-
 import java.time.Instant;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +35,8 @@ public class SemesterServiceImpl implements SemesterService {
     private final SemesterExtendRepository semesterExtendRepository;
 
     private final BlockExtendRepository blockExtendRepository;
+
+    private final IdentityConnection identityConnection;
 
     @Override
     public ResponseObject<?> getAllSemester(SemesterRequest request) {
@@ -132,4 +135,10 @@ public class SemesterServiceImpl implements SemesterService {
         }
         return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Học kỳ không tồn tại!");
     }
+
+    @Override
+    public ResponseObject<?> synchronize() {
+        return identityConnection.handleCallApiGetSemesterByStatus() ;
+    }
+
 }

@@ -5,6 +5,16 @@
         <v-icon name="bi-list-ul" scale="2" />
         <span class="ml-2 text-2xl">Danh sách học kỳ</span>
       </h2>
+      <a-button
+          type="primary"
+          size="large"
+          class="m-4 flex justify-between items-center"
+          @click="handleSync"
+          :disabled="isSyncing"
+      >
+        <v-icon name="bi-arrow-counterclockwise" scale="2" />
+        Đồng bộ
+      </a-button>
     </div>
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
@@ -54,6 +64,11 @@ import { getDateFormat } from "@/utils/common.helper";
 import { ColumnType } from "ant-design-vue/es/table";
 import {h} from "vue";
 import {EyeOutlined} from "@ant-design/icons-vue";
+import {useSemesterSynchronize} from "@/services/service/semester.action.ts";
+import {toast} from "vue3-toastify";
+import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
+import {useQueryClient} from "@tanstack/vue-query";
+import {queryKey} from "@/constants/queryKey.ts";
 
 defineProps({
   dataSource: Array<SemesterResponse>,
@@ -61,8 +76,32 @@ defineProps({
   paginationParams: Object,
   totalPages: Number,
 });
+// Sử dụng useQueryClient để lấy queryClient
+const queryClient = useQueryClient();
 
-defineEmits(["update:paginationParams", 'handleOpenModalDetail']);
+const emit = defineEmits(["update:paginationParams", "handleOpenModalDetail", "syncSuccess"]);
+
+const { mutate: onSync, isLoading: isSyncing } = useSemesterSynchronize();
+
+// Handle button click
+const handleSync = async () => {
+  try {
+    await onSync(); // Chỉ gọi khi nhấn nút
+    toast.success("Đồng bộ học kỳ và block thành công");
+
+    // Chờ invalidate hoàn tất trước khi thực hiện refetch
+    // Invalidating query và refetch ngay lập tức
+    await queryClient.invalidateQueries({ queryKey: [queryKey.admin.semester.semesterList] });
+    await queryClient.refetchQueries({ queryKey: [queryKey.admin.semester.semesterList] });
+
+    emit('syncSuccess');
+  } catch (error: any) {
+    console.error("🚀 ~ handleSync ~ error:", error); // Log lỗi để dễ dàng debug
+    toast.error(
+        error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+    );
+  }
+};
 
 const columnsSemester: ColumnType[] = [
   {
