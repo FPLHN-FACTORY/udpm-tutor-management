@@ -66,4 +66,5 @@ public interface BlockExtendRepository extends BlockRepository {
                     """, nativeQuery = true
     )
     Optional<BlockResponse> getDetailBlockById(String blockId);
+
 }

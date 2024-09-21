@@ -43,10 +43,24 @@ export const getSemesters = async (params: Ref<ParamsGetSemester>) => {
     method: "GET",
     params: params.value,
   })) as AxiosResponse<
-    DefaultResponse<PaginationResponse<Array<SemesterResponse>>>
+      DefaultResponse<PaginationResponse<Array<SemesterResponse>>>
   >;
 
   return res.data;
+};
+
+export const getSemesterSynchronize = async () => {
+  try {
+    const res: AxiosResponse<DefaultResponse<string>> = await request({
+      url: `${PREFIX_API_SEMESTER_ADMIN}/synchronize`,
+      method: 'GET',
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error('Error during synchronization:', error);
+    throw error; // Ném lỗi để xử lý ở nơi gọi
+  }
 };
 
 export const getDetailSemester = async (id: string | null) => {

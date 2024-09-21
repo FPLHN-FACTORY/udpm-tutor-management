@@ -1,10 +1,10 @@
 import { Ref } from "vue";
 import {
   getDetailSemester,
-  getSemesters,
+  getSemesters, getSemesterSynchronize, getSynchronize,
   ParamsGetSemester,
 } from "../api/semester.api";
-import { useQuery, UseQueryReturnType } from "@tanstack/vue-query";
+import {useMutation, useQuery, useQueryClient, UseQueryReturnType} from "@tanstack/vue-query";
 import { queryKey } from "@/constants/queryKey";
 
 export const useGetSemester = (
@@ -28,3 +28,20 @@ export const useDetailSemester = (
     ...options,
   });
 };
+
+export function useSemesterSynchronize() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => getSemesterSynchronize(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKey.admin.semester.semesterSynchronize],
+      });
+    },
+    onError: (error) => {
+      // Handle error
+      console.error('Error during synchronization:', error);
+    }
+  });
+}

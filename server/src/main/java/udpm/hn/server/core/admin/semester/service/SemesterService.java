@@ -17,4 +17,6 @@ public interface SemesterService {
 
     ResponseObject<?> statusChangeSemester(String semesterId);
 
+    ResponseObject<?> synchronize();
+
 }

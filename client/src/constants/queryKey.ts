@@ -35,6 +35,7 @@ export const queryKey = {
     semester: {
       semesterList: "semesterListKey",
       semesterDetail: "semesterDetailKey",
+      semesterSynchronize: "semesterSynchronizeKey"
     },
     block: {
       blockList: "blockListKey",
