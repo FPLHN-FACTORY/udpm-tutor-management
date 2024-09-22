@@ -18,8 +18,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ParamsGetRoles } from "@/services/api/role.api";
-import { useGetRoles } from "@/services/service/role.action";
+import { ParamsGetRoles } from "../../../services/api/admin/role.api";
+import { useGetRoles } from "../../../services/service/admin/role.action";
 import RoleTable from "@/pages/admin/role/RoleTable.vue";
 import RoleFilter from "@/pages/admin/role/RoleFilter.vue";
 import { keepPreviousData } from "@tanstack/vue-query";

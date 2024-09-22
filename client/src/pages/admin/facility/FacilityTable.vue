@@ -34,7 +34,7 @@
 
 <script lang="ts" setup>
 import TutorTable from '@/components/ui/TutorTable/TutorTable.vue';
-import { FacilityResponse } from '@/services/api/facility.api';
+import { FacilityResponse } from '../../../services/api/admin/facility.api';
 import { EditOutlined } from '@ant-design/icons-vue';
 import { ColumnType } from 'ant-design-vue/es/table';
 import { h } from 'vue';

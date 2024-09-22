@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
-import { RoleResponse } from "@/services/api/role.api";
+import { RoleResponse } from "../../../services/api/admin/role.api";
 import { ColumnType } from "ant-design-vue/es/table";
 
 defineProps({

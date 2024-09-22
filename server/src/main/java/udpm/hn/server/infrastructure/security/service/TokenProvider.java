@@ -73,9 +73,9 @@ public class TokenProvider {
 
         TokenSubjectResponse tokenSubjectResponse = getTokenSubjectResponse(user);
         String subject = new ObjectMapper().writeValueAsString(tokenSubjectResponse);
-        Map<String, Object> claims = getBodyClaims(tokenSubjectResponse);
 
         Optional<StaffMajorFacility> staffMajorFacility = staffMajorFacilityAuthRepository.findByStaffId(user.getId());
+
         if (staffMajorFacility.isPresent()) {
             MajorFacility majorFacility = staffMajorFacility.get().getMajorFacility();
             Facility facility = majorFacility.getDepartmentFacility().getFacility();
@@ -92,6 +92,8 @@ public class TokenProvider {
             tokenSubjectResponse.setFacilityName("");
             tokenSubjectResponse.setDepartmentName("");
         }
+
+        Map<String, Object> claims = getBodyClaims(tokenSubjectResponse);
 
         return Jwts.builder()
                 .setSubject(subject)
@@ -109,7 +111,6 @@ public class TokenProvider {
 
         TokenSubjectResponse tokenSubjectResponse = getTokenSubjectResponse(user);
         String subject = new ObjectMapper().writeValueAsString(tokenSubjectResponse);
-        Map<String, Object> claims = getBodyClaims(tokenSubjectResponse);
 
         Optional<StaffMajorFacility> staffMajorFacility = staffMajorFacilityAuthRepository.findByStaffId(user.getId());
         if (staffMajorFacility.isPresent()) {
@@ -128,6 +129,9 @@ public class TokenProvider {
             tokenSubjectResponse.setFacilityName("");
             tokenSubjectResponse.setDepartmentName("");
         }
+
+        Map<String, Object> claims = getBodyClaims(tokenSubjectResponse);
+
 
         return Jwts.builder()
                 .setSubject(subject)

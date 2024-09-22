@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
-import { MajorResponse } from "@/services/api/major.api";
+import { MajorResponse } from "../../../services/api/admin/major.api";
 import { ColumnType } from "ant-design-vue/es/table";
 
 const props = defineProps({

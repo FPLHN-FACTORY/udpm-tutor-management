@@ -21,10 +21,10 @@
 import StaffTable from "@/pages/admin/staff/StaffTable.vue";
 import StaffFilter from "@/pages/admin/staff/StaffFilter.vue";
 import {computed, ref} from "vue";
-import {ParamsGetStaff} from "@/services/api/staff.api.ts";
-import {useGetStaff} from "@/services/service/staff.action.ts";
+import {ParamsGetStaff} from "../../../services/api/admin/staff.api.ts";
+import {useGetStaff} from "../../../services/service/admin/staff.action.ts";
 import {keepPreviousData} from "@tanstack/vue-query";
-import {ParamsGetDepartment} from "@/services/api/department.api.ts";
+import {ParamsGetDepartment} from "../../../services/api/admin/department.api.ts";
 
 const params = ref<ParamsGetStaff>({
   page: 1,

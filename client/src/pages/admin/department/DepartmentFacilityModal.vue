@@ -47,10 +47,10 @@ import DepartmentFacilityTable from '@/pages/admin/department/DepartmentFacility
 import DepartmentFacilityFilter from '@/pages/admin/department/DepartmentFacilityFilter.vue';
 import MajorFacilityFilter from '@/pages/admin/department/MajorFacilityFilter.vue';
 import MajorFacilityTable from '@/pages/admin/department/MajorFacilityTable.vue';
-import { DepartmentFacilityResponse, ParamsGetDepartmentFacility } from '@/services/api/department.api';
-import { useGetDepartmentFacility } from '@/services/service/department.action';
-import { useGetMajorsFacility } from '@/services/service/major.action';
-import { MajorFacilityResponse, ParamsGetMajorFacility } from '@/services/api/major.api';
+import { DepartmentFacilityResponse, ParamsGetDepartmentFacility } from '../../../services/api/admin/department.api';
+import { useGetDepartmentFacility } from '../../../services/service/admin/department.action';
+import { useGetMajorsFacility } from '../../../services/service/admin/major.action';
+import { MajorFacilityResponse, ParamsGetMajorFacility } from '../../../services/api/admin/major.api';
 import { keepPreviousData } from '@tanstack/vue-query';
 
 const emit = defineEmits(['handleClose']);

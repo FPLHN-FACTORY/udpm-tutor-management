@@ -14,19 +14,13 @@ import udpm.hn.server.core.headdepartment.headsubjects.model.request.HeadSubject
 import udpm.hn.server.core.headdepartment.headsubjects.model.request.HeadSubjectSearchRequest;
 import udpm.hn.server.core.headdepartment.headsubjects.model.request.ReassignHeadSubjectRequest;
 import udpm.hn.server.core.headdepartment.headsubjects.model.request.SubjectByHeadSubjectRequest;
-import udpm.hn.server.core.headdepartment.headsubjects.repository.HDHSHeadSubjectBySemesterRepository;
-import udpm.hn.server.core.headdepartment.headsubjects.repository.HDHSSFacilityExtendRepository;
-import udpm.hn.server.core.headdepartment.headsubjects.repository.HDHSSSemesterExtendRepository;
-import udpm.hn.server.core.headdepartment.headsubjects.repository.HDHSStaffExtendRepository;
-import udpm.hn.server.core.headdepartment.headsubjects.repository.HDHSSubjectRepository;
+import udpm.hn.server.core.headdepartment.headsubjects.repository.*;
 import udpm.hn.server.core.headdepartment.headsubjects.service.HeadSubjectsService;
-import udpm.hn.server.entity.HeadSubjectBySemester;
-import udpm.hn.server.entity.Semester;
-import udpm.hn.server.entity.Staff;
-import udpm.hn.server.entity.Subject;
+import udpm.hn.server.entity.*;
 import udpm.hn.server.infrastructure.constant.Role;
 import udpm.hn.server.utils.Helper;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -46,6 +40,10 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
     private final HDHSSFacilityExtendRepository hdhsFacilityExtendRepository;
 
     private final HDHSSSemesterExtendRepository hdhsSemesterExtendRepository;
+
+    private final HDHSSDepartmentExtendRepository hdhsDepartmentExtendRepository;
+
+    private final HDHSSDepartmentFacilityExtendRepository hdhssDepartmentFacilityExtendRepository;
 
     @Override
     public ResponseObject<?> getAllHeadSubjects(HeadSubjectRequest request) {
@@ -236,9 +234,9 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
             );
         }
 
+        Semester semester = hdhsSemesterExtendRepository.findById(previousSemesterId).orElse(null);
         List<HeadSubjectBySemester> headSubjectBySemesters = hdhsHeadSubjectBySemesterRepository
-                .findBySemester_Id(previousSemesterId);
-
+                .findBySemester(semester);
         if (headSubjectBySemesters.isEmpty()) {
             return ResponseObject.errorForward(
                     "Chưa phân công trưởng môn cho học kỳ trước",
@@ -262,7 +260,6 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
                 hdhsHeadSubjectBySemesterRepository.save(newHeadSubjectBySemester);
             }
         }
-
         return ResponseObject.successForward(
                 HttpStatus.OK,
                 "Đồng bộ trưởng bộ môn từ học kỳ trước sang học kỳ hiện tại thành công"
@@ -271,8 +268,9 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
 
     @Override
     public ResponseObject<?> checkCurrentSemesterHasHeadSubject(String semesterId) {
+        Semester semester = hdhsSemesterExtendRepository.findById(semesterId).orElse(null);
         List<HeadSubjectBySemester> headSubjectBySemesters = hdhsHeadSubjectBySemesterRepository
-                .findBySemester_Id(semesterId);
+                .findBySemester(semester);
         if (headSubjectBySemesters.isEmpty()) {
             return new ResponseObject<>(
                     true,
@@ -288,15 +286,17 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
     }
 
     private String getPreviousSemesterId(String semesterId) {
-        Semester currentSemester = hdhsSemesterExtendRepository
-                .getReferenceById(Objects.requireNonNull(semesterId));
+        Semester currentSemester = hdhsSemesterExtendRepository.getReferenceById(Objects.requireNonNull(semesterId));
         List<Semester> semesters = hdhsSemesterExtendRepository.findAll();
-        for (Semester semester : semesters) {
-            if (semester.getStartTime() <= currentSemester.getStartTime()) {
-                return semester.getId();
-            }
-        }
-        return null;
+
+        return semesters.stream()
+                .filter(semester -> semester.getStartTime() < currentSemester.getStartTime()
+                        && !semester.getId().equals(currentSemester.getId()))
+                .sorted(Comparator.comparing(Semester::getStartTime).reversed())
+                .findFirst()
+                .map(Semester::getId)
+                .orElse(null);
     }
+
 
 }

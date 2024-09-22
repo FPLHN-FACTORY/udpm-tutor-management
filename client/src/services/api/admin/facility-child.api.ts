@@ -1,9 +1,9 @@
-import { DefaultResponse, PaginationParams, PaginationResponse, ResponseList } from "@/types/api.common";
-import request from "../request";
+import { DefaultResponse, PaginationParams, PaginationResponse, ResponseList } from "@/types/api.common.ts";
+import request from "../../request.ts";
 import { Ref } from "vue";
-import { PREFIX_API_FACILITY_ADMIN, PREFIX_API_FACILITY_CHILD_ADMIN } from "@/constants/url";
+import { PREFIX_API_FACILITY_ADMIN, PREFIX_API_FACILITY_CHILD_ADMIN } from "@/constants/url.ts";
 import { AxiosResponse } from "axios";
-import { FacilityDetailResponse, FacilityResponse } from "./facility.api";
+import { FacilityDetailResponse, FacilityResponse } from "./facility.api.ts";
 
 export interface ParamsGetFacilityChild extends PaginationParams {
 

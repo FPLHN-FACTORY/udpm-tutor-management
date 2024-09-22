@@ -52,7 +52,7 @@ import { useGetDepartmentOptions } from "@/services/service/common.action";
 import {
   useCreateSubject,
   useUpdateSubject,
-} from "@/services/service/subject.action";
+} from "../../../services/service/admin/subject.action";
 import { filterOption } from "@/utils/common.helper";
 import { Form } from "ant-design-vue";
 import dayjs from "dayjs";

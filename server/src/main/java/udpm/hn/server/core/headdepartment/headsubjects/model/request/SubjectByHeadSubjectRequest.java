@@ -12,10 +12,10 @@ public class SubjectByHeadSubjectRequest extends PageableRequest {
 
     private String currentSemesterId;
 
+    private String departmentCode;
+
+    private String facilityCode;
+
     private String headSubjectId;
-
-    private String departmentFacilityId;
-
-    private String facilityId;
 
 }

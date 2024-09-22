@@ -41,4 +41,9 @@ public class CommonRestController {
         return Helper.createResponseEntity(commonServiceHelper.getAllFacility(request));
     }
 
+    @GetMapping("/semester")
+    public ResponseEntity<?> getSemester(CMOptionsFilterRequest request) {
+        return Helper.createResponseEntity(commonServiceHelper.getAllSemester(request));
+    }
+
 }

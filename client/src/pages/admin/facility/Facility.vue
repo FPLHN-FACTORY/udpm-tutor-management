@@ -21,11 +21,11 @@ import { computed, ref } from 'vue';
 import FacilityFilter from './FacilityFilter.vue';
 import FacilityTable from './FacilityTable.vue';
 import DetailFacilityModal from './DetailFacilityModal.vue';
-import { useDetailFacility, useGetFacility } from '@/services/service/facility.action';
-import { FacilityResponse, ParamsGetFacility } from '@/services/api/facility.api';
+import { useDetailFacility, useGetFacility } from '../../../services/service/admin/facility.action';
+import { FacilityResponse, ParamsGetFacility } from '../../../services/api/admin/facility.api';
 import { keepPreviousData } from '@tanstack/vue-query';
-import { useGetFacilityChild } from '@/services/service/facility-child.action';
-import { ParamsGetFacilityChild } from '@/services/api/facility-child.api';
+import { useGetFacilityChild } from '../../../services/service/admin/facility-child.action';
+import { ParamsGetFacilityChild } from '../../../services/api/admin/facility-child.api';
 
 const openModal = ref(false);
 const facilityId = ref<string | any>(null);

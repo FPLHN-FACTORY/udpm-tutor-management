@@ -31,3 +31,15 @@ export const getFacilityOptions = async (query?: string) => {
 
   return res.data;
 };
+
+export const getSemesterOptions = async (query?: string) => {
+  const res = (await request({
+    url: `${PREFIX_API_COMMON}/semester`,
+    params: {
+      query,
+    },
+    method: "GET",
+  })) as AxiosResponse<DefaultResponse<Array<CommonOptionsResponse>>>;
+
+  return res.data;
+};

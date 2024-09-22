@@ -1,4 +1,4 @@
-import { queryKey } from "@/constants/queryKey";
+import { queryKey } from "@/constants/queryKey.ts";
 import {
   createSubject,
   CreateUpdateSubjectParams,
@@ -6,7 +6,7 @@ import {
   getSubjects,
   ParamsGetSubjects,
   updateSubject,
-} from "@/services/api/subject.api";
+} from "../../api/admin/subject.api.ts";
 import {
   useMutation,
   useQuery,

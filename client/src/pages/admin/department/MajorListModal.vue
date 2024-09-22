@@ -36,10 +36,10 @@
 import { defineEmits, defineProps, ref, watch, computed } from 'vue';
 import MajorFilter from '@/pages/admin/department/MajorFilter.vue';
 import MajorTable from '@/pages/admin/department/MajorTable.vue';
-import { ParamsGetMajor } from '@/services/api/major.api';
-import { useGetMajors } from '@/services/service/major.action';
+import { ParamsGetMajor } from '../../../services/api/admin/major.api';
+import { useGetMajors } from '../../../services/service/admin/major.action';
 import { keepPreviousData } from '@tanstack/vue-query';
-import { ParamsGetDepartment } from '@/services/api/department.api';
+import { ParamsGetDepartment } from '../../../services/api/admin/department.api';
 
 const emit = defineEmits(['handleClose']);
 

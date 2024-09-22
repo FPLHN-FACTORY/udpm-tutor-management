@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
-import {StaffResponse} from "@/services/api/staff.api.ts";
+import {StaffResponse} from "../../../services/api/admin/staff.api.ts";
 import {ColumnType} from "ant-design-vue/es/table";
 
 defineProps({

@@ -137,6 +137,7 @@ public class SemesterServiceImpl implements SemesterService {
     }
 
     @Override
+    @Transactional
     public ResponseObject<?> synchronize() {
         return identityConnection.handleCallApiGetSemesterByStatus() ;
     }
