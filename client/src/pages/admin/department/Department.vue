@@ -47,9 +47,9 @@ import DepartmentTable from '@/pages/admin/department/DepartmentTable.vue';
 import MajorListModal from '@/pages/admin/department/MajorListModal.vue';
 import DepartmentFacilityModal from '@/pages/admin/department/DepartmentFacilityModal.vue';
 
-import { useDetailDepartment, useGetDepartment } from '@/services/service/department.action';
-import { DepartmentFacilityResponse, DepartmentResponse, ParamsGetDepartment } from '@/services/api/department.api';
-import { MajorResponse } from '@/services/api/major.api';
+import { useDetailDepartment, useGetDepartment } from '@/services/service/admin/department.action';
+import { DepartmentFacilityResponse, DepartmentResponse, ParamsGetDepartment } from '@/services/api/admin/department.api';
+import { MajorResponse } from '@/services/api/admin/major.api';
 
 const params = ref<ParamsGetDepartment>({ page: 1, size: 10 });
 const openDepartmentDetailModal = ref(false);

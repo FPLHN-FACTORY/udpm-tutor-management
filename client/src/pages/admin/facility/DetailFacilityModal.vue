@@ -39,7 +39,7 @@ import { computed, h, ref } from 'vue';
 import TutorTable from '@/components/ui/TutorTable/TutorTable.vue';
 import { ColumnType } from 'ant-design-vue/es/table';
 import DetailFacilityChildModal from './facility-child/DetailFacilityChildModal.vue';
-import { FacilityChildResponse } from '@/services/api/facility-child.api';
+import { FacilityChildResponse } from '@/services/api/admin/facility-child.api';
 import { EyeOutlined } from '@ant-design/icons-vue';
 
 

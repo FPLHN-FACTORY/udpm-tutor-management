@@ -17,11 +17,11 @@
       @handleOpenModalAdd="handleOpenModalAdd"
     />
     <create-update-subject-modal
-      :open="open"
-      @handleClose="handleClose"
-      @cancel="open = false"
-      :subject-detail="subjectDetail || null"
-      :is-loading-detail="isLoadingDetail || false"
+        :open="open"
+        @handleClose="handleClose"
+        @cancel="open = false"
+        :subject-detail="subjectDetail || null"
+        :is-loading-detail="isLoadingDetail || false"
     />
   </div>
 </template>
@@ -30,11 +30,11 @@
 import CreateUpdateSubjectModal from "@/pages/admin/subject/CreateUpdateSubjectModal.vue";
 import SubjectFilter from "@/pages/admin/subject/SubjectFilter.vue";
 import SubjectTable from "@/pages/admin/subject/SubjectTable.vue";
-import { ParamsGetSubjects, SubjectResponse } from "@/services/api/subject.api";
+import { ParamsGetSubjects, SubjectResponse } from "@/services/api/admin/subject.api";
 import {
   useDetailSubject,
   useGetSubject,
-} from "@/services/service/subject.action";
+} from "@/services/service/admin/subject.action";
 import { keepPreviousData } from "@tanstack/vue-query";
 import { computed, ref } from "vue";
 

@@ -1,11 +1,11 @@
-import { PREFIX_API_DEPARTMENT_ADMIN, PREFIX_API_DEPARTMENT_FACILITY_ADMIN } from "@/constants/url";
-import request from "@/services/request";
+import { PREFIX_API_DEPARTMENT_ADMIN, PREFIX_API_DEPARTMENT_FACILITY_ADMIN } from "@/constants/url.ts";
+import request from "@/services/request.ts";
 import {
   DefaultResponse,
   PaginationParams,
   PaginationResponse,
   ResponseList,
-} from "@/types/api.common";
+} from "@/types/api.common.ts";
 import { AxiosResponse } from "axios";
 import { Ref } from "vue";
 import { MajorFacilityResponse } from "./major.api";

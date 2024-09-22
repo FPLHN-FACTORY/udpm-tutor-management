@@ -1,7 +1,7 @@
 import { Ref } from "vue";
-import { getDetailFacilityChild, getFacilityChilds, ParamsGetFacilityChild } from "../api/facility-child.api";
+import { getDetailFacilityChild, getFacilityChilds, ParamsGetFacilityChild } from "../../api/admin/facility-child.api.ts";
 import { useQuery, UseQueryReturnType } from "@tanstack/vue-query";
-import { queryKey } from "@/constants/queryKey";
+import { queryKey } from "@/constants/queryKey.ts";
 
 export const useGetFacilityChild = (
     params: Ref<ParamsGetFacilityChild>,

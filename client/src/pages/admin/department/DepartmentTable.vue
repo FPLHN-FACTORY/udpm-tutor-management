@@ -65,7 +65,7 @@
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
-import { DepartmentResponse } from "@/services/api/department.api";
+import { DepartmentResponse } from "@/services/api/admin/department.api";
 import { BookOutlined, EyeOutlined, GoldOutlined } from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { h } from "vue";

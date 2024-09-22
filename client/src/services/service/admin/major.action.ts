@@ -1,10 +1,10 @@
-import { queryKey } from "@/constants/queryKey";
+import { queryKey } from "@/constants/queryKey.ts";
 import {
   useQuery,
   UseQueryReturnType,
 } from "@tanstack/vue-query";
 import { Ref } from "vue";
-import { getMajors, getMajorsFacility, ParamsGetMajor } from "../api/major.api";
+import { getMajors, getMajorsFacility, ParamsGetMajor } from "../../api/admin/major.api.ts";
 
 export const useGetMajors = (
     departmentId: Ref<string | null>,

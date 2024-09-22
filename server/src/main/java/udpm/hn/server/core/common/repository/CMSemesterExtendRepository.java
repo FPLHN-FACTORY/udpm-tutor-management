@@ -14,10 +14,10 @@ public interface CMSemesterExtendRepository extends SemesterRepository {
             value = """
                     SELECT
                         s.id AS id,
-                        CONCAT(s.name, ' - ', s.year) AS semesterInfo
+                        CONCAT(s.name, ' - ', s.year) AS name 
                     FROM
                         semester s
-                    ORDER BY s.start_time DESC
+                    ORDER BY s.start_time 
                     """,
             nativeQuery = true
     )

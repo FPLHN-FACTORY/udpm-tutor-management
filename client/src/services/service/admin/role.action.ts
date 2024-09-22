@@ -1,5 +1,5 @@
-import { queryKey } from "@/constants/queryKey";
-import { getRoles, ParamsGetRoles } from "@/services/api/role.api";
+import { queryKey } from "@/constants/queryKey.ts";
+import { getRoles, ParamsGetRoles } from "../../api/admin/role.api.ts";
 import { useQuery, UseQueryReturnType } from "@tanstack/vue-query";
 import { Ref } from "vue";
 

@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
-import { SubjectResponse } from "@/services/api/subject.api";
+import { SubjectResponse } from "@/services/api/admin/subject.api";
 import { EditOutlined } from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { getDateFormat } from "@/utils/common.helper";
