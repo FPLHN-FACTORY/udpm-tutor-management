@@ -5,6 +5,6 @@ import udpm.hn.server.core.common.base.IsIdentify;
 
 public interface SemesterInfoResponse extends IsIdentify {
 
-    String getSemesterInfo();
+    String getName();
 
 }

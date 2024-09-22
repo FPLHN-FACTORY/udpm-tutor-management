@@ -9,6 +9,7 @@ import udpm.hn.server.core.headdepartment.headsubjects.model.request.HeadSubject
 import udpm.hn.server.core.headdepartment.headsubjects.model.response.HeadSubjectResponse;
 import udpm.hn.server.core.headdepartment.headsubjects.model.response.HeadSubjectSearchResponse;
 import udpm.hn.server.entity.HeadSubjectBySemester;
+import udpm.hn.server.entity.Semester;
 import udpm.hn.server.repository.HeadSubjectBySemesterRepository;
 
 import java.util.List;
@@ -33,6 +34,8 @@ public interface HDHSHeadSubjectBySemesterRepository extends HeadSubjectBySemest
                     LEFT JOIN staff_major_facility smf ON s.id = smf.id_staff
                     LEFT JOIN major_facility mf ON mf.id = smf.id_major_facility
                     LEFT JOIN department_facility df ON mf.id_department_facility = df.id
+                    LEFT JOIN facility f ON f.id = df.id_facility
+                    LEFT JOIN department d ON d.id = df.id_department
                     LEFT JOIN head_subject_by_semester hsbs ON hsbs.id_staff = s.id AND hsbs.id_semester = :#{#request.currentSemesterId}
                     LEFT JOIN semester se ON se.id = hsbs.id_semester
                     LEFT JOIN staff_role sr ON sr.id_staff = s.id
@@ -40,7 +43,8 @@ public interface HDHSHeadSubjectBySemesterRepository extends HeadSubjectBySemest
                     WHERE
                         r.code = :#{#request.headSubjectRoleCode}
                         AND s.id != :#{#request.currentUserId}
-                        AND df.id = :#{#request.currentDepartmentFacilityId}
+                        AND d.code = :#{#request.currentDepartmentCode}
+                        AND f.code = :#{#request.currentFacilityCode}
                         AND ((:#{#request.q} IS NULL OR s.staff_code LIKE CONCAT('%',:#{#request.q},'%')) OR (:#{#request.q} IS NULL OR s.name LIKE CONCAT('%',:#{#request.q},'%')) )
                     GROUP BY s.id, s.staff_code, s.name, s.email_fpt, s.email_fe
                     """,
@@ -51,6 +55,8 @@ public interface HDHSHeadSubjectBySemesterRepository extends HeadSubjectBySemest
                     LEFT JOIN staff_major_facility smf ON s.id = smf.id_staff
                     LEFT JOIN major_facility mf ON mf.id = smf.id_major_facility
                     LEFT JOIN department_facility df ON mf.id_department_facility = df.id
+                    LEFT JOIN facility f ON f.id = df.id_facility
+                    LEFT JOIN department d ON d.id = df.id_department
                     LEFT JOIN head_subject_by_semester hsbs ON hsbs.id_staff = s.id AND hsbs.id_semester = :#{#request.currentSemesterId}
                     LEFT JOIN semester se ON se.id = hsbs.id_semester
                     LEFT JOIN staff_role sr ON sr.id_staff = s.id
@@ -58,7 +64,8 @@ public interface HDHSHeadSubjectBySemesterRepository extends HeadSubjectBySemest
                     WHERE
                         r.code = :#{#request.headSubjectRoleCode}
                         AND s.id != :#{#request.currentUserId}
-                        AND df.id = :#{#request.currentDepartmentFacilityId}
+                        AND d.code = :#{#request.currentDepartmentCode}
+                        AND f.code = :#{#request.currentFacilityCode}
                         AND ((:#{#request.q} IS NULL OR s.staff_code LIKE CONCAT('%',:#{#request.q},'%')) OR (:#{#request.q} IS NULL OR s.name LIKE CONCAT('%',:#{#request.q},'%')) )
                     """,
             nativeQuery = true
@@ -80,13 +87,14 @@ public interface HDHSHeadSubjectBySemesterRepository extends HeadSubjectBySemest
     @Query(
             value = """
                     SELECT
-                        s.staff_code as code,
+                        s.id as code,
                         CONCAT(s.staff_code, ' - ', s.name) as staffInfo
                     FROM
                         staff s
                     LEFT JOIN staff_major_facility smf ON s.id = smf.id_staff
                     LEFT JOIN major_facility mf ON mf.id = smf.id_major_facility
                     LEFT JOIN department_facility df ON mf.id_department_facility = df.id
+                    LEFT JOIN department d ON d.id = df.id_department
                     LEFT JOIN head_subject_by_semester hsbs ON hsbs.id_staff = s.id AND hsbs.id_semester = :#{#request.currentSemesterId}
                     LEFT JOIN semester se ON se.id = hsbs.id_semester
                     LEFT JOIN staff_role sr ON sr.id_staff = s.id
@@ -95,7 +103,8 @@ public interface HDHSHeadSubjectBySemesterRepository extends HeadSubjectBySemest
                         r.code = :currentRoleName
                         AND r.id_facility = :#{#request.currentFacilityId}
                         AND s.id != :#{#request.currentUserId}
-                        AND df.id = :#{#request.currentDepartmentFacilityId}
+                        AND s.id != :#{#request.headSubjectId}
+                        AND d.code = :#{#request.currentDepartmentCode}
                         AND (:#{#request.q} IS NULL OR (s.staff_code LIKE CONCAT('%',:#{#request.q},'%') OR s.name LIKE CONCAT('%',:#{#request.q},'%')))
                     GROUP BY s.id, s.staff_code, s.name, s.email_fpt, s.email_fe
                     """,
@@ -106,6 +115,6 @@ public interface HDHSHeadSubjectBySemesterRepository extends HeadSubjectBySemest
             String currentRoleName
     );
 
-    List<HeadSubjectBySemester> findBySemester_Id(String semesterId);
+    List<HeadSubjectBySemester> findBySemester(Semester semester);
 
 }

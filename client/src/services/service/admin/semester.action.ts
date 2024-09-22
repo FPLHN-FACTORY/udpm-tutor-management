@@ -3,9 +3,9 @@ import {
   getDetailSemester,
   getSemesters, getSemesterSynchronize, getSynchronize,
   ParamsGetSemester,
-} from "../api/semester.api";
+} from "../../api/admin/semester.api.ts";
 import {useMutation, useQuery, useQueryClient, UseQueryReturnType} from "@tanstack/vue-query";
-import { queryKey } from "@/constants/queryKey";
+import { queryKey } from "@/constants/queryKey.ts";
 
 export const useGetSemester = (
   params: Ref<ParamsGetSemester>,
@@ -36,7 +36,7 @@ export function useSemesterSynchronize() {
     mutationFn: () => getSemesterSynchronize(),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [queryKey.admin.semester.semesterSynchronize],
+        queryKey: [queryKey.admin.semester.semesterList],
       });
     },
     onError: (error) => {

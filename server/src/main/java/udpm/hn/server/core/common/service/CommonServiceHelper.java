@@ -70,6 +70,14 @@ public class CommonServiceHelper {
         );
     }
 
+    public ResponseObject<?> getAllSemester(CMOptionsFilterRequest request) {
+        return new ResponseObject<>(
+                cMSemesterExtendRepository.getSemesterInfos(),
+                HttpStatus.OK,
+                "Lấy danh sách bộ môn thành công"
+        );
+    }
+
     public ResponseObject<?> getAllFacility(CMOptionsFilterRequest request) {
         return new ResponseObject<>(
                 facilityExtendRepository.getFacilities(request),

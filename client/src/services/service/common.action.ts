@@ -1,7 +1,7 @@
 import { queryKey } from "@/constants/queryKey";
 import {
   getDepartmentOptions,
-  getFacilityOptions,
+  getFacilityOptions, getSemesterOptions,
 } from "@/services/api/common.api";
 import { UseQueryReturnType, useQuery } from "@tanstack/vue-query";
 
@@ -29,6 +29,20 @@ export const useGetFacilityOptions = (
   return useQuery({
     queryKey: [queryKey.common.facilityOptions],
     queryFn: () => getFacilityOptions(query),
+    ...options,
+  });
+};
+
+export const useGetSemesterOptions = (
+    query?: string,
+    options?: any
+): UseQueryReturnType<
+    Awaited<ReturnType<typeof getSemesterOptions>>,
+    Error
+> => {
+  return useQuery({
+    queryKey: [queryKey.common.semesterOptions],
+    queryFn: () => getSemesterOptions(query),
     ...options,
   });
 };

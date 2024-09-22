@@ -1,11 +1,11 @@
-import { PREFIX_API_SUBJECT_ADMIN } from "@/constants/url";
-import request from "@/services/request";
+import { PREFIX_API_SUBJECT_ADMIN } from "@/constants/url.ts";
+import request from "@/services/request.ts";
 import {
   DefaultResponse,
   PaginationParams,
   PaginationResponse,
   ResponseList,
-} from "@/types/api.common";
+} from "@/types/api.common.ts";
 import { AxiosResponse } from "axios";
 import { Ref } from "vue";
 
@@ -41,7 +41,7 @@ export const getSubjects = async (params: Ref<ParamsGetSubjects>) => {
     method: "GET",
     params: params.value,
   })) as AxiosResponse<
-    DefaultResponse<PaginationResponse<Array<SubjectResponse>>>
+      DefaultResponse<PaginationResponse<Array<SubjectResponse>>>
   >;
 
   return res.data;
@@ -66,8 +66,8 @@ export const createSubject = async (params: CreateUpdateSubjectParams) => {
 };
 
 export const updateSubject = async (
-  subjectId: string,
-  params: CreateUpdateSubjectParams
+    subjectId: string,
+    params: CreateUpdateSubjectParams
 ) => {
   const res = (await request({
     url: `${PREFIX_API_SUBJECT_ADMIN}/${subjectId}`,

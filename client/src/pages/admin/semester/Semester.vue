@@ -29,8 +29,8 @@
 import SemesterTable from "@/pages/admin/semester/SemesterTable.vue";
 import DetailSemesterModal from "@/pages/admin/semester/DetailSemesterModal.vue";
 import SemesterFilter from "@/pages/admin/semester/SemesterFilter.vue";
-import { SemesterResponse, ParamsGetSemester} from "@/services/api/semester.api";
-import { useDetailSemester, useGetSemester} from "@/services/service/semester.action";
+import { SemesterResponse, ParamsGetSemester} from "@/services/api/admin/semester.api";
+import { useDetailSemester, useGetSemester} from "@/services/service/admin/semester.action";
 import { keepPreviousData } from "@tanstack/vue-query";
 import { computed, ref } from "vue";
 

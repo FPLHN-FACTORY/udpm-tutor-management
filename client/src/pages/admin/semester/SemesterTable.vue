@@ -59,16 +59,14 @@
 
 <script lang="ts" setup>
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
-import { SemesterResponse } from "@/services/api/semester.api";
+import { SemesterResponse } from "@/services/api/admin/semester.api";
 import { getDateFormat } from "@/utils/common.helper";
 import { ColumnType } from "ant-design-vue/es/table";
 import {h} from "vue";
 import {EyeOutlined} from "@ant-design/icons-vue";
-import {useSemesterSynchronize} from "@/services/service/semester.action.ts";
+import {useSemesterSynchronize} from "@/services/service/admin/semester.action.ts";
 import {toast} from "vue3-toastify";
 import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
-import {useQueryClient} from "@tanstack/vue-query";
-import {queryKey} from "@/constants/queryKey.ts";
 
 defineProps({
   dataSource: Array<SemesterResponse>,
@@ -76,8 +74,6 @@ defineProps({
   paginationParams: Object,
   totalPages: Number,
 });
-// Sử dụng useQueryClient để lấy queryClient
-const queryClient = useQueryClient();
 
 const emit = defineEmits(["update:paginationParams", "handleOpenModalDetail", "syncSuccess"]);
 
@@ -88,12 +84,6 @@ const handleSync = async () => {
   try {
     await onSync(); // Chỉ gọi khi nhấn nút
     toast.success("Đồng bộ học kỳ và block thành công");
-
-    // Chờ invalidate hoàn tất trước khi thực hiện refetch
-    // Invalidating query và refetch ngay lập tức
-    await queryClient.invalidateQueries({ queryKey: [queryKey.admin.semester.semesterList] });
-    await queryClient.refetchQueries({ queryKey: [queryKey.admin.semester.semesterList] });
-
     emit('syncSuccess');
   } catch (error: any) {
     console.error("🚀 ~ handleSync ~ error:", error); // Log lỗi để dễ dàng debug

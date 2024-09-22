@@ -1,7 +1,7 @@
-import { DefaultResponse, PaginationParams, PaginationResponse, ResponseList } from "@/types/api.common";
+import { DefaultResponse, PaginationParams, PaginationResponse, ResponseList } from "@/types/api.common.ts";
 import { Ref } from "vue";
-import request from "../request";
-import { PREFIX_API_FACILITY_ADMIN } from "@/constants/url";
+import request from "../../request.ts";
+import { PREFIX_API_FACILITY_ADMIN } from "@/constants/url.ts";
 import { AxiosResponse } from "axios";
 
 export interface ParamsGetFacility extends PaginationParams {

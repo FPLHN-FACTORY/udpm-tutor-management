@@ -3,7 +3,7 @@ import {
     getStaffRoles,
     getStaffs,
     ParamsGetStaff
-} from "@/services/api/staff.api.ts";
+} from "../../api/admin/staff.api.ts";
 import {ComputedRef, Ref} from "vue";
 import {useQuery, UseQueryReturnType} from "@tanstack/vue-query";
 import {queryKey} from "@/constants/queryKey.ts";

@@ -78,7 +78,7 @@
 import StaffRoleTable from "@/pages/admin/staff/StaffRoleTable.vue";
 import StaffDepartmentMajorTable from "@/pages/admin/staff/StaffDepartmentMajorTable.vue";
 import { useRoute } from 'vue-router';
-import {useDetailStaff, useGetStaffDepartmentMajor, useGetStaffRole} from "@/services/service/staff.action.ts";
+import {useDetailStaff, useGetStaffDepartmentMajor, useGetStaffRole} from "@/services/service/admin/staff.action.ts";
 import {computed} from "vue";
 
 const route = useRoute();

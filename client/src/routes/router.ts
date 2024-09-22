@@ -99,18 +99,17 @@ export const routes: RouteRecordRaw[] = [
   },
   {
     path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.path,
-    redirect:
-      ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.MANAGE_HEAD_SUBJECT.path,
+    redirect: `${ROUTES_CONSTANTS.HEAD_DEPARTMENT.path}/${ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_SUBJECT.path}`,
     component: () => import("@/layout/HeadDepartment.vue"),
     children: [
       {
-        path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.MANAGE_HEAD_SUBJECT
+        path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_SUBJECT
           .path,
-        name: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.MANAGE_HEAD_SUBJECT
+        name: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_SUBJECT
           .name,
         component: () =>
           import(
-            "@/pages/headdepartment/manageheadsubject/ManageHeadSubject.vue"
+            "@/pages/headdepartment/headsubject/HeadSubject.vue"
           ),
       },
     ],
