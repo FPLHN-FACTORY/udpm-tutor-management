@@ -21,6 +21,7 @@ import udpm.hn.server.infrastructure.connection.response.MajorResponse;
 import udpm.hn.server.infrastructure.connection.response.SemesterResponse;
 import udpm.hn.server.infrastructure.connection.response.UserInformationResponse;
 import udpm.hn.server.infrastructure.constant.BlockName;
+import udpm.hn.server.infrastructure.constant.EntityStatus;
 import udpm.hn.server.infrastructure.constant.Message;
 import udpm.hn.server.infrastructure.constant.SemesterName;
 import udpm.hn.server.infrastructure.exception.RestApiException;
@@ -331,7 +332,7 @@ public class IdentityConnection {
         postSemester.setStartTime(semesterResponse.getStartTime() * 1000);
         postSemester.setEndTime(semesterResponse.getEndTime() * 1000);
         postSemester.setSemesterId(semesterResponse.getId());
-
+        postSemester.setStatus(EntityStatus.ACTIVE);
         // Lưu semester vào cơ sở dữ liệu
         semesterRepository.save(postSemester);
 
@@ -347,11 +348,13 @@ public class IdentityConnection {
             block1.setStartTime(semesterResponse.getStartTimeFirstBlock() * 1000);
             block1.setEndTime(semesterResponse.getEndTimeFirstBlock() * 1000);
             block1.setSemester(postSemester);
+            block1.setStatus(EntityStatus.ACTIVE);
 
             block2.setName(BlockName.BLOCK_2);
             block2.setStartTime(semesterResponse.getStartTimeSecondBlock() * 1000);
             block2.setEndTime(semesterResponse.getEndTimeSecondBlock() * 1000);
             block2.setSemester(postSemester);
+            block2.setStatus(EntityStatus.ACTIVE);
 
             blockRepository.save(block1);
             blockRepository.save(block2);

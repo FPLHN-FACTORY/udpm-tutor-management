@@ -13,10 +13,12 @@ public class HeadSubjectSearchRequest {
 
     private String currentSemesterId;
 
-    private String currentDepartmentFacilityId;
+    private String currentDepartmentCode;
 
     private String currentUserId;
 
     private String currentFacilityId;
+
+    private String headSubjectId;
 
 }

@@ -1,4 +1,4 @@
-import { queryKey } from "@/constants/queryKey";
+import { queryKey } from "@/constants/queryKey.ts";
 import {
   createDepartment,
   CreateUpdateDepartmentParams,
@@ -8,7 +8,7 @@ import {
   ParamsGetDepartment,
   ParamsGetDepartmentFacility,
   updateDepartment,
-} from "@/services/api/department.api";
+} from "../../api/admin/department.api.ts";
 import {
   useMutation,
   useQuery,

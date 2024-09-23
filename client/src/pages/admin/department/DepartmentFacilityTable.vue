@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
-import { FacilityResponse } from "@/services/api/department.api";
+import { FacilityResponse } from "@/services/api/admin/department.api";
 import { EyeOutlined } from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { h } from "vue";

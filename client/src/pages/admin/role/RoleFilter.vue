@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { ParamsGetRoles } from "@/services/api/role.api";
+import { ParamsGetRoles } from "@/services/api/admin/role.api";
 import { useGetFacilityOptions } from "@/services/service/common.action";
 import { debounce } from "lodash";
 import { computed, defineEmits, ref, watch } from "vue";

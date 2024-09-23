@@ -1,7 +1,10 @@
+import {useCreateHeadOfSubject} from "@/services/service/headdepartment/head-subject.ts";
+
 export const queryKey = {
   common: {
     departmentOptions: "departmentOptionsKey",
     facilityOptions: "facilityOptionsKey",
+    semesterOptions: "semesterOptionsKey",
   },
   admin: {
     subject: {
@@ -34,8 +37,7 @@ export const queryKey = {
     },
     semester: {
       semesterList: "semesterListKey",
-      semesterDetail: "semesterDetailKey",
-      semesterSynchronize: "semesterSynchronizeKey"
+      semesterDetail: "semesterDetailKey"
     },
     block: {
       blockList: "blockListKey",
@@ -48,4 +50,12 @@ export const queryKey = {
       staffDepartmentMajor: "staffDepartmentMajor",
     },
   },
+  headOfDepartment: {
+    headOfSubject: {
+      headOfSubjectList: "headOfSubjectListKey",
+      subjectByHeadOfSubject: " subjectByHeadOfSubjectKey",
+      staffByHeadOfSubject: " staffByHeadOfSubjectKey",
+      headOfSubjectDetail: "headOfSubjectDetailKey",
+    },
+  }
 };

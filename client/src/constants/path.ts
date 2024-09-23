@@ -45,9 +45,9 @@ export const ROUTES_CONSTANTS = {
     path: "/head-department",
     name: "head-department",
     children: {
-      MANAGE_HEAD_SUBJECT: {
-        path: "manage-head-subject",
-        name: "manage-head-subject",
+      HEAD_SUBJECT: {
+        path: "head-subject",
+        name: "head-subject",
       },
     },
   },

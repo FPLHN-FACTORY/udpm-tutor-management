@@ -42,7 +42,7 @@ import { ERROR_MESSAGE } from "@/constants/message.constant";
 import {
   useCreateDepartment,
   useUpdateDepartment,
-} from "@/services/service/department.action";
+} from "@/services/service/admin/department.action.ts";
 import { Form } from "ant-design-vue";
 import { computed, reactive, watch } from "vue";
 import { toast } from "vue3-toastify";

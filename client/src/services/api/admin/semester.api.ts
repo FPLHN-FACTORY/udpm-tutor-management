@@ -3,11 +3,11 @@ import {
   PaginationParams,
   PaginationResponse,
   ResponseList,
-} from "@/types/api.common";
+} from "@/types/api.common.ts";
 import { Ref } from "vue";
-import { PREFIX_API_SEMESTER_ADMIN } from "@/constants/url";
+import { PREFIX_API_SEMESTER_ADMIN } from "@/constants/url.ts";
 import { AxiosResponse } from "axios";
-import request from "@/services/request";
+import request from "@/services/request.ts";
 
 export interface ParamsGetSemester extends PaginationParams {
   semesterName?: string | null;
