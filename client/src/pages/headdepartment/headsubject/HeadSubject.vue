@@ -53,7 +53,7 @@ import {
   useGetHeadOfSubject,
   useGetSubjectByHeadOfSubject,
   useGetSubjectsWithAssignByHeadOfSubject
-} from "@/services/service/headdepartment/head-subject.ts";
+} from "@/services/service/headdepartment/head-subject.action.ts";
 import {
   HeadOfSubjectResponse,
   ParamsGetHeadOfSubjects,

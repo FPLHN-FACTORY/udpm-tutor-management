@@ -18,7 +18,6 @@ import {
 import {queryKey} from "@/constants/queryKey.ts";
 import {useMutation, useQuery, useQueryClient, UseQueryReturnType} from "@tanstack/vue-query";
 import {Ref} from "vue";
-import {CreateUpdateSubjectParams, updateSubject} from "@/services/api/admin/subject.api.ts";
 
 export const useGetHeadOfSubject = (
     params: Ref<ParamsGetHeadOfSubjects>,
@@ -146,13 +145,19 @@ export const useCheckCurrentSemesterHasHeadSubject = (
     });
 };
 
-export const useSyncHeadSubjectAttach = (
-    semesterId: Ref<string | null>,
-    options?: any
-): UseQueryReturnType<Awaited<ReturnType<typeof syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester>>, Error> => {
-    return useQuery({
-        queryKey: [queryKey.headOfDepartment.headOfSubject.staffByHeadOfSubject],
-        queryFn: () => syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester(semesterId.value),
-        ...options,
+export function useSyncHeadSubjectAttach() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (semesterId: string) => syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester(semesterId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [queryKey.headOfDepartment.headOfSubject.headOfSubjectList],
+            });
+        },
+        onError: (error) => {
+            // Handle error
+            console.error('Error during synchronization:', error);
+        }
     });
-};
+}

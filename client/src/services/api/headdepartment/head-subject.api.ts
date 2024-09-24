@@ -8,6 +8,7 @@ import {
 } from "@/types/api.common.ts";
 import { AxiosResponse } from "axios";
 import {Ref} from "vue";
+import {toast} from "vue3-toastify";
 
 export interface ParamsGetHeadOfSubjects extends PaginationParams {
     currentSemesterId: string | null,
@@ -204,7 +205,7 @@ export const checkCurrentSemesterHasHeadSubject = async (
 };
 
 export const syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester = async (
-    semesterId: string | null
+    semesterId: string
 ) => {
     try {
         const res = await request({
@@ -212,10 +213,10 @@ export const syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemest
             method: "GET",
             params: { semesterId },
         }) as AxiosResponse<DefaultResponse<Object>>;
-
+        toast.success("Đồng bộ dữ liệu trưởng môn thành công");
         return res.data; // res.data sẽ là phản hồi từ API (VD: "OK")
     } catch (error) {
-        console.error("Error in syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester:", error);
+        toast.error(error?.response?.data?.message || "Có lỗi xảy ra trong quá trình đồng bộ");
         throw error;  // Ném lại lỗi để xử lý ở nơi gọi
     }
 };

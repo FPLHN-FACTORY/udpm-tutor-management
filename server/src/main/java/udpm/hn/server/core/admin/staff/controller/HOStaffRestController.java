@@ -55,4 +55,9 @@ public class HOStaffRestController {
         return Helper.createResponseEntity(staffService.deleteStaff(id));
     }
 
+    @GetMapping("/synchronize")
+    public ResponseEntity<?> synchronize(String campusCode) {
+        return Helper.createResponseEntity(staffService.synchronize(campusCode));
+    }
+
 }

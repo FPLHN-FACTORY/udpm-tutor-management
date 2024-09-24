@@ -10,7 +10,6 @@
           size="large"
           class="m-4 flex justify-between items-center"
           @click="handleSync"
-          :disabled="isSyncing"
       >
         <v-icon name="bi-arrow-counterclockwise" scale="2" />
         Đồng bộ
@@ -65,8 +64,6 @@ import { ColumnType } from "ant-design-vue/es/table";
 import {h} from "vue";
 import {EyeOutlined} from "@ant-design/icons-vue";
 import {useSemesterSynchronize} from "@/services/service/admin/semester.action.ts";
-import {toast} from "vue3-toastify";
-import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
 
 defineProps({
   dataSource: Array<SemesterResponse>,
@@ -75,22 +72,13 @@ defineProps({
   totalPages: Number,
 });
 
-const emit = defineEmits(["update:paginationParams", "handleOpenModalDetail", "syncSuccess"]);
+const emit = defineEmits(["update:paginationParams", "handleOpenModalDetail"]);
 
-const { mutate: onSync, isLoading: isSyncing } = useSemesterSynchronize();
+const { mutate: onSync } = useSemesterSynchronize();
 
 // Handle button click
 const handleSync = async () => {
-  try {
     await onSync(); // Chỉ gọi khi nhấn nút
-    toast.success("Đồng bộ học kỳ và block thành công");
-    emit('syncSuccess');
-  } catch (error: any) {
-    console.error("🚀 ~ handleSync ~ error:", error); // Log lỗi để dễ dàng debug
-    toast.error(
-        error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-    );
-  }
 };
 
 const columnsSemester: ColumnType[] = [

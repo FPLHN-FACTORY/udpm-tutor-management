@@ -14,7 +14,6 @@
       :total-pages="totalPages"
       @update:pagination-params="handlePaginationChange"
       @handleOpenModalDetail="handleOpenModalDetail"
-      @syncSuccess="refetchSemesterData"
     />
     <detail-semester-modal
       :open="open"
@@ -43,7 +42,7 @@ const open = ref(false);
 
 const semesterId = ref<string | null>(null);
 
-const { data, isLoading, isFetching, refetch } = useGetSemester(params, {
+const { data, isLoading, isFetching } = useGetSemester(params, {
   refetchOnWindowFocus: false,
   placeholderData: keepPreviousData,
 });
@@ -72,11 +71,6 @@ const handleCloseModal = () => {
 const handleOpenModalDetail = (record: SemesterResponse) => {
   semesterId.value = record.id;
   open.value = true;
-};
-
-// Hàm refetch dữ liệu
-const refetchSemesterData = () => {
-  refetch(); // Gọi lại hàm refetch để cập nhật dữ liệu
 };
 
 const semesterData = computed(() => data?.value?.data?.data || []);

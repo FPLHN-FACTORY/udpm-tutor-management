@@ -66,10 +66,7 @@ import { SubjectResponse } from "@/services/api/admin/subject.api";
 import { EditOutlined, EyeOutlined } from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { h } from "vue";
-import { toast } from "vue3-toastify";
-import {
-  syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester
-} from "@/services/api/headdepartment/head-subject.api.ts";
+import {useSyncHeadSubjectAttach} from "@/services/service/headdepartment/head-subject.action.ts";
 
 // Định nghĩa props nhận từ component cha
 const props = defineProps({
@@ -90,19 +87,12 @@ const emit = defineEmits([
 
 // Biến trạng thái cho việc loading khi đồng bộ
 const isSyncing = ref(false);
-
+const { mutate: onSync } = useSyncHeadSubjectAttach();
 // Hàm đồng bộ dữ liệu trưởng môn từ học kỳ trước
 const handleSyncHeadSubjectAttach = async () => {
   isSyncing.value = true; // Bật trạng thái loading
-  try {
-    await syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester(props.semesterId);
-    toast.success("Đồng bộ dữ liệu trưởng môn thành công");
-  } catch (error) {
-    console.error("Error syncing head subject data:", error); // Logging error chi tiết
-    toast.error(error?.response?.data?.message || "Có lỗi xảy ra trong quá trình đồng bộ");
-  } finally {
-    isSyncing.value = false; // Tắt trạng thái loading
-  }
+  await onSync(props.semesterId);
+  isSyncing.value = false; // Tắt trạng thái loading
 };
 
 // Cấu hình cột của bảng danh sách trưởng môn

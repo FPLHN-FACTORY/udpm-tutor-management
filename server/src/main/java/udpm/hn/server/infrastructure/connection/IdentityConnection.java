@@ -7,19 +7,16 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.entity.Block;
 import udpm.hn.server.entity.Semester;
-import udpm.hn.server.infrastructure.connection.response.CampusResponse;
-import udpm.hn.server.infrastructure.connection.response.DepartmentCampusResponse;
-import udpm.hn.server.infrastructure.connection.response.DepartmentResponse;
-import udpm.hn.server.infrastructure.connection.response.MajorCampusResponse;
-import udpm.hn.server.infrastructure.connection.response.MajorResponse;
-import udpm.hn.server.infrastructure.connection.response.SemesterResponse;
-import udpm.hn.server.infrastructure.connection.response.UserInformationResponse;
+import udpm.hn.server.entity.Staff;
+import udpm.hn.server.entity.StaffRole;
+import udpm.hn.server.infrastructure.connection.response.*;
 import udpm.hn.server.infrastructure.constant.BlockName;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
 import udpm.hn.server.infrastructure.constant.Message;
@@ -27,6 +24,7 @@ import udpm.hn.server.infrastructure.constant.SemesterName;
 import udpm.hn.server.infrastructure.exception.RestApiException;
 import udpm.hn.server.repository.BlockRepository;
 import udpm.hn.server.repository.SemesterRepository;
+import udpm.hn.server.repository.StaffRepository;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -51,6 +49,8 @@ public class IdentityConnection {
     private String clientSecret;
 
     private final SemesterRepository semesterRepository;
+
+    private final StaffRepository staffRepository;
 
     private final BlockRepository blockRepository;
 
@@ -268,7 +268,7 @@ public class IdentityConnection {
     /**
      * @return Trả về list các semester và block.
      */
-    public ResponseObject<?> getSemesters() {
+    public List<SemesterResponse> getSemesters() {
         try {
             String apiUrl = domainIdentity + APIConnection.PREFIX_SEMESTER;
             WebClient webClient = WebClient.create(apiUrl);
@@ -283,89 +283,58 @@ public class IdentityConnection {
                     })
                     .block();
 
-            // Kiểm tra kết quả trả về từ API
-            if (responseObject != null && responseObject.isSuccess()) {
-                List<SemesterResponse> semesterData = responseObject.getData();
-                List<Semester> semesters = semesterRepository.findAll();
-
-                if (semesters.isEmpty()) {
-                    // Nếu không có semester, đồng bộ tất cả các semester từ dữ liệu nhận được
-                    for (SemesterResponse semesterResponse : semesterData) {
-                        syncSemester(null, semesterResponse);
-                    }
-                } else {
-                    // Nếu đã có semester, đồng bộ từng semester từ dữ liệu nhận được
-                    for (SemesterResponse semesterResponse : semesterData) {
-                        for (Semester semester : semesters) {
-                            syncSemester(semester, semesterResponse);
-                        }
-                    }
-                }
-
-                return ResponseObject.successForward(null, "Đồng bộ học kỳ và block thành công!");
-            } else {
-                return ResponseObject.errorForward("Đồng bộ học kỳ và block không thành công!", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            return responseObject.getData();
         } catch (Exception e) {
-            e.printStackTrace();  // In ra stack trace của lỗi để dễ debug
-            return ResponseObject.errorForward("Đồng bộ học kỳ và block không thành công! Đã xảy ra lỗi.", HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace(System.out);
+            throw new RestApiException(Message.Exception.CALL_API_FAIL);
         }
     }
 
-    private void syncSemester(Semester semester, SemesterResponse semesterResponse) {
-        // Khởi tạo hoặc lấy đối tượng Semester từ cơ sở dữ liệu
-        Semester postSemester;
-        if (semester == null) {
-            postSemester = new Semester();
-        } else {
-            Optional<Semester> semesterOptional = semesterRepository.findBySemesterId(semesterResponse.getId());
-            postSemester = semesterOptional.orElseGet(Semester::new);
+    /**
+     * @return Trả về list các semester và block.
+     */
+    public List<StaffResponse> getStaffs(String campusCode) {
+        try {
+            String apiUrl = domainIdentity + APIConnection.PREFIX_STAFF;
+            WebClient webClient = WebClient.create(apiUrl);
+            Map<String, Object> requestBody = getCurrentClientAuthorizeProps();
+            requestBody.put("campusCode", campusCode);
+
+            // Gọi API và nhận dữ liệu
+            ResponseObject<List<StaffResponse>> responseObject = webClient.post()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(BodyInserters.fromValue(requestBody))
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<ResponseObject<List<StaffResponse>>>() {
+                    })
+                    .block();
+            return responseObject.getData();
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+            throw new RestApiException(Message.Exception.CALL_API_FAIL);
         }
+    }
 
-        // Chuyển đổi thời gian và cập nhật thuộc tính của semester
-        LocalDateTime startDate = Instant.ofEpochMilli(semesterResponse.getStartTime() * 1000)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
+    public List<StaffRoleResponse> getRoleStaffs(String campusCode, String userCode) {
+        try {
+            String apiUrl = domainIdentity + APIConnection.PREFIX_STAFF_ROLE;
+            WebClient webClient = WebClient.create(apiUrl);
+            Map<String, Object> requestBody = getCurrentClientAuthorizeProps();
+            requestBody.put("campusCode", campusCode);
+            requestBody.put("userCode", userCode);
 
-        postSemester.setYear(startDate.getYear());
-        postSemester.setSemesterName(SemesterName.valueOf(semesterResponse.getSemesterName()));
-        postSemester.setStartTime(semesterResponse.getStartTime() * 1000);
-        postSemester.setEndTime(semesterResponse.getEndTime() * 1000);
-        postSemester.setSemesterId(semesterResponse.getId());
-        postSemester.setStatus(EntityStatus.ACTIVE);
-        // Lưu semester vào cơ sở dữ liệu
-        semesterRepository.save(postSemester);
-
-        // Lấy danh sách blocks liên quan đến semester vừa lưu
-        List<Block> blocks = blockRepository.findBlockBySemesterId(postSemester.getId());
-
-        if (blocks.isEmpty()) {
-            // Nếu không có blocks, tạo mới hai block và lưu vào cơ sở dữ liệu
-            Block block1 = new Block();
-            Block block2 = new Block();
-
-            block1.setName(BlockName.BLOCK_1);
-            block1.setStartTime(semesterResponse.getStartTimeFirstBlock() * 1000);
-            block1.setEndTime(semesterResponse.getEndTimeFirstBlock() * 1000);
-            block1.setSemester(postSemester);
-            block1.setStatus(EntityStatus.ACTIVE);
-
-            block2.setName(BlockName.BLOCK_2);
-            block2.setStartTime(semesterResponse.getStartTimeSecondBlock() * 1000);
-            block2.setEndTime(semesterResponse.getEndTimeSecondBlock() * 1000);
-            block2.setSemester(postSemester);
-            block2.setStatus(EntityStatus.ACTIVE);
-
-            blockRepository.save(block1);
-            blockRepository.save(block2);
-        } else {
-            // Nếu có blocks, cập nhật thông tin của từng block
-            for (Block block : blocks) {
-                block.setStartTime(semesterResponse.getStartTimeFirstBlock() * 1000);
-                block.setEndTime(semesterResponse.getEndTimeFirstBlock() * 1000);
-                block.setSemester(postSemester);
-                blockRepository.save(block);
-            }
+            // Gọi API và nhận dữ liệu
+            ResponseObject<List<StaffRoleResponse>> responseObject = webClient.post()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(BodyInserters.fromValue(requestBody))
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<ResponseObject<List<StaffRoleResponse>>>() {
+                    })
+                    .block();
+            return responseObject.getData();
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+            throw new RestApiException(Message.Exception.CALL_API_FAIL);
         }
     }
 
@@ -394,6 +363,8 @@ public class IdentityConnection {
         public static final String CONNECTOR = "/api/connector";
 
         public static final String PREFIX_STAFF = CONNECTOR + "/staffs";
+
+        public static final String PREFIX_STAFF_ROLE = CONNECTOR + "/staffs/roles";
 
         public static final String PREFIX_DEPARTMENT = CONNECTOR + "/departments";
 

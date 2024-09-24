@@ -1,7 +1,7 @@
 import { Ref } from "vue";
 import {
   getDetailSemester,
-  getSemesters, getSemesterSynchronize, getSynchronize,
+  getSemesters, getSemesterSynchronize,
   ParamsGetSemester,
 } from "../../api/admin/semester.api.ts";
 import {useMutation, useQuery, useQueryClient, UseQueryReturnType} from "@tanstack/vue-query";

@@ -31,7 +31,7 @@ public interface HOStaffMajorFacilityRepository extends MajorFacilityRepository 
             WHERE smf.status = 0
             AND smf.id_staff LIKE :idStaff
             """, nativeQuery = true)
-    List<HOStaffMajorFacilityResponse> getMajorFacilities(String idStaff);
+        List<HOStaffMajorFacilityResponse> getMajorFacilities(String idStaff);
 
     @Query(value = """ 
                     SELECT d.id AS departmentId,
@@ -56,6 +56,8 @@ public interface HOStaffMajorFacilityRepository extends MajorFacilityRepository 
                    ANd df.id_facility LIKE :idFacility
             """, nativeQuery = true)
     List<HOStaffMajorResponse> getMajorByDepartmentFacility(String idDepartment, String idFacility);
+
+    List<MajorFacility> findAllByDepartmentFacility_IdAndMajor_Code(String departmentFacilityId, String majorCode);
 
     List<MajorFacility> findAllByDepartmentFacility_IdAndMajor_IdAndStatus(String departmentFacilityId, String majorId, EntityStatus status);
 

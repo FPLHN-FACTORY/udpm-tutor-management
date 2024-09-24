@@ -1,11 +1,11 @@
 import {
     getDetailStaff, getStaffDepartmentMajor,
     getStaffRoles,
-    getStaffs,
+    getStaffs, getStaffSynchronize,
     ParamsGetStaff
 } from "../../api/admin/staff.api.ts";
 import {ComputedRef, Ref} from "vue";
-import {useQuery, UseQueryReturnType} from "@tanstack/vue-query";
+import {useMutation, useQuery, useQueryClient, UseQueryReturnType} from "@tanstack/vue-query";
 import {queryKey} from "@/constants/queryKey.ts";
 
 export const useGetStaff = (
@@ -54,3 +54,22 @@ export const useGetStaffDepartmentMajor = (
         ...options,
     });
 };
+
+export function useStaffSynchronize() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (campusCode: string) => getStaffSynchronize(campusCode),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [queryKey.admin.staff.staffList],
+            });
+        },
+        onError: (error) => {
+            // Handle error
+            console.error('Error during synchronization:', error?.response?.data?.message);
+        }
+    });
+}
+
+

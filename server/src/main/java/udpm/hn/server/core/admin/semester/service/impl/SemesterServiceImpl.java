@@ -15,9 +15,15 @@ import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.entity.Block;
 import udpm.hn.server.entity.Semester;
 import udpm.hn.server.infrastructure.connection.IdentityConnection;
+import udpm.hn.server.infrastructure.connection.response.SemesterResponse;
+import udpm.hn.server.infrastructure.constant.BlockName;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
+import udpm.hn.server.infrastructure.constant.SemesterName;
 import udpm.hn.server.utils.Helper;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,65 +47,6 @@ public class SemesterServiceImpl implements SemesterService {
                 "Lấy danh sách học kỳ thành công!"
         );
     }
-
-//    @Override
-//    public ResponseObject<?> createSemester(@Valid CreateUpdateSemesterRequest createUpdateSemesterRequest) {
-//        String name = SemesterName.valueOf(createUpdateSemesterRequest.getSemesterName()).toString();
-//        Integer year = createUpdateSemesterRequest.getSemesterYear();
-//        Long startDate = createUpdateSemesterRequest.getStartTime();
-//
-//        Optional<Semester> existingHocKy = semesterExtendRepository.existingBySemesterNameAndSemesterYear(name, year);
-//        if (existingHocKy.isPresent()) {
-//            return new ResponseObject<>(null, HttpStatus.CONFLICT, "Học kỳ đã tồn tại!");
-//        }
-//
-//        LocalDate localDate = LocalDate.ofInstant(Instant.ofEpochMilli(startDate), ZoneId.systemDefault());
-//        Integer yearStartDate = localDate.getYear();
-//        if (yearStartDate.compareTo(year) != 0) {
-//            return new ResponseObject<>(null, HttpStatus.CONFLICT,
-//                    "Thời gian bắt đầu phải trùng với năm học!");
-//        }
-//
-//        Semester semester = new Semester();
-//        semester.setSemesterName(SemesterName.valueOf(name));
-//        semester.setYear(year);
-//        semester.setStartTime(startDate);
-//        semester.setStatus(EntityStatus.ACTIVE);
-//        semesterExtendRepository.save(semester);
-//
-//        return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm học kỳ thành công!");
-//    }
-
-//    @Override
-//    public ResponseObject<?> updateSemester(String semesterId, CreateUpdateSemesterRequest createUpdateSemesterRequest) {
-//        Optional<Semester> existingSemester = semesterExtendRepository.findById(semesterId);
-//        if (existingSemester.isPresent()) {
-//            Semester semester = existingSemester.get();
-//            String name = SemesterName.valueOf(createUpdateSemesterRequest.getSemesterName()).toString();
-//            Integer year = createUpdateSemesterRequest.getSemesterYear();
-//            Long startTime = createUpdateSemesterRequest.getStartTime();
-//
-//            Optional<Semester> existingByHocKyAndYear = semesterExtendRepository.existingBySemesterNameAndSemesterYear(name, year);
-//            if (existingByHocKyAndYear.isPresent() && !existingByHocKyAndYear.get().equals(semester)) {
-//                return new ResponseObject<>(null, HttpStatus.CONFLICT,
-//                        "Học kỳ đã tồn tại!");
-//            }
-//
-//            LocalDate localDate = LocalDate.ofInstant(Instant.ofEpochMilli(startTime), ZoneId.systemDefault());
-//            Integer yearStartTime = localDate.getYear();
-//            if (yearStartTime.compareTo(year) != 0) {
-//                return new ResponseObject<>(null, HttpStatus.CONFLICT,
-//                        "Thời gian bắt đầu phải trùng với năm học!");
-//            }
-//
-//            semester.setSemesterName(SemesterName.valueOf(createUpdateSemesterRequest.getSemesterName()));
-//            semester.setYear(year);
-//            semester.setStartTime(startTime);
-//            semesterExtendRepository.save(semester);
-//            return new ResponseObject<>(null, HttpStatus.OK, "Cập nhật học kỳ thành công!");
-//        }
-//        return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Học kỳ không tồn tại!");
-//    }
 
     @Override
     public ResponseObject<?> getSemesterById(String semesterId) {
@@ -133,7 +80,90 @@ public class SemesterServiceImpl implements SemesterService {
     @Override
     @Transactional
     public ResponseObject<?> synchronize() {
-        return identityConnection.getSemesters() ;
+        try {
+            List<SemesterResponse> semesterData = identityConnection.getSemesters();
+            List<Semester> semesters = semesterExtendRepository.findAll();
+
+            if (semesters.isEmpty()) {
+                // Nếu không có semester, đồng bộ tất cả các semester từ dữ liệu nhận được
+                for (SemesterResponse semesterResponse : semesterData) {
+                    syncSemester(null, semesterResponse);
+                }
+            } else {
+                // Nếu đã có semester, đồng bộ từng semester từ dữ liệu nhận được
+                for (SemesterResponse semesterResponse : semesterData) {
+                    for (Semester semester : semesters) {
+                        syncSemester(semester, semesterResponse);
+                    }
+                }
+            }
+
+            return ResponseObject.successForward(null, "Đồng bộ học kỳ và block thành công!");
+        } catch (Exception e) {
+            e.printStackTrace();  // In ra stack trace của lỗi để dễ debug
+            return ResponseObject.errorForward("Đồng bộ học kỳ và block không thành công! Đã xảy ra lỗi.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
+    private void syncSemester(Semester semester, SemesterResponse semesterResponse) {
+        // Khởi tạo hoặc lấy đối tượng Semester từ cơ sở dữ liệu
+        Semester postSemester;
+        if (semester == null) {
+            postSemester = new Semester();
+        } else {
+            Optional<Semester> semesterOptional = semesterExtendRepository.findBySemesterId(semesterResponse.getId());
+            postSemester = semesterOptional.orElseGet(Semester::new);
+        }
+
+        // Chuyển đổi thời gian và cập nhật thuộc tính của semester
+        LocalDateTime startDate = Instant.ofEpochMilli(semesterResponse.getStartTime() * 1000)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+
+        postSemester.setYear(startDate.getYear());
+        postSemester.setSemesterName(SemesterName.valueOf(semesterResponse.getSemesterName()));
+        postSemester.setStartTime(semesterResponse.getStartTime() * 1000);
+        postSemester.setEndTime(semesterResponse.getEndTime() * 1000);
+        postSemester.setSemesterId(semesterResponse.getId());
+        postSemester.setStatus(EntityStatus.ACTIVE);
+        // Lưu semester vào cơ sở dữ liệu
+        semesterExtendRepository.save(postSemester);
+
+        // Lấy danh sách blocks liên quan đến semester vừa lưu
+        List<Block> blocks = blockExtendRepository.findBlockBySemesterId(postSemester.getId());
+
+        if (blocks.isEmpty()) {
+            // Nếu không có blocks, tạo mới hai block và lưu vào cơ sở dữ liệu
+            Block block1 = new Block();
+            Block block2 = new Block();
+
+            block1.setName(BlockName.BLOCK_1);
+            block1.setStartTime(semesterResponse.getStartTimeFirstBlock() * 1000);
+            block1.setEndTime(semesterResponse.getEndTimeFirstBlock() * 1000);
+            block1.setSemester(postSemester);
+            block1.setStatus(EntityStatus.ACTIVE);
+
+            block2.setName(BlockName.BLOCK_2);
+            block2.setStartTime(semesterResponse.getStartTimeSecondBlock() * 1000);
+            block2.setEndTime(semesterResponse.getEndTimeSecondBlock() * 1000);
+            block2.setSemester(postSemester);
+            block2.setStatus(EntityStatus.ACTIVE);
+
+            blockExtendRepository.save(block1);
+            blockExtendRepository.save(block2);
+        } else {
+            // Nếu có blocks, cập nhật thông tin của từng block
+            for (Block block : blocks) {
+                if(block.getName().equals(BlockName.BLOCK_1)){
+                    block.setStartTime(semesterResponse.getStartTimeFirstBlock() * 1000);
+                    block.setEndTime(semesterResponse.getEndTimeFirstBlock() * 1000);
+                }else {
+                    block.setStartTime(semesterResponse.getStartTimeSecondBlock() * 1000);
+                    block.setEndTime(semesterResponse.getEndTimeSecondBlock() * 1000);
+                }
+                block.setSemester(postSemester);
+                blockExtendRepository.save(block);
+            }
+        }
+    }
 }

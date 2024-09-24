@@ -11,7 +11,7 @@ const itemsHeadDepartment = [
     key: "1",
     icon: UserSwitchOutlined,
     text: "Quản lý trưởng môn",
-    path: "/head-department/manage-head-subject",
+    path: "/head-department/head-subject",
   },
 ];
 

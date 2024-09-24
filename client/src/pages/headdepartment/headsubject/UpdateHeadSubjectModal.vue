@@ -50,7 +50,7 @@
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { computed, ref } from "vue";
-import { useAssignSubjectForHeadSubject, useUnAssignSubjectForHeadSubject } from "@/services/service/headdepartment/head-subject.ts";
+import { useAssignSubjectForHeadSubject, useUnAssignSubjectForHeadSubject } from "@/services/service/headdepartment/head-subject.action.ts";
 import { useAuthStore } from "@/stores/auth.ts";
 import { toast } from "vue3-toastify";
 
