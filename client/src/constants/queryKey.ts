@@ -1,5 +1,3 @@
-import {useCreateHeadOfSubject} from "@/services/service/headdepartment/head-subject.ts";
-
 export const queryKey = {
   common: {
     departmentOptions: "departmentOptionsKey",

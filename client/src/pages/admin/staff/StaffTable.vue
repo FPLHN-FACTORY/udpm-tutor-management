@@ -9,6 +9,7 @@
           type="primary"
           size="large"
           class="m-4"
+          @click="handleSync"
       >
         Đồng bộ
       </a-button>
@@ -47,10 +48,15 @@ import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
 import {StaffResponse} from "@/services/api/admin/staff.api.ts";
 import {ColumnType} from "ant-design-vue/es/table";
 import {EyeOutlined} from "@ant-design/icons-vue";
-import {h} from "vue";
+import {computed, h} from "vue";
 import {useRouter} from "vue-router";
+import {useStaffSynchronize} from "@/services/service/admin/staff.action.ts";
+import {useAuthStore} from "@/stores/auth.ts";
 
 const router = useRouter();
+// Khởi tạo Auth Store và lấy thông tin người dùng
+const auth = useAuthStore();
+const userInfo = computed(() => auth.user);
 
 function goToDetail(staffId: string) {
   router.push({ name: 'DetailStaff', params: { staffId } });
@@ -66,6 +72,13 @@ defineProps({
 defineEmits([
   "update:paginationParams",
 ]);
+
+const { mutate: onSync } = useStaffSynchronize();
+
+// Handle button click
+const handleSync = async () => {
+    await onSync(userInfo.value?.facilityCode)
+};
 
 const columnsStaff: ColumnType[] = [
   {

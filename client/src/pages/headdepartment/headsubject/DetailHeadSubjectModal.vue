@@ -17,6 +17,7 @@
       <!-- Phần chọn trưởng môn mới và nút phân công lại -->
       <div v-if="subjects.length > 0" class="flex justify-between items-center min-h-16">
         <a-select
+            v-model:value="newHeadSubject"
             :value="newHeadSubject"
             @change="onSelectChange"
             class="min-w-[250px]"
@@ -67,7 +68,7 @@
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { computed, ref, watch } from "vue";
-import { useGetStaffByHeadSubject, useReassignSubjectForAnotherHeadSubject } from "@/services/service/headdepartment/head-subject.ts";
+import { useGetStaffByHeadSubject, useReassignSubjectForAnotherHeadSubject } from "@/services/service/headdepartment/head-subject.action.ts";
 import { useAuthStore } from "@/stores/auth.ts";
 import { toast } from "vue3-toastify";
 
@@ -131,7 +132,7 @@ const handleReassignSubject = async () => {
       newHeadSubjectId: newHeadSubject.value,
     });
     toast.success("Chuyển môn học cho trưởng bộ môn khác thành công");
-    emit("handleClose");
+    handleClose();
   } catch (error) {
     toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
   } finally {
@@ -146,11 +147,6 @@ const staffSubjectOptions = computed(() =>
       label: item.staffInfo,
     })) || []
 );
-
-// Cập nhật trưởng môn mới khi thay đổi lựa chọn
-const onSelectChange = (value: string) => {
-  newHeadSubject.value = value;
-};
 
 // Xác định màu sắc của thẻ tag theo loại môn học
 const getTagColor = (subjectType: string) => {

@@ -7,6 +7,7 @@ import udpm.hn.server.entity.StaffMajorFacility;
 import udpm.hn.server.repository.StaffMajorFacilityRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface HOStaffMajorFacilityStaffRepository extends StaffMajorFacilityRepository {
@@ -31,5 +32,7 @@ public interface HOStaffMajorFacilityStaffRepository extends StaffMajorFacilityR
             AND smf.status = 0
             """, nativeQuery = true)
     List<HOStaffMajorFacilityDetailResponse> detailStaffMajorFacility(String idStaffMajorFacility);
+
+    Optional<StaffMajorFacility> findByStaff_Id(String staffId);
 
 }

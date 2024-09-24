@@ -18,4 +18,6 @@ public interface HOStaffService {
 
     ResponseObject<?> deleteStaff(String idStaff);
 
+    ResponseObject<?> synchronize(String campusCode);
+
 }

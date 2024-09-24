@@ -62,7 +62,7 @@ public interface HOStaffRepository extends StaffRepository {
             """, nativeQuery = true)
     Optional<HOStaffDetailResponse> getStaff(String id);
 
-    List<Staff> findByStaffCode(String staffCode);
+    Optional<Staff> findByStaffCode(String staffCode);
 
     Optional<Staff> findByIdAndStatus(String id, EntityStatus status);
 
