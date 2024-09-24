@@ -48,3 +48,17 @@ export const getDetailFacility = async (facilityId: string | null) => {
 
     return res.data;
 };
+
+export const getFacilitySynchronize = async () => {
+    try {
+        const res: AxiosResponse<DefaultResponse<string>> = await request({
+            url: `${PREFIX_API_FACILITY_ADMIN}/synchronize`,
+            method: 'GET',
+        });
+
+        return res.data;
+    } catch (error) {
+        console.error('Error during synchronization:', error);
+        throw error; // Ném lỗi để xử lý ở nơi gọi
+    }
+};

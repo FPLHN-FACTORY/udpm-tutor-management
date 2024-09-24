@@ -61,6 +61,8 @@ public interface FacilityExtendRepository extends FacilityRepository {
     )
     Optional<FacilityResponse> getDetailFacilityById(String facilityId);
 
+    Optional<Facility> findByCode(String facilityCode);
+
     List<Facility> findAllByName(String name);
 
     boolean existsByNameAndIdNot(String name, String id);

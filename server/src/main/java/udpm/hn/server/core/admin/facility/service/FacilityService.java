@@ -17,4 +17,6 @@ public interface FacilityService {
 
     ResponseObject<?> getFacilityById(String FacilityId);
 
+    ResponseObject<?> synchronize();
+
 }
