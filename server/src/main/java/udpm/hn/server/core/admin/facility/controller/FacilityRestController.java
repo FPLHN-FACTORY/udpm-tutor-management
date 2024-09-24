@@ -76,4 +76,9 @@ public class FacilityRestController {
         return Helper.createResponseEntity(facilityChildService.changeFacilityStatusChild(facilityChildId));
     }
 
+    @GetMapping("/synchronize")
+    public ResponseEntity<?> synchronize() {
+        return Helper.createResponseEntity(facilityService.synchronize());
+    }
+
 }

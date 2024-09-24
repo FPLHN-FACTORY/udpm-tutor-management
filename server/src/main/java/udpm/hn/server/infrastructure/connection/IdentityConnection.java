@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.entity.Block;
+import udpm.hn.server.entity.Facility;
 import udpm.hn.server.entity.Semester;
 import udpm.hn.server.infrastructure.connection.response.CampusResponse;
 import udpm.hn.server.infrastructure.connection.response.DepartmentCampusResponse;
@@ -26,6 +27,7 @@ import udpm.hn.server.infrastructure.constant.Message;
 import udpm.hn.server.infrastructure.constant.SemesterName;
 import udpm.hn.server.infrastructure.exception.RestApiException;
 import udpm.hn.server.repository.BlockRepository;
+import udpm.hn.server.repository.FacilityRepository;
 import udpm.hn.server.repository.SemesterRepository;
 
 import java.time.Instant;
@@ -176,14 +178,15 @@ public class IdentityConnection {
 
             Map<String, Object> requestBody = getCurrentClientAuthorizeProps();
 
-            Mono<List<CampusResponse>> responseMono = webClient
-                    .post()
+            ResponseObject<List<CampusResponse>> responseObject = webClient.post()
+                    .contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(requestBody))
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<>() {
-                    });
+                    .bodyToMono(new ParameterizedTypeReference<ResponseObject<List<CampusResponse>>>() {
+                    })
+                    .block();
 
-            return responseMono.block();
+            return responseObject.getData();
         } catch (Exception e) {
             e.printStackTrace(System.out);
             throw new RestApiException(Message.Exception.CALL_API_FAIL);

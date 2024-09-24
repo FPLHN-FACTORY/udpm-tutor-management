@@ -5,21 +5,34 @@
                 <v-icon name="bi-list-ul" scale="2" />
                 <span class="ml-2 text-2xl">Danh sách cở sở</span>
             </h2>
+            <a-button
+                :loading="loadingSync"
+                type="primary" size="large"
+                class="m-4 flex justify-between items-center"
+                @click="handleSync"
+                :disabled="isSyncing">
+                Đồng bộ
+            </a-button>
         </div>
         <div class="flex h-0 flex-1 flex-col">
             <tutor-table
                 wrapperClassName="min-h-[410px]"
-                :columns="columnsFacility" :data-source="dataSource"
+                :columns="columnsFacility"
+                :data-source="dataSource"
                 :pagination-params="paginationParams || {}"
                 :total-pages="totalPages || 0"
                 @update:pagination-params="$emit('update:paginationParams', $event)"
+                :loading="loading"
             >
                 <template #bodyCell="{ column, record }">
                     <div v-if="column.key === 'action'" class="space-x-2 flex items-center justify-center">
-                        <a-tooltip title="Chỉnh sửa cơ sở" color="#FFC26E">
-                            <a-button type="primary" size="large" class="flex items-center justify-center" :icon="h(EditOutlined)"
-                                @click="$emit('handleOpenModalUpdate', record)" />
-                        </a-tooltip>
+                        <a-button
+                            type="primary"
+                            size="large"
+                            class="flex items-center justify-center"
+                            :icon="h(EditOutlined)"
+                            @click="$emit('handleOpenModalUpdate', record)"
+                        />
                     </div>
                     <div v-else-if="column.key === 'facilityStatus'">
                         <a-tag :color="record.facilityStatus === 0 ? 'green' : 'red'">
@@ -34,20 +47,49 @@
 
 <script lang="ts" setup>
 import TutorTable from '@/components/ui/TutorTable/TutorTable.vue';
-import { FacilityResponse } from '@/services/api/admin/facility.api';
+import { ERROR_MESSAGE } from '@/constants/message.constant';
+import { queryKey } from '@/constants/queryKey';
+import { FacilityResponse } from '@/services/api/admin/department.api';
+import { useFacilitySynchronize } from '@/services/service/admin/facility.action';
 import { EditOutlined } from '@ant-design/icons-vue';
+import { useQueryClient } from '@tanstack/vue-query';
 import { ColumnType } from 'ant-design-vue/es/table';
 import { h } from 'vue';
+import { toast } from 'vue3-toastify';
 
 defineProps({
     dataSource: Array<FacilityResponse>,
     totalPages: Number,
     paginationParams: Object,
+    loadingSync: Boolean,
+    loading: Boolean
 })
 
-defineEmits(['handleOpenModalAdd', 'handleOpenModalUpdate', 'update:paginationParams'])
+const emit = defineEmits(['handleOpenModalAdd', 'handleOpenModalUpdate', 'update:paginationParams', "syncSuccess"])
 
+const { mutate: onSync, isLoading: isSyncing } = useFacilitySynchronize();
 
+// Sử dụng useQueryClient để lấy queryClient
+const queryClient = useQueryClient();
+
+// Handle button click
+const handleSync = async () => {
+    try {
+        await onSync(); // Chỉ gọi khi nhấn nút
+
+        // Chờ invalidate hoàn tất trước khi thực hiện refetch
+        // Invalidating query và refetch ngay lập tức
+        await queryClient.invalidateQueries({ queryKey: [queryKey.admin.facility.facilityList] });
+        await queryClient.refetchQueries({ queryKey: [queryKey.admin.facility.facilityList] });
+
+        emit('syncSuccess');
+    } catch (error: any) {
+        console.error("🚀 ~ handleSync ~ error:", error); // Log lỗi để dễ dàng debug
+        toast.error(
+            error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+        );
+    }
+};
 
 const columnsFacility: ColumnType[] = [
     {

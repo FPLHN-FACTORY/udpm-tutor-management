@@ -30,6 +30,7 @@ export const queryKey = {
     facility: {
       facilityList: "facilityListKey",
       facilityDetail: "facilityDetailKey",
+      facilitySynchronize: "facilitySynchronizeKey"
     },
     facilityChild: {
       facilityChildList: "facilityChildListKey",

@@ -1,7 +1,7 @@
 import { Ref } from "vue";
-import { getDetailFacility, getFacilities, ParamsGetFacility } from "../../api/admin/facility.api.ts";
-import { useQuery, UseQueryReturnType } from "@tanstack/vue-query";
-import { queryKey } from "@/constants/queryKey.ts";
+import { useMutation, useQuery, useQueryClient, UseQueryReturnType } from "@tanstack/vue-query";
+import { queryKey } from "@/constants/queryKey";
+import { getDetailFacility, getFacilities, getFacilitySynchronize, ParamsGetFacility } from "@/services/api/admin/facility.api";
 
 export const useGetFacility = (
     params: Ref<ParamsGetFacility>,
@@ -24,3 +24,20 @@ export const useDetailFacility = (
         ...options,
     });
 };
+
+export function useFacilitySynchronize() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: () => getFacilitySynchronize(),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [queryKey.admin.facility.facilitySynchronize],
+            });
+        },
+        onError: (error) => {
+            // Handle error
+            console.error('Error during synchronization:', error);
+        }
+    });
+}

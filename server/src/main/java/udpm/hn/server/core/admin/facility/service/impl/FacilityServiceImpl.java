@@ -1,6 +1,7 @@
 package udpm.hn.server.core.admin.facility.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -11,19 +12,32 @@ import udpm.hn.server.core.admin.facility.repository.FacilityExtendRepository;
 import udpm.hn.server.core.admin.facility.service.FacilityService;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
+import udpm.hn.server.entity.Block;
 import udpm.hn.server.entity.Facility;
+import udpm.hn.server.entity.Semester;
+import udpm.hn.server.infrastructure.connection.IdentityConnection;
+import udpm.hn.server.infrastructure.connection.response.CampusResponse;
+import udpm.hn.server.infrastructure.connection.response.SemesterResponse;
+import udpm.hn.server.infrastructure.constant.BlockName;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
+import udpm.hn.server.infrastructure.constant.SemesterName;
 import udpm.hn.server.utils.Helper;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class FacilityServiceImpl implements FacilityService {
 
     private final FacilityExtendRepository facilityExtendRepository;
+
+    private final IdentityConnection identityConnection;
 
     @Override
     public ResponseObject<?> getAllFacility(FacilityRequest request) {
@@ -95,6 +109,46 @@ public class FacilityServiceImpl implements FacilityService {
         return facilityExtendRepository.getDetailFacilityById(facilityId)
                 .map(subject -> new ResponseObject<>(subject, HttpStatus.OK, "Get facility successfully"))
                 .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Facility not found"));
+    }
+
+    @Override
+    public ResponseObject<?> synchronize() {
+        List<CampusResponse> responseData = identityConnection.getCampuses();
+        List<Facility> facilities = facilityExtendRepository.findAll();
+
+        if (facilities.isEmpty()) {
+            // Nếu không có facility, đồng bộ tất cả các facility từ dữ liệu nhận được
+            for (CampusResponse campusResponse : responseData) {
+                syncFacility(null, campusResponse);
+            }
+        } else {
+            // Nếu đã có facility, đồng bộ từng facility từ dữ liệu nhận được
+            for (CampusResponse campusResponse : responseData) {
+                for (Facility facility : facilities) {
+                    syncFacility(facility, campusResponse);
+                }
+            }
+        }
+        return new ResponseObject<>(identityConnection.getCampuses(), HttpStatus.OK, "Lấy thành công");
+    }
+
+    private void syncFacility(Facility facility, CampusResponse campusResponse) {
+        Facility postFacility;
+        if (facility == null) {
+            postFacility = new Facility();
+            log.info("Create facility");
+        } else {
+            Optional<Facility> facilityOptional = facilityExtendRepository.findByCode(campusResponse.getCampusCode());
+            postFacility = facilityOptional.orElseGet(Facility::new);
+            log.info("Update facility");
+        }
+
+        postFacility.setName(campusResponse.getCampusName());
+        postFacility.setCode(campusResponse.getCampusCode());
+        postFacility.setStatus(EntityStatus.ACTIVE);
+
+        // Lưu facility vào cơ sở dữ liệu
+        facilityExtendRepository.save(postFacility);
     }
 
 }

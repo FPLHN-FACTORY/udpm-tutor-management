@@ -6,13 +6,26 @@
         <span class="m-2 text-3xl">Quản lý cơ sở</span>
       </h2>
     </div>
-    <facility-filter @filter="handleFilter" />
-    <facility-table @handle-open-modal-add="handleOpenModal" :data-source="facilityData"
-      @handle-open-modal-update="handleOpenModalUpdate" :total-pages="parentTotalPages"
-      :pagination-params="facilityParams" @update:pagination-params="handleParentChangePagination" />
-    <detail-facility-modal :open="openModal" @handle-close="handleCloseModal"
-      :facility-detail="facilityDetailData || null" :facility-childs="facilityChildData"
-      :pagination-params="facilityChildParams" :total-pages="childTotalPages" @update:pagination-params="handleChildChangePagination" />
+    <facility-filter
+      @filter="handleFilter"
+    />
+    <facility-table
+      @handle-open-modal-add="handleOpenModal"
+      :data-source="facilityData"
+      @handle-open-modal-update="handleOpenModalUpdate"
+      :total-pages="totalPages"
+      :pagination-params="facilityParams"
+      @update:pagination-params="handleParentChangePagination"
+      @syncSuccess="refetchFacilityData"
+      :loading-sync="isLoadingSync"
+      :loading="isLoading || isFetching"
+    />
+    <detail-facility-modal
+      :open="openModal"
+      @handle-close="handleCloseModal"
+      :facility-detail="facilityDetailData || null"
+      :is-loading-detail="isLoadingDetail"
+    />
   </div>
 </template>
 
@@ -21,38 +34,26 @@ import { computed, ref } from 'vue';
 import FacilityFilter from './FacilityFilter.vue';
 import FacilityTable from './FacilityTable.vue';
 import DetailFacilityModal from './DetailFacilityModal.vue';
-import { useDetailFacility, useGetFacility } from '@/services/service/admin/facility.action';
-import { FacilityResponse, ParamsGetFacility } from '@/services/api/admin/facility.api';
 import { keepPreviousData } from '@tanstack/vue-query';
-import { useGetFacilityChild } from '@/services/service/admin/facility-child.action';
-import { ParamsGetFacilityChild } from '@/services/api/admin/facility-child.api';
+import { toast } from 'vue3-toastify';
+import { useDetailFacility, useGetFacility } from '@/services/service/admin/facility.action';
+import { ParamsGetFacility } from '@/services/api/admin/facility.api';
+import { FacilityResponse } from '@/services/api/admin/department.api';
 
 const openModal = ref(false);
 const facilityId = ref<string | any>(null);
+const isLoadingSync = ref<boolean>(false);
 
 const facilityParams = ref<ParamsGetFacility>({
   page: 1,
   size: 5
 })
 
-const facilityChildParams = ref<ParamsGetFacilityChild>({
-  page: 1,
-  size: 5
-})
-
-const { data: listFacilities } = useGetFacility(facilityParams, {
+const { data, isLoading,  isFetching, refetch } = useGetFacility(facilityParams, {
   refetchOnWindowFocus: false,
   placeholderData: keepPreviousData,
 });
-const { data: facilityDetail } = useDetailFacility(facilityId,
-  {
-    refetchOnWindowFocus: false,
-    enabled: () => !!facilityId.value,
-  }
-)
-const { data: listFacilityChilds } = useGetFacilityChild(
-  facilityChildParams,
-  facilityId,
+const { data: facilityDetail, isLoading: isLoadingDetail } = useDetailFacility(facilityId,
   {
     refetchOnWindowFocus: false,
     enabled: () => !!facilityId.value,
@@ -61,10 +62,6 @@ const { data: listFacilityChilds } = useGetFacilityChild(
 
 const handleParentChangePagination = (newParams: ParamsGetFacility) => {
   facilityParams.value = { ...facilityParams.value, ...newParams }
-}
-
-const handleChildChangePagination = (newParams: ParamsGetFacilityChild) => {
-  facilityChildParams.value = { ...facilityChildParams.value, ...newParams }
 }
 
 const handleFilter = (newParams: ParamsGetFacility) => {
@@ -86,15 +83,22 @@ const handleCloseModal = () => {
   facilityId.value = null;
 }
 
-const facilityData = computed(() => listFacilities?.value?.data?.data || []);
+// Hàm refetch dữ liệu
+const refetchFacilityData = () => {
+  setTimeout(() => {
+    refetch(); // Gọi lại hàm refetch để cập nhật dữ liệu
+    isLoadingSync.value = false;
+    toast.success("Đồng bộ cơ sở thành công");
+  }, 2000)
+  isLoadingSync.value = true;
+};
+
+const facilityData = computed(() => data?.value?.data?.data || []);
 const facilityDetailData = computed(() =>
   facilityId.value ? {
     ...facilityDetail.value?.data,
     facilityId: facilityId.value
   } : {})
-const parentTotalPages = computed(() => listFacilities?.value?.data?.totalPages || 0)
-
-const facilityChildData = computed(() => listFacilityChilds?.value?.data?.data || []);
-const childTotalPages = computed(() => listFacilityChilds?.value?.data?.totalPages || 0);
+const totalPages = computed(() => data?.value?.data?.totalPages || 0)
 
 </script>
