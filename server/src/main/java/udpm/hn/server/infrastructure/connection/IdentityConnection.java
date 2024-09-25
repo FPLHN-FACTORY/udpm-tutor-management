@@ -7,24 +7,35 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import udpm.hn.server.core.admin.departments.department.repository.DepartmentExtendRepository;
 import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.entity.Block;
-import udpm.hn.server.entity.Facility;
+import udpm.hn.server.entity.Department;
+import udpm.hn.server.entity.DepartmentFacility;
+import udpm.hn.server.entity.Major;
+import udpm.hn.server.entity.MajorFacility;
 import udpm.hn.server.entity.Semester;
-import udpm.hn.server.entity.Staff;
-import udpm.hn.server.entity.StaffRole;
-import udpm.hn.server.infrastructure.connection.response.*;
+import udpm.hn.server.infrastructure.connection.response.CampusResponse;
+import udpm.hn.server.infrastructure.connection.response.DepartmentCampusResponse;
+import udpm.hn.server.infrastructure.connection.response.DepartmentResponse;
+import udpm.hn.server.infrastructure.connection.response.MajorCampusResponse;
+import udpm.hn.server.infrastructure.connection.response.MajorResponse;
+import udpm.hn.server.infrastructure.connection.response.SemesterResponse;
+import udpm.hn.server.infrastructure.connection.response.StaffResponse;
+import udpm.hn.server.infrastructure.connection.response.StaffRoleResponse;
+import udpm.hn.server.infrastructure.connection.response.UserInformationResponse;
 import udpm.hn.server.infrastructure.constant.BlockName;
-import udpm.hn.server.infrastructure.constant.EntityStatus;
 import udpm.hn.server.infrastructure.constant.Message;
 import udpm.hn.server.infrastructure.constant.SemesterName;
 import udpm.hn.server.infrastructure.exception.RestApiException;
 import udpm.hn.server.repository.BlockRepository;
+import udpm.hn.server.repository.DepartmentFacilityRepository;
 import udpm.hn.server.repository.FacilityRepository;
+import udpm.hn.server.repository.MajorFacilityRepository;
+import udpm.hn.server.repository.MajorRepository;
 import udpm.hn.server.repository.SemesterRepository;
 import udpm.hn.server.repository.StaffRepository;
 
@@ -52,9 +63,19 @@ public class IdentityConnection {
 
     private final SemesterRepository semesterRepository;
 
+    private final BlockRepository blockRepository;
+
+    private final MajorRepository majorRepository;
+
+    private final MajorFacilityRepository majorFacilityRepository;
+
+    private final DepartmentFacilityRepository departmentFacilityRepository;
+
     private final StaffRepository staffRepository;
 
-    private final BlockRepository blockRepository;
+    private final FacilityRepository facilityRepository;
+
+    private final DepartmentExtendRepository departmentExtendRepository;
 
     private static final Map<String, Object> EMPTY_ADDITIONAL_PROPS = null;
 
@@ -146,22 +167,20 @@ public class IdentityConnection {
     /**
      * @return Trả về list các department
      */
-    public List<DepartmentResponse> getDepartments(String facilityId, String departmentId) {
+    public List<DepartmentResponse> getDepartments() {
         try {
             String apiUrl = domainIdentity + APIConnection.PREFIX_DEPARTMENT;
-
             WebClient webClient = WebClient.create(apiUrl);
+            Map<String, Object> requestBody = getCurrentClientAuthorizeProps();
 
-            Map<String, Object> requestBody = getCurrentClientAndCampusSubjectAuthorizeProps(facilityId, departmentId);
-
-            Mono<List<DepartmentResponse>> responseMono = webClient
-                    .post()
+            ResponseObject<List<DepartmentResponse>> responseObject  = webClient.post()
+                    .contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(requestBody))
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<>() {
-                    });
-
-            return responseMono.block();
+                    .bodyToMono(new ParameterizedTypeReference<ResponseObject<List<DepartmentResponse>>>() {
+                    })
+                    .block();
+            return responseObject.getData();
         } catch (Exception e) {
             throw new RestApiException(Message.Exception.CALL_API_FAIL);
         }
@@ -178,15 +197,14 @@ public class IdentityConnection {
 
             Map<String, Object> requestBody = getCurrentClientAuthorizeProps();
 
-            ResponseObject<List<CampusResponse>> responseObject = webClient.post()
-                    .contentType(MediaType.APPLICATION_JSON)
+            Mono<List<CampusResponse>> responseMono = webClient
+                    .post()
                     .body(BodyInserters.fromValue(requestBody))
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<ResponseObject<List<CampusResponse>>>() {
-                    })
-                    .block();
+                    .bodyToMono(new ParameterizedTypeReference<>() {
+                    });
 
-            return responseObject.getData();
+            return responseMono.block();
         } catch (Exception e) {
             e.printStackTrace(System.out);
             throw new RestApiException(Message.Exception.CALL_API_FAIL);
@@ -199,19 +217,16 @@ public class IdentityConnection {
     public List<MajorResponse> getMajors() {
         try {
             String apiUrl = domainIdentity + APIConnection.PREFIX_MAJOR;
-
             WebClient webClient = WebClient.create(apiUrl);
-
             Map<String, Object> requestBody = getCurrentClientAuthorizeProps();
-
-            Mono<List<MajorResponse>> responseMono = webClient
-                    .post()
+            ResponseObject<List<MajorResponse>> responseObject  = webClient.post()
+                    .contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(requestBody))
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<>() {
-                    });
-
-            return responseMono.block();
+                    .bodyToMono(new ParameterizedTypeReference<ResponseObject<List<MajorResponse>>>() {
+                    })
+                    .block();
+            return responseObject.getData();
         } catch (Exception e) {
             e.printStackTrace(System.out);
             throw new RestApiException(Message.Exception.CALL_API_FAIL);
@@ -224,24 +239,24 @@ public class IdentityConnection {
     public List<DepartmentCampusResponse> getDepartmentCampuses() {
         try {
             String apiUrl = domainIdentity + APIConnection.PREFIX_DEPARTMENT_CAMPUS;
-
             WebClient webClient = WebClient.create(apiUrl);
-
             Map<String, Object> requestBody = getCurrentClientAuthorizeProps();
 
-            Mono<List<DepartmentCampusResponse>> responseMono = webClient
-                    .post()
+            ResponseObject<List<DepartmentCampusResponse>> responseObject  = webClient.post()
+                    .contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(requestBody))
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<>() {
-                    });
+                    .bodyToMono(new ParameterizedTypeReference<ResponseObject<List<DepartmentCampusResponse>>>() {
+                    })
+                    .block();
 
-            return responseMono.block();
+            return responseObject.getData();
         } catch (Exception e) {
             e.printStackTrace(System.out);
             throw new RestApiException(Message.Exception.CALL_API_FAIL);
         }
     }
+
 
     /**
      * @return Trả về list các major campus
@@ -249,24 +264,22 @@ public class IdentityConnection {
     public List<MajorCampusResponse> getMajorCampuses() {
         try {
             String apiUrl = domainIdentity + APIConnection.PREFIX_MAJOR_CAMPUS;
-
             WebClient webClient = WebClient.create(apiUrl);
-
             Map<String, Object> requestBody = getCurrentClientAuthorizeProps();
-
-            Mono<List<MajorCampusResponse>> responseMono = webClient
-                    .post()
+            ResponseObject<List<MajorCampusResponse>> responseObject  = webClient.post()
+                    .contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(requestBody))
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<>() {
-                    });
-
-            return responseMono.block();
+                    .bodyToMono(new ParameterizedTypeReference<ResponseObject<List<MajorCampusResponse>>>() {
+                    })
+                    .block();
+            return responseObject.getData();
         } catch (Exception e) {
             e.printStackTrace(System.out);
             throw new RestApiException(Message.Exception.CALL_API_FAIL);
         }
     }
+
 
     /**
      * @return Trả về list các semester và block.
@@ -291,6 +304,81 @@ public class IdentityConnection {
             e.printStackTrace(System.out);
             throw new RestApiException(Message.Exception.CALL_API_FAIL);
         }
+    }
+
+    private void syncSemester(Semester semester, SemesterResponse semesterResponse) {
+        // Khởi tạo hoặc lấy đối tượng Semester từ cơ sở dữ liệu
+        Semester postSemester;
+        if (semester == null) {
+            postSemester = new Semester();
+        } else {
+            Optional<Semester> semesterOptional = semesterRepository.findBySemesterId(semesterResponse.getId());
+            postSemester = semesterOptional.orElseGet(Semester::new);
+        }
+
+        // Chuyển đổi thời gian và cập nhật thuộc tính của semester
+        LocalDateTime startDate = Instant.ofEpochMilli(semesterResponse.getStartTime() * 1000)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+
+        postSemester.setYear(startDate.getYear());
+        postSemester.setSemesterName(SemesterName.valueOf(semesterResponse.getSemesterName()));
+        postSemester.setStartTime(semesterResponse.getStartTime() * 1000);
+        postSemester.setEndTime(semesterResponse.getEndTime() * 1000);
+        postSemester.setSemesterId(semesterResponse.getId());
+
+        // Lưu semester vào cơ sở dữ liệu
+        semesterRepository.save(postSemester);
+
+        // Lấy danh sách blocks liên quan đến semester vừa lưu
+        List<Block> blocks = blockRepository.findBlockBySemesterId(postSemester.getId());
+
+        if (blocks.isEmpty()) {
+            // Nếu không có blocks, tạo mới hai block và lưu vào cơ sở dữ liệu
+            Block block1 = new Block();
+            Block block2 = new Block();
+
+            block1.setName(BlockName.BLOCK_1);
+            block1.setStartTime(semesterResponse.getStartTimeFirstBlock() * 1000);
+            block1.setEndTime(semesterResponse.getEndTimeFirstBlock() * 1000);
+            block1.setSemester(postSemester);
+
+            block2.setName(BlockName.BLOCK_2);
+            block2.setStartTime(semesterResponse.getStartTimeSecondBlock() * 1000);
+            block2.setEndTime(semesterResponse.getEndTimeSecondBlock() * 1000);
+            block2.setSemester(postSemester);
+
+            blockRepository.save(block1);
+            blockRepository.save(block2);
+        } else {
+            // Nếu có blocks, cập nhật thông tin của từng block
+            for (Block block : blocks) {
+                block.setStartTime(semesterResponse.getStartTimeFirstBlock() * 1000);
+                block.setEndTime(semesterResponse.getEndTimeFirstBlock() * 1000);
+                block.setSemester(postSemester);
+                blockRepository.save(block);
+            }
+        }
+    }
+
+    private Map<String, Object> getCurrentClientAndCampusSubjectAuthorizeProps(
+            String facilityId,
+            String departmentId
+    ) {
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("clientId", clientId);
+        requestBody.put("clientSecret", clientSecret);
+        requestBody.put("campusCode", facilityId);
+        requestBody.put("subjectCode", departmentId);
+
+        return requestBody;
+    }
+
+    private Map<String, Object> getCurrentClientAuthorizeProps() {
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("clientId", clientId);
+        requestBody.put("clientSecret", clientSecret);
+        return requestBody;
     }
 
     /**
@@ -341,25 +429,6 @@ public class IdentityConnection {
         }
     }
 
-    private Map<String, Object> getCurrentClientAndCampusSubjectAuthorizeProps(
-            String facilityId,
-            String departmentId
-    ) {
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("clientId", clientId);
-        requestBody.put("clientSecret", clientSecret);
-        requestBody.put("campusCode", facilityId);
-        requestBody.put("subjectCode", departmentId);
-
-        return requestBody;
-    }
-
-    private Map<String, Object> getCurrentClientAuthorizeProps() {
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("clientId", clientId);
-        requestBody.put("clientSecret", clientSecret);
-        return requestBody;
-    }
 
     private static class APIConnection {
 

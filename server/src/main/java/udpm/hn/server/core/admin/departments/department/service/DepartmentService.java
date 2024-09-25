@@ -18,4 +18,6 @@ public interface DepartmentService {
 
     ResponseObject<?> deleteDepartment(String id);
 
+    ResponseObject<?> synchronize();
+
 }

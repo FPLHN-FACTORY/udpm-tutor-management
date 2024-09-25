@@ -47,4 +47,9 @@ public class DepartmentController {
         return Helper.createResponseEntity(departmentService.deleteDepartment(id));
     }
 
+    @GetMapping("/synchronize")
+    public ResponseEntity<?> synchronize() {
+        return Helper.createResponseEntity(departmentService.synchronize());
+    }
+
 }

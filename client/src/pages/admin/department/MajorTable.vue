@@ -4,6 +4,16 @@
       <h2 class="flex items-center text-primary text-3xl font-semibold p-2">
         <span class="text-xl">Danh Sách Chuyên Ngành</span>
       </h2>
+      <a-button
+        type="primary"
+        size="large"
+        class="m-4 flex justify-between items-center"
+        @click="handleSync"
+        :disabled="isSyncing"
+    >
+      <v-icon name="bi-arrow-repeat" scale="1.5" class="me-1" />
+      Đồng bộ
+    </a-button>
     </div>
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
@@ -28,8 +38,13 @@
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
+import { ERROR_MESSAGE } from "@/constants/message.constant";
+import { queryKey } from "@/constants/queryKey";
 import { MajorResponse } from "@/services/api/admin/major.api";
+import { useMajorSynchronize } from "@/services/service/admin/major.action";
+import { useQueryClient } from "@tanstack/vue-query";
 import { ColumnType } from "ant-design-vue/es/table";
+import { toast } from "vue3-toastify";
 
 const props = defineProps({
   dataSource: Array as () => MajorResponse[],
@@ -41,7 +56,29 @@ const props = defineProps({
 const emit = defineEmits([
   "update:paginationParams",
   "handleOpenModalDetail",
+  "syncSuccess",
 ]);
+
+const queryClient = useQueryClient();
+
+const { mutate: onSync, isLoading: isSyncing } = useMajorSynchronize();
+
+const handleSync = async () => {
+  try {
+    await onSync();
+    toast.success("Đồng bộ chuyên ngành thành công");
+
+    await queryClient.invalidateQueries({ queryKey: [queryKey.admin.major.majorList] });
+    await queryClient.refetchQueries({ queryKey: [queryKey.admin.major.majorList] });
+
+    emit('syncSuccess');
+  } catch (error: any) {
+    console.error("🚀 ~ handleSync ~ error:", error);
+    toast.error(
+        error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+    );
+  }
+};
 
 const columnsMajor: ColumnType[] = [
   {
@@ -61,12 +98,6 @@ const columnsMajor: ColumnType[] = [
     dataIndex: "majorName",
     key: "majorName",
     ellipsis: true,
-  },
-  {
-    title: "Trạng thái",
-    dataIndex: "majorStatus",
-    key: "majorStatus",
-    ellipsis: true,
-  },
+  }
 ];
 </script>

@@ -18,4 +18,6 @@ public interface MajorFacilityService {
 
     ResponseObject<?> getAllMajors(String departmentId);
 
+    ResponseObject<?> synchronize();
+
 }

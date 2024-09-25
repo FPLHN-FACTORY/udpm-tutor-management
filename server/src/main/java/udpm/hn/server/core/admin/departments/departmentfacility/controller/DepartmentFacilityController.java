@@ -57,4 +57,9 @@ public class DepartmentFacilityController {
         return Helper.createResponseEntity(departmentFacilityService.getDepartmentName(departmentId));
     }
 
+    @GetMapping("/synchronize")
+    public ResponseEntity<?> synchronize() {
+        return Helper.createResponseEntity(departmentFacilityService.synchronize());
+    }
+
 }

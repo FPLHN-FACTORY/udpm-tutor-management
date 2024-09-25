@@ -16,6 +16,7 @@
       @handleOpenDepartmentDetailModal="handleOpenDepartmentDetailModal"
       @handleOpenMajorListModal="handleOpenMajorListModal"
       @handleOpenDepartmentsFacilityListModal="handleOpenDepartmentsFacilityListModal"
+      @syncSuccess="refetchDepartmentData"
     />
     <department-detail-modal
       :open="openDepartmentDetailModal"
@@ -56,7 +57,7 @@ const openDepartmentDetailModal = ref(false);
 const departmentId = ref<string | null>(null);
 const title = ref<string>('');
 
-const { data, isLoading, isFetching } = useGetDepartment(params, {
+const { data, isLoading, isFetching, refetch } = useGetDepartment(params, {
   refetchOnWindowFocus: false,
   placeholderData: keepPreviousData,
 });
@@ -113,4 +114,9 @@ const handleOpenDepartmentsFacilityListModal = (record: DepartmentFacilityRespon
   title.value = record.departmentCode + "_" + record.departmentName;
   openDepartmentsFacilityListModal.value = true;
 };
+
+const refetchDepartmentData = () => {
+  refetch(); 
+};
+
 </script>

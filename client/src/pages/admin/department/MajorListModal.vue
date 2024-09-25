@@ -26,6 +26,7 @@
           :pagination-params="params"
           :total-pages="totalPages"
           @update:pagination-params="handlePaginationChange"
+          @syncSuccess="refetchMajorData"
         />
       </div>
     </a-modal>
@@ -74,7 +75,7 @@ watch(
   { immediate: true }
 );
 
-const { data: majorDataResponse, isLoading, isFetching } = useGetMajors(
+const { data: majorDataResponse, isLoading, isFetching, refetch } = useGetMajors(
   currentDepartmentId,
   params,
   {
@@ -86,4 +87,9 @@ const { data: majorDataResponse, isLoading, isFetching } = useGetMajors(
 
 const majorData = computed(() => majorDataResponse?.value?.data?.data || []);
 const totalPages = computed(() => majorDataResponse?.value?.data?.totalPages || 0);
+
+const refetchMajorData = () => {
+  refetch();
+};
+
 </script>

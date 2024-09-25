@@ -34,4 +34,7 @@ public class DepartmentFacility extends PrimaryEntity implements Serializable {
     @JoinColumn(name = "id_staff")
     private Staff staff;
 
+    @JoinColumn(name = "department_facility_identity_Id")
+    private Long departmentFacilityIdentityId;
+
 }

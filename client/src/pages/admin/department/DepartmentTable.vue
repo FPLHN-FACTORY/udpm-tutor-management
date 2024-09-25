@@ -5,16 +5,16 @@
         <v-icon name="bi-list-ul" scale="2" />
         <span class="ml-2 text-2xl">Danh sách bộ môn</span>
       </h2>
-      <!--
       <a-button
-          type="primary"
-          @click="$emit('handleOpenModalAdd')"
-          size="large"
-          class="m-4"
-      >
-        Tạo bộ môn
-      </a-button>
-      -->
+        type="primary"
+        size="large"
+        class="m-4 flex justify-between items-center"
+        @click="handleSync"
+        :disabled="isSyncing"
+    >
+      <v-icon name="bi-arrow-repeat" scale="1.5" class="me-1" />
+      Đồng bộ
+    </a-button>
     </div>
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
@@ -65,10 +65,15 @@
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
+import { ERROR_MESSAGE } from "@/constants/message.constant";
 import { DepartmentResponse } from "@/services/api/admin/department.api";
+import { useDepartmentSynchronize } from "@/services/service/admin/department.action";
 import { BookOutlined, EyeOutlined, GoldOutlined } from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { h } from "vue";
+import { toast } from "vue3-toastify";
+import {useQueryClient} from "@tanstack/vue-query";
+import { queryKey } from "@/constants/queryKey";
 
 const props = defineProps({
   dataSource: Array as () => DepartmentResponse[],
@@ -83,7 +88,29 @@ const emit = defineEmits([
   "handleOpenModalAdd",
   "handleOpenMajorListModal",
   "handleOpenDepartmentsFacilityListModal",
+  "syncSuccess",
 ]);
+
+const queryClient = useQueryClient();
+
+const { mutate: onSync, isLoading: isSyncing } = useDepartmentSynchronize();
+
+const handleSync = async () => {
+  try {
+    await onSync();
+    toast.success("Đồng bộ bộ môn thành công");
+
+    await queryClient.invalidateQueries({ queryKey: [queryKey.admin.department.departmentList] });
+    await queryClient.refetchQueries({ queryKey: [queryKey.admin.department.departmentList] });
+
+    emit('syncSuccess');
+  } catch (error: any) {
+    console.error("🚀 ~ handleSync ~ error:", error);
+    toast.error(
+        error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+    );
+  }
+};
 
 const columnsDepartment: ColumnType[] = [
   {
@@ -104,12 +131,12 @@ const columnsDepartment: ColumnType[] = [
     key: "departmentName",
     ellipsis: true,
   },
-  {
-    title: "Trạng thái",
-    dataIndex: "departmentStatus",
-    key: "departmentStatus",
-    ellipsis: true,
-  },
+  // {
+  //   title: "Trạng thái",
+  //   dataIndex: "departmentStatus",
+  //   key: "departmentStatus",
+  //   ellipsis: true,
+  // },
   {
     title: "Hành động",
     key: "action",

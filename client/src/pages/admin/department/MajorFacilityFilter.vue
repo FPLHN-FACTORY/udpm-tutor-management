@@ -1,7 +1,7 @@
 <template>
   <div class="shadow-md p-3 rounded-md">
     <h2 class="flex items-center text-primary text-3xl font-semibold p-2">
-      <span class="text-xl">Tìm Kiếm</span>
+      <span class="text-xl">Tìm Kiếm Chuyên Ngành Theo Cơ Sở</span>
     </h2>
     <a-form layout="vertical" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 p-2">
       <a-form-item class="col-span-1 md:col-span-2 lg:col-span-1 mb-0">
