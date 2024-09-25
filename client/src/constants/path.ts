@@ -51,6 +51,16 @@ export const ROUTES_CONSTANTS = {
       },
     },
   },
+  PLANNER: {
+    path: "/planner",
+    name: "planner",
+    children: {
+      PLAN: {
+        path: "plan",
+        name: "plan",
+      },
+    },
+  },
   NOT_FOUND: {
     path: "/:pathMatch(.*)*",
     name: "NotFound",

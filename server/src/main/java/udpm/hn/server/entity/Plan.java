@@ -37,6 +37,10 @@ public class Plan extends PrimaryEntity implements Serializable {
     @JoinColumn(name = "planner_id")
     private Staff planner;
 
+    @ManyToOne
+    @JoinColumn(name = "department_facility_id")
+    private DepartmentFacility departmentFacility;
+
     @Column(name = "description")
     private String description;
 

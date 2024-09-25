@@ -17,6 +17,7 @@ export const getUserInformation = (token: string): UserInformation => {
     departmentCode: decoded.departmentCode,
     departmentName: decoded.departmentName,
     emailFe: decoded.emailFe,
+    semesterId: decoded.semesterId,
   };
 };
 

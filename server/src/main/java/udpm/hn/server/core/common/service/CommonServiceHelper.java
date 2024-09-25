@@ -78,6 +78,14 @@ public class CommonServiceHelper {
         );
     }
 
+    public ResponseObject<?> getBlocks(String id) {
+        return new ResponseObject<>(
+                cMSemesterExtendRepository.getBlockInfos(id),
+                HttpStatus.OK,
+                "Lấy block thành công"
+        );
+    }
+
     public ResponseObject<?> getAllFacility(CMOptionsFilterRequest request) {
         return new ResponseObject<>(
                 facilityExtendRepository.getFacilities(request),

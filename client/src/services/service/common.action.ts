@@ -1,5 +1,6 @@
 import { queryKey } from "@/constants/queryKey";
 import {
+  getBlockOptions,
   getDepartmentOptions,
   getFacilityOptions, getSemesterOptions,
 } from "@/services/api/common.api";
@@ -43,6 +44,22 @@ export const useGetSemesterOptions = (
   return useQuery({
     queryKey: [queryKey.common.semesterOptions],
     queryFn: () => getSemesterOptions(query),
+    ...options,
+  });
+};
+
+export const useGetBlockOptions = (
+    semesterId: string,
+    options?: any
+): UseQueryReturnType<
+    Awaited<ReturnType<typeof getBlockOptions>>,
+    Error
+> => {
+  console.log(semesterId)
+  console.log("xxxxxxxxxxxxxxxxx")
+  return useQuery({
+    queryKey: [queryKey.common.blockOptions, semesterId],
+    queryFn: () => getBlockOptions(semesterId),
     ...options,
   });
 };

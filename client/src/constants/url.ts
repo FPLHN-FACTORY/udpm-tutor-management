@@ -45,3 +45,6 @@ export const PREFIX_API_STAFF_ADMIN = `${API_URL}/admin/staffs` as string;
 
 // HEAD DEPARTMENT API
 export const PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT = `${API_URL}/head-department/head-of-subjects` as string;
+
+// PLANNER API
+export const PREFIX_API_PLANNER_PLAN = `${API_URL}/planner/plans` as string;

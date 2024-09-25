@@ -46,4 +46,9 @@ public class CommonRestController {
         return Helper.createResponseEntity(commonServiceHelper.getAllSemester(request));
     }
 
+    @GetMapping("/block")
+    public ResponseEntity<?> getBlock(String semesterId) {
+        return Helper.createResponseEntity(commonServiceHelper.getBlocks(semesterId));
+    }
+
 }

@@ -36,6 +36,4 @@ public class TutorClass extends PrimaryEntity implements Serializable {
     @Column(name = "number_of_classes")
     private Integer numberOfClasses;
 
-
-
 }

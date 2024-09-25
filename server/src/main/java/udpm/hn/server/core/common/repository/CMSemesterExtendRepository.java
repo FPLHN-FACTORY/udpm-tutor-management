@@ -1,6 +1,7 @@
 package udpm.hn.server.core.common.repository;
 
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import udpm.hn.server.core.common.model.response.SemesterInfoResponse;
 import udpm.hn.server.repository.SemesterRepository;
@@ -22,5 +23,20 @@ public interface CMSemesterExtendRepository extends SemesterRepository {
             nativeQuery = true
     )
     List<SemesterInfoResponse> getSemesterInfos();
+
+    @Query(
+            value = """
+                    SELECT
+                        s.id AS id,
+                        s.name AS name 
+                    FROM
+                        block s
+                    WHERE
+                        s.semester_id = :id
+                    ORDER BY s.start_time 
+                    """,
+            nativeQuery = true
+    )
+    List<SemesterInfoResponse> getBlockInfos(@Param("id") String id);
 
 }

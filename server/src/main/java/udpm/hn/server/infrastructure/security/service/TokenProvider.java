@@ -19,10 +19,12 @@ import org.springframework.stereotype.Service;
 import udpm.hn.server.entity.DepartmentFacility;
 import udpm.hn.server.entity.Facility;
 import udpm.hn.server.entity.MajorFacility;
+import udpm.hn.server.entity.Semester;
 import udpm.hn.server.entity.Staff;
 import udpm.hn.server.entity.StaffMajorFacility;
 import udpm.hn.server.infrastructure.connection.IdentityValidation;
 import udpm.hn.server.infrastructure.constant.Role;
+import udpm.hn.server.infrastructure.security.repository.SemesterAuthRepository;
 import udpm.hn.server.infrastructure.security.repository.StaffAuthRepository;
 import udpm.hn.server.infrastructure.security.repository.StaffMajorFacilityAuthRepository;
 import udpm.hn.server.infrastructure.security.repository.StaffRoleAuthRepository;
@@ -65,6 +67,9 @@ public class TokenProvider {
     @Setter(onMethod_ = @Autowired)
     private StaffMajorFacilityAuthRepository staffMajorFacilityAuthRepository;
 
+    @Setter(onMethod_ = @Autowired)
+    private SemesterAuthRepository semesterAuthRepository;
+
     public String createToken(Authentication authentication) throws BadRequestException, JsonProcessingException {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         Staff user = getCurrentUserLogin(userPrincipal.getEmail());
@@ -85,6 +90,9 @@ public class TokenProvider {
             tokenSubjectResponse.setFacilityId(facility.getId());
             tokenSubjectResponse.setFacilityName(facility.getName());
             tokenSubjectResponse.setDepartmentName(departmentFacility.getDepartment().getName());
+            Long now = System.currentTimeMillis();
+            String semesterOptional = semesterAuthRepository.findSemesterBy(now);
+            tokenSubjectResponse.setSemesterId(semesterOptional);
         } else {
             tokenSubjectResponse.setFacilityCode("");
             tokenSubjectResponse.setDepartmentCode("");
@@ -176,6 +184,7 @@ public class TokenProvider {
         claims.put("facilityName", tokenSubjectResponse.getFacilityName());
         claims.put("departmentName", tokenSubjectResponse.getDepartmentName());
         claims.put("pictureUrl", tokenSubjectResponse.getPictureUrl());
+        claims.put("semesterId", tokenSubjectResponse.getSemesterId());
         List<String> rolesCode = tokenSubjectResponse.getRolesCode();
         List<String> rolesName = tokenSubjectResponse.getRolesName();
         if (rolesCode.size() == 1) {

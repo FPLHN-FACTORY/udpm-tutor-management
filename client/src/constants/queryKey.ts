@@ -3,6 +3,7 @@ export const queryKey = {
     departmentOptions: "departmentOptionsKey",
     facilityOptions: "facilityOptionsKey",
     semesterOptions: "semesterOptionsKey",
+    blockOptions: "blockOptionsKey",
   },
   admin: {
     subject: {
@@ -62,6 +63,13 @@ export const queryKey = {
       subjectByHeadOfSubject: " subjectByHeadOfSubjectKey",
       staffByHeadOfSubject: " staffByHeadOfSubjectKey",
       headOfSubjectDetail: "headOfSubjectDetailKey",
+    },
+  },
+  planner: {
+    plan: {
+      planList: "planListKey",
+      semesterInfo: "semesterInfo",
+      planDetail: "planDetailKey",
     },
   }
 };
