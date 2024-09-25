@@ -21,4 +21,6 @@ public interface DepartmentFacilityService {
 
     ResponseObject<?> getDepartmentName(String departmentId);
 
+    ResponseObject<?> synchronize();
+
 }

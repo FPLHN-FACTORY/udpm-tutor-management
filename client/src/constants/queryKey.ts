@@ -16,14 +16,21 @@ export const queryKey = {
     department: {
       departmentList: "departmentListKey",
       departmentDetail: "departmentDetailKey",
+      departmentSynchronize: "departmentSynchronizeKey",
     },
     major: {
       majorList: "majorListKey",
       majorDetail: "majorDetailKey",
+      majorSynchronize: "majorSynchronizeKey",
+    },
+    majorFacility: {
+      majorFacilityList: "majorFacilityListKey",
+      majorFacilitySynchronize: "majorFacilitySynchronizeKey",
     },
     departmentFacility: {
       departmentFacilityList: "departmentFacilityListKey",
       departmentFacilityDetail: "departmentFacilityDetailKey",
+      departmentFacilitySynchronize: "departmentFacilitySynchronizeKey",
     },
     facility: {
       facilityList: "facilityListKey",

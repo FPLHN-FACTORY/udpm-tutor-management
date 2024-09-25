@@ -1,11 +1,16 @@
 package udpm.hn.server.core.admin.departments.departmentfacility.service.impl;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 import udpm.hn.server.core.admin.departments.departmentfacility.model.request.CreateOrUpdateDepartmentFacilityRequest;
 import udpm.hn.server.core.admin.departments.departmentfacility.model.request.FindFacilityDetailRequest;
 import udpm.hn.server.core.admin.departments.departmentfacility.repository.DFDepartmentExtendRepository;
@@ -18,10 +23,20 @@ import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.entity.Department;
 import udpm.hn.server.entity.DepartmentFacility;
 import udpm.hn.server.entity.Facility;
+import udpm.hn.server.entity.MajorFacility;
 import udpm.hn.server.entity.Staff;
+import udpm.hn.server.infrastructure.connection.IdentityConnection;
+import udpm.hn.server.infrastructure.connection.response.DepartmentCampusResponse;
+import udpm.hn.server.infrastructure.connection.response.MajorCampusResponse;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
+import udpm.hn.server.repository.DepartmentFacilityRepository;
+import udpm.hn.server.repository.DepartmentRepository;
+import udpm.hn.server.repository.FacilityRepository;
+import udpm.hn.server.repository.StaffRepository;
 import udpm.hn.server.utils.Helper;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -37,6 +52,15 @@ public class DepartmentFacilityServiceImpl implements DepartmentFacilityService 
 
     private final DFStaffExtendRepository dfStaffExtendRepository;
 
+    private final IdentityConnection identityConnection;
+
+    private final DepartmentFacilityRepository departmentFacilityRepository;
+
+    private final DepartmentRepository departmentRepository;
+
+    private final FacilityRepository facilityRepository;
+
+    private final StaffRepository staffRepository;
 
     @Override
     public ResponseObject<?> getAllDepartmentFacility(String id, FindFacilityDetailRequest request) {
@@ -152,5 +176,51 @@ public class DepartmentFacilityServiceImpl implements DepartmentFacilityService 
         }
         return new ResponseObject<>(departmentOptional.get().getName(), HttpStatus.OK, "Tìm thấy thành công tên bộ môn");
     }
+
+
+    @Override
+    @Transactional
+    public ResponseObject<?> synchronize() {
+        try {
+            List<DepartmentCampusResponse> departmentCampusData = identityConnection.getDepartmentCampuses();
+            List<DepartmentFacility> departmentFacilities = dfDepartmentFacilityExtendRepository.findAll();
+
+            for (DepartmentCampusResponse departmentCampusResponse : departmentCampusData) {
+                Department department = departmentRepository.findDepartmentByDepartmentIdentityId(departmentCampusResponse.getDepartmentId()).orElse(null);
+                Facility facility = facilityRepository.findMajorByFacilityIdentityId(departmentCampusResponse.getCampusId()).orElse(null);
+
+                if (department == null || facility == null) {
+                    return ResponseObject.successForward(null,"Vui lòng đồng bộ cơ sở và bộ môn.");
+                }
+
+                if (departmentFacilities.isEmpty()) {
+                    syncDepartmentCampus(null, departmentCampusResponse, department, facility);
+                } else {
+                    for (DepartmentFacility departmentFacility : departmentFacilities) {
+                        syncDepartmentCampus(departmentFacility, departmentCampusResponse, department, facility);
+                    }
+                }
+            }
+            return ResponseObject.successForward(null, "Đồng bộ môn và cơ sở thành công!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseObject.errorForward("Đồng bộ bộ môn và cơ sở không thành công! Đã xảy ra lỗi.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void syncDepartmentCampus(DepartmentFacility departmentFacility, DepartmentCampusResponse departmentCampusResponse, Department department, Facility facility) {
+        DepartmentFacility postDepartmentFacility;
+
+        if (departmentFacility == null) {
+            postDepartmentFacility = new DepartmentFacility();
+        } else {
+            postDepartmentFacility = departmentFacilityRepository.findDepartmentFacilityByDepartmentFacility(departmentCampusResponse.getDepartmentCampusId())
+                    .orElseGet(DepartmentFacility::new);
+        }
+        postDepartmentFacility.setDepartmentFacilityIdentityId(departmentCampusResponse.getDepartmentCampusId());
+        postDepartmentFacility.setDepartment(department);
+        postDepartmentFacility.setFacility(facility);
+    }
+
 
 }

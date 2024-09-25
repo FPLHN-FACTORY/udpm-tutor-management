@@ -2,6 +2,7 @@ package udpm.hn.server.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,5 +29,8 @@ public class Facility extends PrimaryEntity implements Serializable {
     @Column(name = "name", length = EntityProperties.LENGTH_NAME)
     @Nationalized
     private String name;
+
+    @JoinColumn(name = "facility_identity_id")
+    private Long facilityIdentityId;
 
 }

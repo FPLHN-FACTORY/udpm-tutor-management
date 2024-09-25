@@ -34,4 +34,7 @@ public class Major extends PrimaryEntity implements Serializable {
     @JoinColumn(name = "id_department")
     private Department department;
 
+    @Column(name = "major_identity_id")
+    private Long majorIdentityId;
+
 }

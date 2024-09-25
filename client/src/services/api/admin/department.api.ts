@@ -9,6 +9,7 @@ import {
 import { AxiosResponse } from "axios";
 import { Ref } from "vue";
 import { MajorFacilityResponse } from "./major.api";
+import { toast } from "vue3-toastify";
 
 export interface ParamsGetDepartment extends PaginationParams {
   departmentCode?: string | null;
@@ -111,4 +112,38 @@ export const updateDepartment = async (
   })) as AxiosResponse<DefaultResponse<null>>;
 
   return res.data;
+};
+
+export const getDepartmentSynchronize = async () => {
+  try {
+    const res: AxiosResponse<DefaultResponse<string>> = await request({
+      url: `${PREFIX_API_DEPARTMENT_ADMIN}/synchronize`,
+      method: 'GET',
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error('Error during synchronization:', error);
+    throw error; 
+  }
+};
+
+export const getDepartmentCampusSynchronize = async () => {
+  try {
+    const res: AxiosResponse<DefaultResponse<string>> = await request({
+      url: `${PREFIX_API_DEPARTMENT_FACILITY_ADMIN}/synchronize`,
+      method: 'GET',
+    });
+
+    if (res.data.data === null && res.data.message === "Vui lòng đồng bộ cơ sở và bộ môn.") {
+      toast.error(res.data.message);
+    } else {
+      toast.success("Đồng bộ bộ môn cơ sở thành công");
+    }
+
+    return res.data;
+  } catch (error) {
+    console.error('Error during synchronization:', error);
+    throw error;
+  }
 };

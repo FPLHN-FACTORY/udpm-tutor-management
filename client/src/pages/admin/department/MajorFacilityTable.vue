@@ -2,8 +2,18 @@
   <div class="shadow-xl p-3 rounded-md flex h-full flex-col overflow-auto">
     <div class="flex justify-between items-center min-h-[56px]">
       <h2 class="flex items-center text-primary text-3xl font-semibold p-2">
-        <span class="text-xl">Danh Sách Chuyên Ngành Thuộc Bộ Môn Cơ Sở</span>
+        <span class="text-xl">Danh Sách Chuyên Ngành</span>
       </h2>
+      <a-button
+        type="primary"
+        size="large"
+        class="m-4 flex justify-between items-center"
+        @click="handleSync"
+        :disabled="isSyncing"
+    >
+      <v-icon name="bi-arrow-repeat" scale="1.5" class="me-1" />
+      Đồng bộ
+    </a-button>
     </div>
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
@@ -28,10 +38,15 @@
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
+import { ERROR_MESSAGE } from "@/constants/message.constant";
+import { queryKey } from "@/constants/queryKey";
 import { MajorFacilityResponse } from "@/services/api/admin/major.api";
+import { useMajorCampusSynchronize } from "@/services/service/admin/major.action";
+import { useQueryClient } from "@tanstack/vue-query";
 import { ColumnType } from "ant-design-vue/es/table";
+import { toast } from "vue3-toastify";
 
-const props = defineProps({
+defineProps({
   dataSource: Array as () => MajorFacilityResponse[],
   loading: Boolean,
   paginationParams: Object as () => any,
@@ -39,8 +54,28 @@ const props = defineProps({
 });
 
 const emit = defineEmits([
-  "update:paginationParams",
+  "update:paginationParams"
 ]);
+
+const queryClient = useQueryClient();
+
+const { mutate: onSync, isLoading: isSyncing } = useMajorCampusSynchronize();
+
+const handleSync = async () => {
+  try {
+    await onSync();
+    toast.success("Đồng bộ chuyên ngành cơ sở thành công");
+
+    await queryClient.invalidateQueries({ queryKey: [queryKey.admin.majorFacility.majorFacilityList] });
+    await queryClient.refetchQueries({ queryKey: [queryKey.admin.majorFacility.majorFacilityList] });
+
+  } catch (error: any) {
+    console.error("🚀 ~ handleSync ~ error:", error);
+    toast.error(
+        error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+    );
+  }
+};
 
 const columnsMajorFacility: ColumnType[] = [
   {
@@ -59,12 +94,6 @@ const columnsMajorFacility: ColumnType[] = [
     title: "Chủ nhiệm bộ môn",
     dataIndex: "headMajorCodeName",
     key: "headMajorCodeName",
-    ellipsis: true,
-  },
-  {
-    title: "Trạng thái",
-    dataIndex: "status",
-    key: "status",
     ellipsis: true,
   },
 ];

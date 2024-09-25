@@ -36,6 +36,7 @@
         :total-pages="totalPages"
         @update:pagination-params="handlePaginationChange"
         @handleGetMajorFacility="handleGetMajorFacility"
+        @dataSynced="refreshData"
       />
     </div>
   </a-modal>
@@ -95,18 +96,19 @@ const goBack = () => {
 };
 
 const handleGetMajorFacility = (record: MajorFacilityResponse) => {
-  titleMajorFacility.value = `Chi Tiết Bộ Môn : ${props.title} - Cơ sở: ${record.facilityCode}_${record.facilityName}`;
+  // titleMajorFacility.value = `Chi Tiết Bộ Môn : ${props.title} - Cơ sở: ${record.facilityCode}_${record.facilityName}`;
+  titleMajorFacility.value = `Quản Lý Chuyên Ngành Theo Cơ Sở`;
   currentMajorFacilityId.value = String(record.departmentFacilityId);
   currentView.value = 'major';
 };
 
-const { data: departmentData, isLoading: isDepartmentLoading, isFetching: isDepartmentFetching } = useGetDepartmentFacility(currentDepartmentId, params, {
+const { data: departmentData, isLoading: isDepartmentLoading, isFetching: isDepartmentFetching, refetch: refetchDepartment  } = useGetDepartmentFacility(currentDepartmentId, params, {
   refetchOnWindowFocus: false,
   placeholderData: keepPreviousData,
   enabled: computed(() => !!props.open && !!currentDepartmentId.value && currentView.value === 'department'),
 });
 
-const { data: majorData, isLoading: isMajorLoading, isFetching: isMajorFetching } = useGetMajorsFacility(paramsMajorFacility, {
+const { data: majorData, isLoading: isMajorLoading, isFetching: isMajorFetching , refetch: refetchMajor } = useGetMajorsFacility(paramsMajorFacility, {
   refetchOnWindowFocus: false,
   placeholderData: keepPreviousData,
   enabled: computed(() => !!paramsMajorFacility.value.departmentFacilityId && currentView.value === 'major'),
@@ -126,7 +128,6 @@ const totalPages = computed(() => {
 
 const dataSource = computed(() => {
   if (currentView.value === 'department') {
-    console.log("Data for department", departmentData?.value?.data?.data);
     return (departmentData?.value?.data?.data as DepartmentFacilityResponse[]) || [];
   } else {
     return (majorData?.value?.data?.majorFacilities?.data as MajorFacilityResponse[]) || [];
@@ -142,6 +143,7 @@ watch(
   },
   { immediate: true }
 );
+
 
 watchEffect(() => {
   if (currentMajorFacilityId.value && currentView.value === 'major') {
@@ -159,4 +161,14 @@ const currentComponent = computed(() => {
 const currentFilter = computed(() => {
   return currentView.value === 'department' ? DepartmentFacilityFilter : MajorFacilityFilter;
 });
+
+const refreshData = () => {
+  console.log(currentDepartmentId.value)
+  if (currentView.value === 'department') {
+    refetchDepartment(); 
+  } else {
+    refetchMajor();
+  }
+};
+
 </script>

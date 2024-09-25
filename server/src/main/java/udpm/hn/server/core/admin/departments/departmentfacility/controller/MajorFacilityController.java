@@ -48,4 +48,8 @@ public class MajorFacilityController {
         return Helper.createResponseEntity(majorFacilityService.getAllMajors(departmentId));
     }
 
+    @GetMapping("/synchronize")
+    public ResponseEntity<?> synchronize() {
+        return Helper.createResponseEntity(majorFacilityService.synchronize());
+    }
 }

@@ -68,8 +68,6 @@ export const getMajors = async (departmentId: Ref<string | null>, params: Ref<Pa
   };
 
 
-
-
 export const getDetailMajor = async (id: string | null) => {
     const res = (await request({
       url: `${PREFIX_API_MAJOR_ADMIN}/${id}`,
@@ -77,5 +75,33 @@ export const getDetailMajor = async (id: string | null) => {
     })) as AxiosResponse<DefaultResponse<DetailMajorResponse>>;
   
     return res.data;
-  };
-  
+};
+
+
+export const getMajorSynchronize = async () => {
+  try {
+    const res: AxiosResponse<DefaultResponse<string>> = await request({
+      url: `${PREFIX_API_MAJOR_ADMIN}/synchronize`,
+      method: 'GET',
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error('Error during synchronization:', error);
+    throw error; 
+  }
+};
+
+export const getMajorCampusSynchronize = async () => {
+  try {
+    const res: AxiosResponse<DefaultResponse<string>> = await request({
+      url: `${PREFIX_API_MAJOR_FACILITY_ADMIN}/synchronize`,
+      method: 'GET',
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error('Error during synchronization:', error);
+    throw error;
+  }
+};

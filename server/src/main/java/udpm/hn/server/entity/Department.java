@@ -28,4 +28,7 @@ public class Department extends PrimaryEntity implements Serializable {
     @Column(name = "code", length = EntityProperties.LENGTH_NAME)
     private String code;
 
+    @Column(name = "department_identity_id")
+    private Long departmentIdentityId;
+
 }
