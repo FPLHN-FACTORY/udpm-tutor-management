@@ -32,4 +32,7 @@ public class MajorFacility extends PrimaryEntity implements Serializable {
     @JoinColumn(name = "id_staff")
     private Staff staff;
 
+    @JoinColumn(name = "major_facility_identity_Id")
+    private String majorFacilityIdentityId;
+
 }

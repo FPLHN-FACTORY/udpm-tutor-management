@@ -43,4 +43,7 @@ public class Staff extends PrimaryEntity implements Serializable {
     @Column(name = "picture", length = EntityProperties.LENGTH_PICTURE)
     private String picture;
 
+    @Column(name = "staff_identity_id")
+    private Long staffIdentityId;
+
 }

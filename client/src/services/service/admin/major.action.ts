@@ -1,10 +1,12 @@
-import { queryKey } from "@/constants/queryKey.ts";
+import { queryKey } from "@/constants/queryKey";
 import {
-  useQuery,
-  UseQueryReturnType,
+    useMutation,
+    useQuery,
+    useQueryClient,
+    UseQueryReturnType,
 } from "@tanstack/vue-query";
 import { Ref } from "vue";
-import { getMajors, getMajorsFacility, ParamsGetMajor } from "../../api/admin/major.api.ts";
+import { getMajorCampusSynchronize, getMajors, getMajorsFacility, getMajorSynchronize, ParamsGetMajor } from "../../api/admin/major.api";
 
 export const useGetMajors = (
     departmentId: Ref<string | null>,
@@ -16,15 +18,52 @@ export const useGetMajors = (
       queryFn: () => getMajors(departmentId, params),
       ...options,
     });
-  };
+};
 
-  export const useGetMajorsFacility = (
+export const useGetMajorsFacility = (
     params: Ref<ParamsGetMajor>,
     options?: any
   ): UseQueryReturnType<Awaited<ReturnType<typeof getMajorsFacility>>, Error> => {
     return useQuery({
-      queryKey: [queryKey.admin.major.majorList, params],
+      queryKey: [queryKey.admin.majorFacility.majorFacilityList, params],
       queryFn: () => getMajorsFacility(params),
       ...options,
     });
-  };
+};
+
+export function useMajorSynchronize() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => getMajorSynchronize(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKey.admin.major.majorSynchronize],
+      });
+    },
+    onError: (error) => {
+      // Handle error
+      console.error('Error during synchronization:', error);
+    }
+  });
+}
+
+export function useMajorCampusSynchronize() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => getMajorCampusSynchronize(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKey.admin.majorFacility.majorFacilitySynchronize],
+      });
+    },
+    onError: (error) => {
+      // Handle error
+      console.error('Error during synchronization:', error);
+      throw error;
+    }
+  });
+}
+
+

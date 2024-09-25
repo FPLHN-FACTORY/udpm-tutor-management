@@ -1,11 +1,16 @@
 package udpm.hn.server.core.admin.departments.departmentfacility.service.impl;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 import udpm.hn.server.core.admin.departments.departmentfacility.model.request.CreateMajorFacilityRequest;
 import udpm.hn.server.core.admin.departments.departmentfacility.model.request.MajorFacilityRequest;
 import udpm.hn.server.core.admin.departments.departmentfacility.model.request.UpdateMajorFacilityRequest;
@@ -23,9 +28,13 @@ import udpm.hn.server.entity.DepartmentFacility;
 import udpm.hn.server.entity.Major;
 import udpm.hn.server.entity.MajorFacility;
 import udpm.hn.server.entity.Staff;
+import udpm.hn.server.infrastructure.connection.IdentityConnection;
+import udpm.hn.server.infrastructure.connection.response.MajorCampusResponse;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
 import udpm.hn.server.utils.Helper;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -40,6 +49,8 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
     private final DFStaffExtendRepository staffRepository;
 
     private final DFMajorExtendRepository majorRepository;
+
+    private final IdentityConnection identityConnection;
 
     @Override
 
@@ -174,5 +185,40 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
                 "Lấy danh sách chuyên ngành thành công"
         );
     }
+
+
+    @Override
+    @Transactional
+    public ResponseObject<?> synchronize() {
+        try {
+
+            List<MajorCampusResponse> MajorCampusData = identityConnection.getMajorCampuses();
+            List<MajorFacility> majorFacilities = majorFacilityExtendRepository.findAll();
+
+            if (majorFacilities.isEmpty()) {
+                for (MajorCampusResponse majorCampusResponse : MajorCampusData) {
+                    syncMajorCampus(null, majorCampusResponse);
+                }
+            } else {
+                for (MajorCampusResponse majorCampusResponse : MajorCampusData) {
+                    for (MajorFacility majorFacility : majorFacilities) {
+                        syncMajorCampus(majorFacility, majorCampusResponse);
+                    }
+                }
+            }
+
+            return ResponseObject.successForward(null, "Đồng chuyên ngành và cơ sở thành công!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseObject.errorForward("Đồng bộ chuyên ngành và cơ sở không thành công! Đã xảy ra lỗi.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    private void syncMajorCampus(MajorFacility majorFacility, MajorCampusResponse majorCampusResponse) {
+
+    }
+
 
 }

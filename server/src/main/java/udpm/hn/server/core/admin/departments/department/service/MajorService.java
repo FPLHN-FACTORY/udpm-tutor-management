@@ -14,4 +14,7 @@ public interface MajorService {
     ResponseObject<?> updateMajor(@Valid CreateOrUpdateMajorRequest request, String id);
 
     ResponseObject<?> deleteMajor(String id);
+
+    ResponseObject<?> synchronize();
+
 }
