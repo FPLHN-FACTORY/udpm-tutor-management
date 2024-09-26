@@ -31,7 +31,7 @@
                   class="flex items-center justify-center"
                   type="primary"
                   size="large"
-                  @click="$emit('handleOpenModalUpdate', record)"
+                  @click="goToDetail(record.id)"
                   :icon="h(EyeOutlined)"
               />
             </a-tooltip>
@@ -58,7 +58,10 @@
             <p>{{ record.departmentName + " - " + record.facilityName  }}</p>
           </div>
           <div v-else-if="column.key === 'status'" class="text-center">
-            <a-tag :color="getTagColor(record.status)">{{ record.status }}</a-tag>
+            <a-tag :color="getTagColor(record.status)">{{ getTagStatus(record.status) }}</a-tag>
+          </div>
+          <div v-else-if="column.key === 'blockName'" >
+            <p>{{ formatBlockName(record.blockName) }}</p>
           </div>
         </template>
        </tutor-table>
@@ -72,23 +75,14 @@ import {DownloadOutlined, EditOutlined, EyeOutlined} from "@ant-design/icons-vue
 import { ColumnType } from "ant-design-vue/es/table";
 import { h } from "vue";
 import {PlanResponse} from "@/services/api/planner/plan.api.ts";
+import {useRouter} from "vue-router";
+import {formatBlockName, getTagColor, getTagStatus} from "@/utils/common.helper.ts";
 
-const getTagColor = (status: string): string => {
-  switch (status) {
-    case 'PENDING':
-      return 'warning';
-    case 'APPROVED':
-      return 'success';
-    case 'REJECTED':
-      return 'error';
-    case 'CANCELED':
-      return 'default';
-    case 'COMPLETED':
-      return 'success';
-    default:
-      return 'default';
-  }
-};
+const router = useRouter();
+
+const goToDetail = (planId: string) => {
+  router.push({ name: 'detailPlan', params: { planId } });
+}
 
 defineProps({
   dataSource: Array<PlanResponse>,

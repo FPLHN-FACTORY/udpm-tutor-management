@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import udpm.hn.server.core.planner.plan.model.request.PLPLCreatePlanRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLPlanInfoRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLPlanListRequest;
+import udpm.hn.server.core.planner.plan.model.request.PLPLTutorListRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLUpdatePlanRequest;
 import udpm.hn.server.core.planner.plan.service.PlansService;
 import udpm.hn.server.infrastructure.constant.MappingConstants;
@@ -27,6 +28,13 @@ public class PlansRestController {
     @GetMapping
     public ResponseEntity<?> getPlans(PLPLPlanListRequest request) {
         return Helper.createResponseEntity(headSubjectsService.getAllPlans(request));
+    }
+
+    @GetMapping("/tutor")
+    public ResponseEntity<?> getPlans(PLPLTutorListRequest request) {
+        System.out.println("xxxxxxxxxxxxxxxxxxxxxxxx");
+        System.out.println(request.getPlanId());
+        return Helper.createResponseEntity(headSubjectsService.getTutorClasses(request));
     }
 
     @GetMapping("/{id}")

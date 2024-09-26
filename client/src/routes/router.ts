@@ -129,6 +129,15 @@ export const routes: RouteRecordRaw[] = [
                 "@/pages/planner/plan/Plan.vue"
                 ),
       },
+      {
+        path: ROUTES_CONSTANTS.PLANNER.children.PLAN_DETAIL.path,
+        name: ROUTES_CONSTANTS.PLANNER.children.PLAN_DETAIL.name,
+        component: () => import("@/pages/planner/plan/PlanDetail.vue"),
+        meta: {
+          requiresRole: ROLES.ADMIN,
+          requiresAuth: true,
+        },
+      },
     ],
   },
 ];

@@ -15,5 +15,7 @@ public interface PLPLPlanDetailResponse extends IsIdentify, HasOrderNumber {
     String getFacilityName();
     Long getNumberSubjects();
     String getStatus();
+    Long getStartTime();
+    Long getEndTime();
 
 }

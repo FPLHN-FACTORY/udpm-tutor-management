@@ -24,7 +24,7 @@ public interface PLPLPlansRepository extends PlanRepository {
 
     @Query(value = """
             SELECT
-                ROW_NUMBER() OVER(ORDER BY pl.created_date DESC) AS orderNumber,
+                ROW_NUMBER() OVER(ORDER BY b.start_time DESC) AS orderNumber,
                 pl.id AS id,
                 CONCAT(s.name, ' ', s.year) AS planName,
                 b.name AS blockName,
@@ -144,10 +144,12 @@ public interface PLPLPlansRepository extends PlanRepository {
 
     @Query(value = """
             SELECT
-            b.name as name,
+                b.name as blockName,
+                b.start_time AS startTime,
+                b.end_time AS endTime,
                 pl.plan_status AS status,
                 f.name AS facilityName,
-                 COALESCE(tc.numberSubjects, 0) AS numberSubjects,
+                COALESCE(tc.numberSubjects, 0) AS numberSubjects,
                 COALESCE(tc.numberClasses, 0) AS numberClasses
             FROM
                 plan pl
@@ -169,6 +171,7 @@ public interface PLPLPlansRepository extends PlanRepository {
             where s.id = :#{#request.semesterId}
             AND (:#{#request.facilityCode} IS NULL OR f.code LIKE :#{#request.facilityCode})
             AND (:#{#request.departmentCode} IS NULL OR d.code LIKE :#{#request.departmentCode})
+            ORDER BY b.start_time
             """, nativeQuery = true)
     List<PLPLPlanInfoResponse> getPlanInfo(PLPLPlanInfoRequest request);
 
@@ -178,6 +181,8 @@ public interface PLPLPlansRepository extends PlanRepository {
             b.name as blockName,
             pl.plan_status AS status,
             f.name AS facilityName,
+            b.start_time AS startTime,
+            b.end_time AS endTime,
             COALESCE(tc.numberSubjects, 0) AS numberSubjects,
             COALESCE(tc.numberClasses, 0) AS numberClasses
             FROM

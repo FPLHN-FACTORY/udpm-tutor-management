@@ -41,6 +41,8 @@ public class TokenSubjectResponse {
 
     private String semesterId;
 
+    private String blockId;
+
     private String semesterName;
 
 }

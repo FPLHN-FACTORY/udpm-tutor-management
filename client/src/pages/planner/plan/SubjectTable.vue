@@ -1,19 +1,6 @@
 <template>
-  <div class="shadow-xl p-3 m-3 rounded-md flex h-full flex-col overflow-auto">
-    <div class="flex justify-between items-center min-h-36">
-      <h2 class="p-4 flex items-center text-primary text-3xl font-semibold">
-        <v-icon name="bi-list-ul" scale="2" />
-        <span class="ml-2 text-2xl">Danh sách kế hoạch</span>
-      </h2>
-      <a-button
-        type="primary"
-        @click="$emit('handleOpenModalAdd')"
-        size="large"
-        class="m-4"
-      >
-        Tạo kế hoạch
-      </a-button>
-    </div>
+  <div class="mt-10 rounded-md flex h-full flex-col">
+    <h2 class="text-center text-xl font-semibold mb-7">Danh sách môn học</h2>
       <div class="flex h-0 flex-1 flex-col">
         <tutor-table
         wrapperClassName="min-h-[410px]"
@@ -26,39 +13,17 @@
       >
         <template #bodyCell="{ column, record }">
           <div v-if="column.key === 'action'" class="space-x-2 flex items-center justify-center">
-            <a-tooltip title="Chi tiết kế hoạch" color="#FFC26E">
+            <a-tooltip title="Chi tiết lớp môn" color="#FFC26E">
               <a-button
                   class="flex items-center justify-center"
                   type="primary"
                   size="large"
-                  @click="goToDetail(record.id)"
                   :icon="h(EyeOutlined)"
               />
             </a-tooltip>
-            <a-tooltip title="Chỉnh sửa kế hoạch" color="#FFC26E">
-              <a-button
-                 class="flex items-center justify-center"
-                type="primary"
-                size="large"
-                @click="$emit('handleOpenModalUpdate', record)"
-                :icon="h(EditOutlined)"
-              />
-            </a-tooltip>
-            <a-tooltip title="Download file" color="#FFC26E">
-              <a-button
-                  class="flex items-center justify-center"
-                  type="primary"
-                  size="large"
-                  @click="$emit('handleOpenModalUpdate', record)"
-                  :icon="h(DownloadOutlined)"
-              />
-            </a-tooltip>
           </div>
-          <div v-else-if="column.key === 'departmentName'" class="text-center">
-            <p>{{ record.departmentName + " - " + record.facilityName  }}</p>
-          </div>
-          <div v-else-if="column.key === 'status'" class="text-center">
-            <a-tag :color="getTagColor(record.status)">{{ getTagStatus(record.status) }}</a-tag>
+          <div v-else-if="column.key === 'format'" class="text-center">
+            <p>{{ getFormatted(record.format) }}</p>
           </div>
         </template>
        </tutor-table>
@@ -68,21 +33,14 @@
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
-import {DownloadOutlined, EditOutlined, EyeOutlined} from "@ant-design/icons-vue";
+import {EyeOutlined} from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { h } from "vue";
-import {PlanResponse} from "@/services/api/planner/plan.api.ts";
-import {useRouter} from "vue-router";
-import {getTagColor, getTagStatus} from "@/utils/common.helper.ts";
-
-const router = useRouter();
-
-const goToDetail = (planId: string) => {
-  router.push({ name: 'detailPlan', params: { planId } });
-}
+import {getFormatted} from "@/utils/common.helper.ts";
+import {TutorClassResponse} from "@/services/api/planner/plan.api.ts";
 
 defineProps({
-  dataSource: Array<PlanResponse>,
+  dataSource: Array<TutorClassResponse>,
   loading: Boolean,
   paginationParams: Object,
   totalPages: Number,
@@ -102,36 +60,28 @@ const columnsSubject: ColumnType[] = [
     ellipsis: true,
   },
   {
-    title: "Tên kế hoạch",
-    dataIndex: "planName",
-    key: "planName",
+    title: "Tên môn học",
+    dataIndex: "subjectName",
+    key: "subjectName",
     ellipsis: true,
   },
   {
-    title: "Block",
-    dataIndex: "blockName",
-    key: "blockName",
+    title: "Số lớp",
+    dataIndex: "numberClasses",
+    key: "numberClasses",
     ellipsis: true,
   },
   {
-    title: "Bộ môn",
-    dataIndex: "departmentName",
-    key: "departmentName",
+    title: "Hình thức",
+    dataIndex: "format",
+    key: "format",
     ellipsis: true,
     width: "120px",
   },
   {
-    title: "Số môn tutor",
-    dataIndex: "numberSubjects",
-    key: "numberSubjects",
-    ellipsis: true,
-    width: "200px",
-    align: "center",
-  },
-  {
-    title: "Trạng thái",
-    dataIndex: "status",
-    key: "status",
+    title: "Trưởng môn",
+    dataIndex: "headSubject",
+    key: "headSubject",
     ellipsis: true,
     width: "200px",
     align: "center",

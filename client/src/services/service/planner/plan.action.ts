@@ -1,9 +1,9 @@
 import {
   createPlan,
   CreateUpdatePlanParams,
-  getDetailPlan,
-  getPlans, getSemesterInfo,
-  ParamsGetPlans, ParamsGetSemesterInfo, updatePlan
+  getDetailPlan, getPlanInfo, getPlanInfoById,
+  getPlans, getSemesterInfo, getTutorClass,
+  ParamsGetPlans, ParamsGetTutorClass, updatePlan
 } from "@/services/api/planner/plan.api.ts";
 import {Ref} from "vue";
 import {useMutation, useQuery, useQueryClient, UseQueryReturnType} from "@tanstack/vue-query";
@@ -20,6 +20,17 @@ export const useGetPlans = (
   });
 };
 
+export const useGetTutorClass = (
+    params: Ref<ParamsGetTutorClass>,
+    options?: any
+): UseQueryReturnType<Awaited<ReturnType<typeof getTutorClass>>, Error> => {
+  return useQuery({
+    queryKey: [queryKey.planner.plan.tutorClassList, params],
+    queryFn: () => getTutorClass(params),
+    ...options,
+  });
+};
+
 export const useGetSemesterInfo = (
     params: ParamsGetPlans,
     options?: any
@@ -28,6 +39,29 @@ export const useGetSemesterInfo = (
   return useQuery({
     queryKey: [queryKey.planner.plan.semesterInfo, params],
     queryFn: () => getSemesterInfo(params),
+    ...options,
+  });
+};
+
+export const useGetPlanInfo = (
+    params: ParamsGetPlans,
+    options?: any
+): UseQueryReturnType<Awaited<ReturnType<typeof getPlanInfo>>, Error> => {
+  console.log(params);
+  return useQuery({
+    queryKey: [queryKey.planner.plan.planInfo, params],
+    queryFn: () => getPlanInfo(params),
+    ...options,
+  });
+};
+
+export const useGetPlanInfoById = (
+    planId: string | null,
+    options?: any
+): UseQueryReturnType<Awaited<ReturnType<typeof getPlanInfoById>>, Error> => {
+  return useQuery({
+    queryKey: [queryKey.planner.plan.planInfo, planId],
+    queryFn: () => getPlanInfoById(planId),
     ...options,
   });
 };

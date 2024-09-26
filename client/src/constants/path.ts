@@ -33,7 +33,7 @@ export const ROUTES_CONSTANTS = {
       },
       STAFF_DETAIL: {
         path: "staff/:staffId",
-        name: "DetailStaff",
+        name: "detailStaff",
       },
     },
   },
@@ -58,6 +58,10 @@ export const ROUTES_CONSTANTS = {
       PLAN: {
         path: "plan",
         name: "plan",
+      },
+      PLAN_DETAIL: {
+        path: "plan/:planId",
+        name: "detailPlan",
       },
     },
   },

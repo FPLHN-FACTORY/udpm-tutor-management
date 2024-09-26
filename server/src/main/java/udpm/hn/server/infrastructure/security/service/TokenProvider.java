@@ -28,6 +28,7 @@ import udpm.hn.server.infrastructure.security.repository.SemesterAuthRepository;
 import udpm.hn.server.infrastructure.security.repository.StaffAuthRepository;
 import udpm.hn.server.infrastructure.security.repository.StaffMajorFacilityAuthRepository;
 import udpm.hn.server.infrastructure.security.repository.StaffRoleAuthRepository;
+import udpm.hn.server.infrastructure.security.response.TokenSemesterResponse;
 import udpm.hn.server.infrastructure.security.response.TokenSubjectResponse;
 import udpm.hn.server.infrastructure.security.user.UserPrincipal;
 
@@ -90,15 +91,19 @@ public class TokenProvider {
             tokenSubjectResponse.setFacilityId(facility.getId());
             tokenSubjectResponse.setFacilityName(facility.getName());
             tokenSubjectResponse.setDepartmentName(departmentFacility.getDepartment().getName());
-            Long now = System.currentTimeMillis();
-            String semesterOptional = semesterAuthRepository.findSemesterBy(now);
-            tokenSubjectResponse.setSemesterId(semesterOptional);
         } else {
             tokenSubjectResponse.setFacilityCode("");
             tokenSubjectResponse.setDepartmentCode("");
             tokenSubjectResponse.setFacilityId("");
             tokenSubjectResponse.setFacilityName("");
             tokenSubjectResponse.setDepartmentName("");
+        }
+
+        Long now = System.currentTimeMillis();
+        TokenSemesterResponse semester = semesterAuthRepository.findSemesterBy(now);
+        if(semester != null){
+            tokenSubjectResponse.setSemesterId(semester.getSemesterId());
+            tokenSubjectResponse.setBlockId(semester.getBlockId());
         }
 
         Map<String, Object> claims = getBodyClaims(tokenSubjectResponse);
@@ -185,6 +190,7 @@ public class TokenProvider {
         claims.put("departmentName", tokenSubjectResponse.getDepartmentName());
         claims.put("pictureUrl", tokenSubjectResponse.getPictureUrl());
         claims.put("semesterId", tokenSubjectResponse.getSemesterId());
+        claims.put("blockId", tokenSubjectResponse.getBlockId());
         List<String> rolesCode = tokenSubjectResponse.getRolesCode();
         List<String> rolesName = tokenSubjectResponse.getRolesName();
         if (rolesCode.size() == 1) {

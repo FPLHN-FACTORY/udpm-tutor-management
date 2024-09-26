@@ -129,7 +129,7 @@ public class SecurityConfig {
                                 Role.TRUONG_MON.name(),
                                 Role.GIANG_VIEN.name(),
                                 Role.SINH_VIEN.name(),
-                                Role.CHU_NHIEM_BO_MON.name(),
+                                    Role.CHU_NHIEM_BO_MON.name(),
                                 Role.NGUOI_LAP_KE_HOACH.name()
                         )
         );

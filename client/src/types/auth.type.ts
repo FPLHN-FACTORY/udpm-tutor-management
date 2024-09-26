@@ -14,6 +14,7 @@ export interface DecodedToken {
   departmentName: string;
   departmentCode: string;
   semesterId: string;
+  blockId: string;
 }
 
 export interface UserInformation {
@@ -31,4 +32,5 @@ export interface UserInformation {
   departmentName: string;
   departmentCode: string;
   semesterId: string;
+  blockId: string;
 }

@@ -11,11 +11,13 @@ import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.core.planner.plan.model.request.PLPLCreatePlanRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLPlanInfoRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLPlanListRequest;
+import udpm.hn.server.core.planner.plan.model.request.PLPLTutorListRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLUpdatePlanRequest;
 import udpm.hn.server.core.planner.plan.repository.PLPLBlocksRepository;
 import udpm.hn.server.core.planner.plan.repository.PLPLDepartmentFacilitysRepository;
 import udpm.hn.server.core.planner.plan.repository.PLPLPlansRepository;
 import udpm.hn.server.core.planner.plan.repository.PLPLStaffsRepository;
+import udpm.hn.server.core.planner.plan.repository.PLPLTutorClassRepository;
 import udpm.hn.server.core.planner.plan.service.PlansService;
 import udpm.hn.server.entity.Block;
 import udpm.hn.server.entity.Department;
@@ -41,6 +43,7 @@ public class PlansServiceImpl implements PlansService {
     private final PLPLDepartmentFacilitysRepository plplDepartmentFacilitysRepository;
     private final PLPLBlocksRepository blocksRepository;
     private final EmailService emailService;
+    private final PLPLTutorClassRepository plplTutorClassRepository;
 
     @Override
     public ResponseObject<?> getAllPlans(PLPLPlanListRequest request) {
@@ -50,6 +53,16 @@ public class PlansServiceImpl implements PlansService {
                 PageableObject.of(plplPlansRepository.getAllPlanning(pageable, request, planStatus)),
                 HttpStatus.OK,
                 "Lấy danh sách kế hoach thành công!"
+        );
+    }
+
+    @Override
+    public ResponseObject<?> getTutorClasses(PLPLTutorListRequest request) {
+        Pageable pageable = Helper.createPageable(request, "createdDate");
+        return new ResponseObject<>(
+                PageableObject.of(plplTutorClassRepository.getTutorClasses(pageable, request.getPlanId())),
+                HttpStatus.OK,
+                "Lấy danh sách lớp môn thành công!"
         );
     }
 

@@ -68,7 +68,9 @@ export const queryKey = {
   planner: {
     plan: {
       planList: "planListKey",
+      tutorClassList: "tutorClassListKey",
       semesterInfo: "semesterInfo",
+      planInfo: "planInfo",
       planDetail: "planDetailKey",
     },
   }

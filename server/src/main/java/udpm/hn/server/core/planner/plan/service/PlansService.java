@@ -4,11 +4,14 @@ import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.core.planner.plan.model.request.PLPLCreatePlanRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLPlanInfoRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLPlanListRequest;
+import udpm.hn.server.core.planner.plan.model.request.PLPLTutorListRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLUpdatePlanRequest;
 
 public interface PlansService {
 
     ResponseObject<?> getAllPlans(PLPLPlanListRequest request);
+
+    ResponseObject<?> getTutorClasses(PLPLTutorListRequest request);
 
     ResponseObject<?> createPlan(PLPLCreatePlanRequest request);
 

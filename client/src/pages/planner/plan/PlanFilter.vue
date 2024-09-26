@@ -1,5 +1,5 @@
 <template>
-  <div class="shadow-md p-3 rounded-md m-3">
+  <div class="shadow-md p-3 rounded-md m-3 mb-10">
     <h2 class="p-4 flex items-center text-primary text-3xl font-semibold">
       <v-icon name="co-filter" scale="2" />
       <span class="ml-2 text-2xl">Bộ lọc</span>

@@ -42,7 +42,7 @@ import { Form } from "ant-design-vue";
 import { computed, reactive, ref, watch } from "vue";
 import {useCreatePlan, useUpdatePlan} from "@/services/service/planner/plan.action.ts";
 import { useAuthStore } from "@/stores/auth.ts";
-import { filterOption } from "@/utils/common.helper.ts";
+import {filterOption, formatBlockName} from "@/utils/common.helper.ts";
 import { getBlockOptions } from "@/services/api/common.api.ts";
 
 const auth = useAuthStore();
@@ -53,6 +53,8 @@ const props = defineProps({
   planDetail: Object as () => any | null,
   isLoadingDetail: Boolean,
   semesterOptions: Array as () => any,
+  semesterId: String,
+  blockId: String
 });
 
 const emit = defineEmits(["handleClose"]);
@@ -83,7 +85,7 @@ const modelRef = reactive<PlanForm>({
 const rulesRef = reactive({
   semesterId: [{ required: true, message: "Vui lòng chọn học kỳ", trigger: "blur" }],
   blockId: [{ required: true, message: "Vui lòng chọn block", trigger: "blur" }],
-  description: [{ required: true, message: "Vui lòng nhập mô tả", trigger: "blur" }],
+  description: [{ required: false, trigger: "blur" }],
 });
 
 const { resetFields, validate, validateInfos } = Form.useForm(modelRef, rulesRef);
@@ -108,8 +110,6 @@ watch(
         if (newVal.semesterId) {
           fetchBlockOptions(newVal.semesterId);
         }
-      } else {
-        resetFields();
       }
     },
     { immediate: true }
@@ -121,7 +121,7 @@ const fetchBlockOptions = async (semesterId: string) => {
     const response = await getBlockOptions(semesterId);
     blockOptions.value = response.data.map(block => ({
       value: block.id,
-      label: block.name,
+      label: formatBlockName(block.name),
     }));
   } catch (error) {
     console.error("Error fetching block options:", error);
@@ -148,6 +148,10 @@ watch(
     (openNew) => {
       if (openNew) {
         resetFields();
+        if(!props.planDetail){
+          modelRef.semesterId = props.semesterId;// Default semesterId
+          modelRef.blockId = props.blockId;// Default blockId
+        }
       }
     }
 );
