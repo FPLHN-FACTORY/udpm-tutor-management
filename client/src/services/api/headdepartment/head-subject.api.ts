@@ -1,4 +1,4 @@
-import {PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT, PREFIX_API_SUBJECT_ADMIN} from "@/constants/url.ts";
+import {PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT} from "@/constants/url.ts";
 import request from "@/services/request.ts";
 import {
     DefaultResponse,

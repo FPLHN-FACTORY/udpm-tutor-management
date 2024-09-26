@@ -39,4 +39,10 @@ public class TokenSubjectResponse {
 
     private String facilityName;
 
+    private String semesterId;
+
+    private String blockId;
+
+    private String semesterName;
+
 }

@@ -9,6 +9,7 @@ public final class MappingConstants {
     public static final String HEAD_DEPARTMENT = "/head-department";
     public static final String TEACHER = "/teacher";
     public static final String STUDENT = "/student";
+    public static final String PLANNER = "/planner";
 
     public static final String API_VERSION_PREFIX = "/api/v1";
 
@@ -17,6 +18,7 @@ public final class MappingConstants {
     public static final String API_HEAD_SUBJECT_PREFIX = API_VERSION_PREFIX + HEAD_SUBJECT;
     public static final String API_ADMIN_PREFIX = API_VERSION_PREFIX + ADMIN;
     public static final String API_HEAD_DEPARTMENT_PREFIX = API_VERSION_PREFIX + HEAD_DEPARTMENT;
+    public static final String API_PLANNER_PREFIX = API_VERSION_PREFIX + PLANNER;
     public static final String API_TEACHER_PREFIX = API_VERSION_PREFIX + TEACHER;
     public static final String API_STUDENT_PREFIX = API_VERSION_PREFIX + STUDENT;
 
@@ -32,6 +34,7 @@ public final class MappingConstants {
     public static final String API_ADMIN_FACILITY = API_ADMIN_PREFIX + "/facilities";
 
     public static final String API_HEAD_DEPARTMENT_HEAD_SUBJECT = API_HEAD_DEPARTMENT_PREFIX + "/head-of-subjects";
+    public static final String API_PLANNER_PLAN = API_PLANNER_PREFIX + "/plans";
 
     /* AUTHENTICATION */
     public static final String API_AUTH_PREFIX = API_VERSION_PREFIX + "/auth";

@@ -19,13 +19,16 @@ import org.springframework.stereotype.Service;
 import udpm.hn.server.entity.DepartmentFacility;
 import udpm.hn.server.entity.Facility;
 import udpm.hn.server.entity.MajorFacility;
+import udpm.hn.server.entity.Semester;
 import udpm.hn.server.entity.Staff;
 import udpm.hn.server.entity.StaffMajorFacility;
 import udpm.hn.server.infrastructure.connection.IdentityValidation;
 import udpm.hn.server.infrastructure.constant.Role;
+import udpm.hn.server.infrastructure.security.repository.SemesterAuthRepository;
 import udpm.hn.server.infrastructure.security.repository.StaffAuthRepository;
 import udpm.hn.server.infrastructure.security.repository.StaffMajorFacilityAuthRepository;
 import udpm.hn.server.infrastructure.security.repository.StaffRoleAuthRepository;
+import udpm.hn.server.infrastructure.security.response.TokenSemesterResponse;
 import udpm.hn.server.infrastructure.security.response.TokenSubjectResponse;
 import udpm.hn.server.infrastructure.security.user.UserPrincipal;
 
@@ -65,6 +68,9 @@ public class TokenProvider {
     @Setter(onMethod_ = @Autowired)
     private StaffMajorFacilityAuthRepository staffMajorFacilityAuthRepository;
 
+    @Setter(onMethod_ = @Autowired)
+    private SemesterAuthRepository semesterAuthRepository;
+
     public String createToken(Authentication authentication) throws BadRequestException, JsonProcessingException {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         Staff user = getCurrentUserLogin(userPrincipal.getEmail());
@@ -91,6 +97,13 @@ public class TokenProvider {
             tokenSubjectResponse.setFacilityId("");
             tokenSubjectResponse.setFacilityName("");
             tokenSubjectResponse.setDepartmentName("");
+        }
+
+        Long now = System.currentTimeMillis();
+        TokenSemesterResponse semester = semesterAuthRepository.findSemesterBy(now);
+        if(semester != null){
+            tokenSubjectResponse.setSemesterId(semester.getSemesterId());
+            tokenSubjectResponse.setBlockId(semester.getBlockId());
         }
 
         Map<String, Object> claims = getBodyClaims(tokenSubjectResponse);
@@ -176,6 +189,8 @@ public class TokenProvider {
         claims.put("facilityName", tokenSubjectResponse.getFacilityName());
         claims.put("departmentName", tokenSubjectResponse.getDepartmentName());
         claims.put("pictureUrl", tokenSubjectResponse.getPictureUrl());
+        claims.put("semesterId", tokenSubjectResponse.getSemesterId());
+        claims.put("blockId", tokenSubjectResponse.getBlockId());
         List<String> rolesCode = tokenSubjectResponse.getRolesCode();
         List<String> rolesName = tokenSubjectResponse.getRolesName();
         if (rolesCode.size() == 1) {

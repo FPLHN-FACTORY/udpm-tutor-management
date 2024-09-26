@@ -104,13 +104,39 @@ export const routes: RouteRecordRaw[] = [
     children: [
       {
         path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_SUBJECT
-          .path,
+            .path,
         name: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_SUBJECT
-          .name,
+            .name,
         component: () =>
-          import(
-            "@/pages/headdepartment/headsubject/HeadSubject.vue"
-          ),
+            import(
+                "@/pages/headdepartment/headsubject/HeadSubject.vue"
+                ),
+      },
+    ],
+  },
+  {
+    path: ROUTES_CONSTANTS.PLANNER.path,
+    redirect: `${ROUTES_CONSTANTS.PLANNER.path}/${ROUTES_CONSTANTS.PLANNER.children.PLAN.path}`,
+    component: () => import("@/layout/Planner.vue"),
+    children: [
+      {
+        path: ROUTES_CONSTANTS.PLANNER.children.PLAN
+            .path,
+        name: ROUTES_CONSTANTS.PLANNER.children.PLAN
+            .name,
+        component: () =>
+            import(
+                "@/pages/planner/plan/Plan.vue"
+                ),
+      },
+      {
+        path: ROUTES_CONSTANTS.PLANNER.children.PLAN_DETAIL.path,
+        name: ROUTES_CONSTANTS.PLANNER.children.PLAN_DETAIL.name,
+        component: () => import("@/pages/planner/plan/PlanDetail.vue"),
+        meta: {
+          requiresRole: ROLES.ADMIN,
+          requiresAuth: true,
+        },
       },
     ],
   },

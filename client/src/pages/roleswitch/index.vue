@@ -54,6 +54,12 @@ const roleMappings = computed(() => [
     route: "/head-department",
   },
   {
+    code: ROLES.PLANER,
+    displayName: "Người lập kế hoạch",
+    image: "/images/TM_CNBM.png",
+    route: "/planner",
+  },
+  {
     code: ROLES.HEAD_DEPARTMENT,
     displayName: "Trưởng môn",
     image: "/images/TM_CNBM.png",

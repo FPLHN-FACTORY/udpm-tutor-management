@@ -13,6 +13,8 @@ export interface DecodedToken {
   facilityName: string;
   departmentName: string;
   departmentCode: string;
+  semesterId: string;
+  blockId: string;
 }
 
 export interface UserInformation {
@@ -29,4 +31,6 @@ export interface UserInformation {
   facilityName: string;
   departmentName: string;
   departmentCode: string;
+  semesterId: string;
+  blockId: string;
 }

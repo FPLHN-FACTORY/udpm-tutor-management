@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-import { UserOutlined, UserSwitchOutlined } from "@ant-design/icons-vue";
+import {MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, UserSwitchOutlined} from "@ant-design/icons-vue";
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
+import {useAuthStore} from "@/stores/auth.ts";
 
 const collapsed = ref<boolean>(false);
 const route = useRoute();
-
+const auth = useAuthStore();
+const userInfo = computed(() => auth.user);
 const itemsHeadDepartment = [
   {
     key: "1",
@@ -46,10 +48,35 @@ const selectedKeys = computed(() => {
       </a-menu>
     </a-layout-sider>
     <a-layout>
-      <a-layout-header class="bg-white">
-        <div class="user-info flex items-center justify-end">
-          <user-outlined />
-          <span class="ml-2">Admin</span>
+      <a-layout-header class="bg-white pl-3 mt-1">
+        <div class="user-info flex items-center justify-between">
+          <div class="cursor-pointer" @click="collapsed = !collapsed">
+            <component
+                :is="collapsed ? MenuUnfoldOutlined : MenuFoldOutlined"
+                class="text-xl"
+            />
+          </div>
+          <a-dropdown placement="bottomRight" arrow>
+            <div class="flex items-center cursor-pointer">
+              <a-avatar
+                  v-if="userInfo?.pictureUrl"
+                  :src="userInfo?.pictureUrl"
+                  size="large"
+              >
+                {{ userInfo?.fullName[0] }}
+              </a-avatar>
+              <span class="ml-2 truncate">
+                {{ userInfo?.fullName }}
+              </span>
+            </div>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item key="logout" @click="handleLogout">
+                  Đăng xuất
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
         </div>
       </a-layout-header>
       <a-layout-content class="mx-4">

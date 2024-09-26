@@ -12,6 +12,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 import udpm.hn.server.entity.base.PrimaryEntity;
+import udpm.hn.server.infrastructure.constant.PlanFormat;
 
 import java.io.Serializable;
 
@@ -36,6 +37,7 @@ public class TutorClass extends PrimaryEntity implements Serializable {
     @Column(name = "number_of_classes")
     private Integer numberOfClasses;
 
-
+    @Column(name = "format")
+    private PlanFormat planFormat;
 
 }

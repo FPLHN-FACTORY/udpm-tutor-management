@@ -43,3 +43,16 @@ export const getSemesterOptions = async (query?: string) => {
 
   return res.data;
 };
+
+export const getBlockOptions = async (semesterId?: string) => {
+  console.log(semesterId)
+  const res = (await request({
+    url: `${PREFIX_API_COMMON}/block`,
+    params: {
+      semesterId,
+    },
+    method: "GET",
+  })) as AxiosResponse<DefaultResponse<Array<CommonOptionsResponse>>>;
+
+  return res.data;
+};

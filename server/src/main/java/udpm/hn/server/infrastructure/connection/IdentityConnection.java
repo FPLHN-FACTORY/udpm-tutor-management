@@ -307,61 +307,6 @@ public class IdentityConnection {
         }
     }
 
-    private void syncSemester(Semester semester, SemesterResponse semesterResponse) {
-        // Khởi tạo hoặc lấy đối tượng Semester từ cơ sở dữ liệu
-        Semester postSemester;
-        if (semester == null) {
-            postSemester = new Semester();
-        } else {
-            Optional<Semester> semesterOptional = semesterRepository.findBySemesterId(semesterResponse.getId());
-            postSemester = semesterOptional.orElseGet(Semester::new);
-        }
-
-        // Chuyển đổi thời gian và cập nhật thuộc tính của semester
-        LocalDateTime startDate = Instant.ofEpochMilli(semesterResponse.getStartTime() * 1000)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
-
-        postSemester.setYear(startDate.getYear());
-        postSemester.setSemesterName(SemesterName.valueOf(semesterResponse.getSemesterName()));
-        postSemester.setStartTime(semesterResponse.getStartTime() * 1000);
-        postSemester.setEndTime(semesterResponse.getEndTime() * 1000);
-        postSemester.setSemesterId(semesterResponse.getId());
-
-        // Lưu semester vào cơ sở dữ liệu
-        semesterRepository.save(postSemester);
-
-        // Lấy danh sách blocks liên quan đến semester vừa lưu
-        List<Block> blocks = blockRepository.findBlockBySemesterId(postSemester.getId());
-
-        if (blocks.isEmpty()) {
-            // Nếu không có blocks, tạo mới hai block và lưu vào cơ sở dữ liệu
-            Block block1 = new Block();
-            Block block2 = new Block();
-
-            block1.setName(BlockName.BLOCK_1);
-            block1.setStartTime(semesterResponse.getStartTimeFirstBlock() * 1000);
-            block1.setEndTime(semesterResponse.getEndTimeFirstBlock() * 1000);
-            block1.setSemester(postSemester);
-
-            block2.setName(BlockName.BLOCK_2);
-            block2.setStartTime(semesterResponse.getStartTimeSecondBlock() * 1000);
-            block2.setEndTime(semesterResponse.getEndTimeSecondBlock() * 1000);
-            block2.setSemester(postSemester);
-
-            blockRepository.save(block1);
-            blockRepository.save(block2);
-        } else {
-            // Nếu có blocks, cập nhật thông tin của từng block
-            for (Block block : blocks) {
-                block.setStartTime(semesterResponse.getStartTimeFirstBlock() * 1000);
-                block.setEndTime(semesterResponse.getEndTimeFirstBlock() * 1000);
-                block.setSemester(postSemester);
-                blockRepository.save(block);
-            }
-        }
-    }
-
     private Map<String, Object> getCurrentClientAndCampusSubjectAuthorizeProps(
             String facilityId,
             String departmentId
