@@ -36,21 +36,6 @@ public class TutorClass extends PrimaryEntity implements Serializable {
     @Column(name = "number_of_classes")
     private Integer numberOfClasses;
 
-    @Column(name = "number_of_lectures")
-    private Integer numberOfLectures;
 
-    @ManyToOne
-    @JoinColumn(name = "teacher_conduct_id")
-    private Staff teacherConduct;
-
-    @ManyToOne
-    @JoinColumn(name = "student_conduct_id")
-    private StudentTutor studentConduct;
-
-    @Column(name = "start_date")
-    private Long startDate;
-
-    @Column(name = "end_date")
-    private Long endDate;
 
 }
