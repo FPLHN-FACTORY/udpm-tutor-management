@@ -43,7 +43,6 @@ public class MajorServiceImpl implements MajorService {
 
     private final MajorRepository majorRepository;
 
-
     @Override
     public ResponseObject<?> getAllMajor(String id, FindMajorRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
@@ -142,17 +141,21 @@ public class MajorServiceImpl implements MajorService {
             List<MajorResponse> majorData = identityConnection.getMajors();
             List<Major> majors = majorRepository.findAll();
 
-            if (majors.isEmpty()) {
-                for (MajorResponse majorResponse : majorData) {
-                    syncMajor(null, majorResponse);
+            for (MajorResponse majorResponse : majorData) {
+                Department department = departmentExtendRepository.findDepartmentByDepartmentIdentityId(majorResponse.getDepartmentId()).orElse(null);
+                if (department == null) {
+                    return ResponseObject.successForward(null, "Để chắc chắn dữ liệu chính sác xin vui lòng đồng bộ dữ liệu ở bộ môn.");
                 }
-            } else {
-                for (MajorResponse majorResponse : majorData) {
+                if (majors.isEmpty()) {
+                    syncMajor(null, majorResponse);
+                } else {
                     for (Major major : majors) {
                         syncMajor(major, majorResponse);
                     }
                 }
             }
+
+            System.out.println("Đồng bộ chuyên ngành thành công");
             return ResponseObject.successForward(null, "Đồng chuyên ngành thành công!");
 
         } catch (Exception e) {

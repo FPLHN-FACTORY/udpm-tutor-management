@@ -36,10 +36,11 @@ export function useMajorSynchronize() {
 
   return useMutation({
     mutationFn: () => getMajorSynchronize(),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: [queryKey.admin.major.majorSynchronize],
       });
+      return data;
     },
     onError: (error) => {
       // Handle error
@@ -53,10 +54,11 @@ export function useMajorCampusSynchronize() {
 
   return useMutation({
     mutationFn: () => getMajorCampusSynchronize(),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: [queryKey.admin.majorFacility.majorFacilitySynchronize],
       });
+      return data;
     },
     onError: (error) => {
       // Handle error

@@ -146,6 +146,7 @@ public class FacilityServiceImpl implements FacilityService {
         postFacility.setName(campusResponse.getCampusName());
         postFacility.setCode(campusResponse.getCampusCode());
         postFacility.setStatus(EntityStatus.ACTIVE);
+        postFacility.setFacilityIdentityId(campusResponse.getCampusId());
 
         // Lưu facility vào cơ sở dữ liệu
         facilityExtendRepository.save(postFacility);

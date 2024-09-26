@@ -273,6 +273,7 @@ public class IdentityConnection {
                     .bodyToMono(new ParameterizedTypeReference<ResponseObject<List<MajorCampusResponse>>>() {
                     })
                     .block();
+
             return responseObject.getData();
         } catch (Exception e) {
             e.printStackTrace(System.out);

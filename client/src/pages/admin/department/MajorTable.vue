@@ -4,7 +4,7 @@
       <h2 class="flex items-center text-primary text-3xl font-semibold p-2">
         <span class="text-xl">Danh Sách Chuyên Ngành</span>
       </h2>
-      <a-button
+      <!-- <a-button
         type="primary"
         size="large"
         class="m-4 flex justify-between items-center"
@@ -13,7 +13,7 @@
     >
       <v-icon name="bi-arrow-repeat" scale="1.5" class="me-1" />
       Đồng bộ
-    </a-button>
+    </a-button> -->
     </div>
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table

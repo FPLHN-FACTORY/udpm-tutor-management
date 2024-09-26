@@ -124,7 +124,6 @@ export function useDepartmentCampusSynchronize() {
   return useMutation({
     mutationFn: () => getDepartmentCampusSynchronize(),
     onSuccess: (data) => {
-      console.log(data);
       queryClient.invalidateQueries({
         queryKey: [
           queryKey.admin.departmentFacility.departmentFacilitySynchronize,

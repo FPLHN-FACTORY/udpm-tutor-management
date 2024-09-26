@@ -67,13 +67,19 @@
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
 import { ERROR_MESSAGE } from "@/constants/message.constant";
 import { DepartmentResponse } from "@/services/api/admin/department.api";
-import { useDepartmentSynchronize } from "@/services/service/admin/department.action";
+import { useDepartmentCampusSynchronize, useDepartmentSynchronize } from "@/services/service/admin/department.action";
 import { BookOutlined, EyeOutlined, GoldOutlined } from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
-import { h } from "vue";
+import { computed, h } from "vue";
 import { toast } from "vue3-toastify";
 import {useQueryClient} from "@tanstack/vue-query";
 import { queryKey } from "@/constants/queryKey";
+import { useMajorCampusSynchronize, useMajorSynchronize } from "@/services/service/admin/major.action";
+import { useAuthStore } from "@/stores/auth";
+import { useStaffSynchronize } from "@/services/service/admin/staff.action";
+
+const auth = useAuthStore();
+const userInfo = computed(() => auth.user);
 
 const props = defineProps({
   dataSource: Array as () => DepartmentResponse[],
@@ -93,12 +99,27 @@ const emit = defineEmits([
 
 const queryClient = useQueryClient();
 
-const { mutate: onSync, isLoading: isSyncing } = useDepartmentSynchronize();
+const { mutate: onSyncDepartment, isLoading: isSyncing } = useDepartmentSynchronize();
+const { mutate: onSyncMajor } = useMajorSynchronize();
+const { mutate: onSyncStaff } = useStaffSynchronize();
+const { mutate: onSyncDepartmentCampus } = useDepartmentCampusSynchronize();
+const { mutate: onSyncCampusSynchronize } = useMajorCampusSynchronize();
 
 const handleSync = async () => {
   try {
-    await onSync();
+
+    // await onSyncStaff(userInfo.value?.facilityCode);
+    await onSyncDepartment();
     toast.success("Đồng bộ bộ môn thành công");
+
+    await onSyncMajor();
+    toast.success("Đồng bộ chuyên ngành thành công");
+
+    await onSyncDepartmentCampus();
+    toast.success("Đồng bộ bộ môn theo cơ sở thành công");
+
+    await onSyncCampusSynchronize();
+    toast.success("Đồng bộ chuyên ngành theo cơ sở thành công");
 
     await queryClient.invalidateQueries({ queryKey: [queryKey.admin.department.departmentList] });
     await queryClient.refetchQueries({ queryKey: [queryKey.admin.department.departmentList] });

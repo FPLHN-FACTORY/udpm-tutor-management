@@ -191,6 +191,7 @@ public class HOStaffServiceImpl implements HOStaffService {
         postStaff.setEmailFe(staffDetail.getEmailFe());
         postStaff.setEmailFpt(staffDetail.getEmailFpt());
         postStaff.setStatus(EntityStatus.ACTIVE);
+        postStaff.setStaffIdentityId(staffResponse.getStaffDetail().getId());
 
         // Save staff to database
         Staff savedStaff = staffRepo.save(postStaff);
