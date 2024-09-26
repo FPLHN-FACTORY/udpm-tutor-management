@@ -148,6 +148,8 @@ public class DepartmentServiceImpl implements DepartmentService {
                     }
                 }
             }
+
+            System.out.println("Đồng bộ bộ môn thành công");
             return ResponseObject.successForward(null, "Đồng bộ bộ môn thành công!");
 
         } catch (Exception e) {

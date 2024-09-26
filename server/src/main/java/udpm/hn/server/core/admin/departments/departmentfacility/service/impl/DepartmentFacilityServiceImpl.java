@@ -185,22 +185,33 @@ public class DepartmentFacilityServiceImpl implements DepartmentFacilityService 
             List<DepartmentCampusResponse> departmentCampusData = identityConnection.getDepartmentCampuses();
             List<DepartmentFacility> departmentFacilities = dfDepartmentFacilityExtendRepository.findAll();
 
+            // xóa DepartmentFacility chưa được đồng bộ (các bảng ghi chưa có hoặc không trùng DepartmentFacilityIdentityId)
+            for(DepartmentFacility departmentFacility : departmentFacilities) {
+                boolean existsInCampusData = departmentCampusData.stream().anyMatch(departmentCampusResponse
+                        -> departmentCampusResponse.getDepartmentCampusId()
+                        .equals(departmentFacility.getDepartmentFacilityIdentityId()));
+                if(!existsInCampusData) {
+                    departmentFacilityRepository.delete(departmentFacility);
+                }
+            }
+
             for (DepartmentCampusResponse departmentCampusResponse : departmentCampusData) {
                 Department department = departmentRepository.findDepartmentByDepartmentIdentityId(departmentCampusResponse.getDepartmentId()).orElse(null);
                 Facility facility = facilityRepository.findMajorByFacilityIdentityId(departmentCampusResponse.getCampusId()).orElse(null);
 
                 if (department == null || facility == null) {
-                    return ResponseObject.successForward(null,"Vui lòng đồng bộ cơ sở và bộ môn.");
+                    return ResponseObject.errorForward("ERROR-SYNCHRONIZED-DEPARTMENT-CAMPUS", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
 
                 if (departmentFacilities.isEmpty()) {
                     syncDepartmentCampus(null, departmentCampusResponse, department, facility);
                 } else {
-                    for (DepartmentFacility departmentFacility : departmentFacilities) {
-                        syncDepartmentCampus(departmentFacility, departmentCampusResponse, department, facility);
-                    }
+                   DepartmentFacility correspondingFacility = departmentFacilityRepository.findDepartmentFacilityByDepartmentFacility(departmentCampusResponse.getDepartmentCampusId()).orElse(null);
+                    syncDepartmentCampus(correspondingFacility, departmentCampusResponse, department, facility);
                 }
             }
+
+            System.out.println("Đồng bộ bộ môn theo cơ sở thành công");
             return ResponseObject.successForward(null, "Đồng bộ môn và cơ sở thành công!");
         } catch (Exception e) {
             e.printStackTrace();
@@ -210,16 +221,26 @@ public class DepartmentFacilityServiceImpl implements DepartmentFacilityService 
 
     private void syncDepartmentCampus(DepartmentFacility departmentFacility, DepartmentCampusResponse departmentCampusResponse, Department department, Facility facility) {
         DepartmentFacility postDepartmentFacility;
-
         if (departmentFacility == null) {
             postDepartmentFacility = new DepartmentFacility();
         } else {
             postDepartmentFacility = departmentFacilityRepository.findDepartmentFacilityByDepartmentFacility(departmentCampusResponse.getDepartmentCampusId())
                     .orElseGet(DepartmentFacility::new);
         }
+        Staff staff = (departmentFacility != null && departmentFacility.getStaff() != null && departmentFacility.getStaff().getId() != null)
+                ? staffRepository.findById(departmentFacility.getStaff().getId()).orElse(null)
+                : null;
+
+        if (staff != null) {
+            staff.setEmailFpt(departmentCampusResponse.getEmailHeadDepartmentFpt());
+            staff.setEmailFe(departmentCampusResponse.getEmailHeadDepartmentFe());
+            staffRepository.save(staff);
+        }
+        postDepartmentFacility.setStaff(staff);
         postDepartmentFacility.setDepartmentFacilityIdentityId(departmentCampusResponse.getDepartmentCampusId());
         postDepartmentFacility.setDepartment(department);
         postDepartmentFacility.setFacility(facility);
+        departmentFacilityRepository.save(postDepartmentFacility);
     }
 
 

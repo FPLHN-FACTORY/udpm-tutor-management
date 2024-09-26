@@ -8,6 +8,7 @@ import {
 } from "@/types/api.common.ts";
 import { AxiosResponse } from "axios";
 import { Ref } from "vue";
+import { toast } from "vue3-toastify";
 
 export interface ParamsGetMajor extends PaginationParams {
     majorName?: string | null;
@@ -84,10 +85,9 @@ export const getMajorSynchronize = async () => {
       url: `${PREFIX_API_MAJOR_ADMIN}/synchronize`,
       method: 'GET',
     });
-
     return res.data;
   } catch (error) {
-    console.error('Error during synchronization:', error);
+    console.error('Lỗi đồng bộ chuyên ngành:', error);
     throw error; 
   }
 };
@@ -101,7 +101,7 @@ export const getMajorCampusSynchronize = async () => {
 
     return res.data;
   } catch (error) {
-    console.error('Error during synchronization:', error);
+    console.error('Lỗi đồng bộ chuyên ngành theo cơ sở:', error);
     throw error;
   }
 };

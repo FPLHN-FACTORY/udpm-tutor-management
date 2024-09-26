@@ -123,7 +123,7 @@ export const getDepartmentSynchronize = async () => {
 
     return res.data;
   } catch (error) {
-    console.error('Error during synchronization:', error);
+    console.error('Lỗi đồng bộ bộ môn:', error);
     throw error; 
   }
 };
@@ -135,15 +135,9 @@ export const getDepartmentCampusSynchronize = async () => {
       method: 'GET',
     });
 
-    if (res.data.data === null && res.data.message === "Vui lòng đồng bộ cơ sở và bộ môn.") {
-      toast.error(res.data.message);
-    } else {
-      toast.success("Đồng bộ bộ môn cơ sở thành công");
-    }
-
     return res.data;
   } catch (error) {
-    console.error('Error during synchronization:', error);
+    console.error('Lỗi đồng bộ bộ môn theo chuyên ngành:', error);
     throw error;
   }
 };

@@ -24,6 +24,7 @@ import udpm.hn.server.core.admin.departments.departmentfacility.repository.Major
 import udpm.hn.server.core.admin.departments.departmentfacility.service.MajorFacilityService;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
+import udpm.hn.server.entity.Department;
 import udpm.hn.server.entity.DepartmentFacility;
 import udpm.hn.server.entity.Major;
 import udpm.hn.server.entity.MajorFacility;
@@ -31,6 +32,8 @@ import udpm.hn.server.entity.Staff;
 import udpm.hn.server.infrastructure.connection.IdentityConnection;
 import udpm.hn.server.infrastructure.connection.response.MajorCampusResponse;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
+import udpm.hn.server.repository.DepartmentFacilityRepository;
+import udpm.hn.server.repository.MajorFacilityRepository;
 import udpm.hn.server.utils.Helper;
 
 import java.util.List;
@@ -51,6 +54,9 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
     private final DFMajorExtendRepository majorRepository;
 
     private final IdentityConnection identityConnection;
+
+    private final MajorFacilityRepository majorFacilityRepository;
+
 
     @Override
 
@@ -191,22 +197,39 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
     @Transactional
     public ResponseObject<?> synchronize() {
         try {
-
-            List<MajorCampusResponse> MajorCampusData = identityConnection.getMajorCampuses();
+            List<MajorCampusResponse> majorCampusData = identityConnection.getMajorCampuses();
             List<MajorFacility> majorFacilities = majorFacilityExtendRepository.findAll();
 
-            if (majorFacilities.isEmpty()) {
-                for (MajorCampusResponse majorCampusResponse : MajorCampusData) {
-                    syncMajorCampus(null, majorCampusResponse);
-                }
-            } else {
-                for (MajorCampusResponse majorCampusResponse : MajorCampusData) {
-                    for (MajorFacility majorFacility : majorFacilities) {
-                        syncMajorCampus(majorFacility, majorCampusResponse);
-                    }
+            // xóa MajorFacility chưa được đồng bộ (các bảng ghi chưa có hoặc không trùng getMajorFacilityIdentityId)
+            for (MajorFacility majorFacility : majorFacilities) {
+                boolean existsInCampusData = majorCampusData.stream()
+                        .anyMatch(majorCampusResponse -> majorCampusResponse.getMajorCampusId().equals(majorFacility.getMajorFacilityIdentityId()));
+                if (!existsInCampusData) {
+                    majorFacilityExtendRepository.delete(majorFacility);
                 }
             }
 
+            for (MajorCampusResponse majorCampusResponse : majorCampusData) {
+                DepartmentFacility departmentFacility = departmentFacilityRepository
+                        .findDepartmentFacilityByDepartmentFacility(majorCampusResponse.getDepartmentCampusId())
+                        .orElse(null);
+                Major major = majorRepository
+                        .findMajorByMajorIdentityId(majorCampusResponse.getMajorId())
+                        .orElse(null);
+
+                if (departmentFacility == null || major == null) {
+                    return ResponseObject.errorForward("ERROR-SYNCHRONIZED-MAJOR-CAMPUS", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+
+                if(majorFacilities.isEmpty()) {
+                    syncMajorCampus(null, majorCampusResponse, departmentFacility, major);
+                } else {
+                    MajorFacility correspondingFacility = majorFacilityRepository.findMajorFacilityByMajorFacilityIdentityId(majorCampusResponse.getMajorCampusId()).orElse(null);
+                    syncMajorCampus(correspondingFacility, majorCampusResponse, departmentFacility, major);
+                }
+            }
+
+            System.out.println("Đồng bộ chuyên ngành theo cơ sở thành công");
             return ResponseObject.successForward(null, "Đồng chuyên ngành và cơ sở thành công!");
 
         } catch (Exception e) {
@@ -215,9 +238,30 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
         }
     }
 
+    private void syncMajorCampus(MajorFacility majorFacility, MajorCampusResponse majorCampusResponse,
+                                 DepartmentFacility departmentFacility, Major major) {
+        MajorFacility posMajorFacility;
 
-    private void syncMajorCampus(MajorFacility majorFacility, MajorCampusResponse majorCampusResponse) {
+        if (majorFacility == null) {
+            posMajorFacility = new MajorFacility();
+        } else {
+            posMajorFacility = majorFacilityRepository
+                    .findMajorFacilityByMajorFacilityIdentityId(majorCampusResponse.getMajorCampusId())
+                    .orElseGet(MajorFacility::new);
+        }
+        Staff staff = (departmentFacility != null && departmentFacility.getStaff() != null && departmentFacility.getStaff().getId() != null)
+                ? staffRepository.findById(departmentFacility.getStaff().getId()).orElse(null)
+                : null;
 
+        if (staff != null) {
+            staff.setEmailFpt(majorCampusResponse.getEmailHeadDepartmentFpt());
+            staff.setEmailFe(majorCampusResponse.getEmailHeadDepartmentFe());
+            staffRepository.save(staff);
+        }
+        posMajorFacility.setStaff(staff);
+        posMajorFacility.setMajorFacilityIdentityId(majorCampusResponse.getDepartmentCampusId());
+        posMajorFacility.setDepartmentFacility(departmentFacility);
+        posMajorFacility.setMajor(major);
     }
 
 
