@@ -31,8 +31,8 @@ import java.io.Serializable;
 public class Lecture extends PrimaryEntity implements Serializable {
 
     @ManyToOne
-    @JoinColumn(name = "tutor_class_id")
-    private TutorClass tutorClass;
+    @JoinColumn(name = "tutor_class_detail_id")
+    private TutorClassDetail tutorClassDetail;
 
     @Column(name = "order_number")
     private Integer orderNumber;

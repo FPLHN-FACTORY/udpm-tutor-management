@@ -21,21 +21,28 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Table(name = "tutor_class")
+@Table(name = "tutor_class_detail")
 @DynamicUpdate
-public class TutorClass extends PrimaryEntity implements Serializable {
+public class TutorClassDetail extends PrimaryEntity implements Serializable {
 
     @ManyToOne
-    @JoinColumn(name = "plan_id")
-    private Plan plan;
+    @JoinColumn(name = "teacher_conduct_id")
+    private Staff teacherConduct;
 
     @ManyToOne
-    @JoinColumn(name = "subject_id")
-    private Subject subject;
+    @JoinColumn(name = "student_conduct_id")
+    private StudentTutor studentConduct;
 
-    @Column(name = "number_of_classes")
-    private Integer numberOfClasses;
+    @ManyToOne
+    @JoinColumn(name = "tutor_class_id")
+    private TutorClass tutorClass;
 
+    @Column(name = "number_of_lectures")
+    private Integer numberOfLectures;
 
+    @Column(name = "start_date")
+    private Long startDate;
 
+    @Column(name = "end_date")
+    private Long endDate;
 }
