@@ -84,7 +84,7 @@ public class PlansServiceImpl implements PlansService {
             return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch đã tồn tại");
         }
         Plan plan = new Plan();
-        plan.setPlanStatus(PlanStatus.PENDING);
+        plan.setPlanStatus(PlanStatus.PLANNING);
         plan.setDepartmentFacility(departmentFacilityOptional.get());
         plan.setBlock(blockOptional.get());
         plan.setDescription(request.getDescription());
@@ -112,7 +112,7 @@ public class PlansServiceImpl implements PlansService {
         }
 
         Plan plan = planOptional.get();
-        plan.setPlanStatus(PlanStatus.PENDING);
+        plan.setPlanStatus(PlanStatus.PLANNING);
         plan.setBlock(blockOptional.get());
         plan.setDescription(request.getDescription());
         plplPlansRepository.save(plan);

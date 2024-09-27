@@ -1,11 +1,11 @@
 package udpm.hn.server.infrastructure.constant;
 
 public enum PlanStatus {
-    PENDING,
-    APPROVED,
-    REJECTED,
-    CANCELED,
-    COMPLETED;
+    PLANNING,
+    PLANNER_APPROVED,
+    HEAD_DEPARTMENT_APPROVED,
+    IN_PROGRESS,
+    DONE;
 
     public static PlanStatus fromString(String status) {
         for (PlanStatus planStatus : PlanStatus.values()) {
