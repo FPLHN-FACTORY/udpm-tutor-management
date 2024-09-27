@@ -29,15 +29,15 @@ export const getFormatted = (status: number): string => {
 
 export const getTagColor = (status: string): string => {
   switch (status) {
-    case 'PENDING':
+    case 'PLANNING':
       return 'warning';
-    case 'APPROVED':
-      return 'success';
-    case 'REJECTED':
-      return 'error';
-    case 'CANCELED':
-      return 'default';
-    case 'COMPLETED':
+    case 'PLANNER_APPROVED':
+      return 'grey';
+    case 'HEAD_DEPARTMENT_APPROVED':
+      return 'blue';
+    case 'IN_PROGRESS':
+      return 'processing';
+    case 'DONE':
       return 'success';
     default:
       return 'default';
@@ -46,20 +46,21 @@ export const getTagColor = (status: string): string => {
 
 export const getTagStatus = (status: string): string => {
   switch (status) {
-    case 'PENDING':
-      return 'Chờ phê duyệt';
-    case 'APPROVED':
-      return 'Đã phê duyệt';
-    case 'REJECTED':
-      return 'Đã từ chối';
-    case 'CANCELED':
-      return 'Đã hủy';
-    case 'COMPLETED':
-      return 'Đã hoàn thành';
+    case 'PLANNING':
+      return 'Đang lên kế hoạch';
+    case 'PLANNER_APPROVED':
+      return 'Người lập kế hoạch thông qua';
+    case 'HEAD_DEPARTMENT_APPROVED':
+      return 'Chủ nhiệm thông qua';
+    case 'IN_PROGRESS':
+      return 'Đang thực hiện';
+    case 'DONE':
+      return 'Đã xong';
     default:
       return 'default';
   }
 };
+
 
 export const formatBlockName = (blockName: string): string => {
   return blockName.replace(/^BLOCK_/, 'Block ');

@@ -23,7 +23,7 @@
           <div class="mt-4">
             <template v-if="planInfoData && planInfoData.length > 0">
               <a-tabs v-model:activeKey="activeKey">
-                <template v-for="(plan, index) in planInfoData" :key="plan.id || index">
+                <template v-for="(plan) in planInfoData" :key="plan.id || index">
                   <a-tab-pane :tab="`Kế hoạch block ${formatBlockName(plan.blockName)}`" force-render>
                     <plan-form :plan="plan" />
                   </a-tab-pane>
