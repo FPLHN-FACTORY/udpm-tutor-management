@@ -10,7 +10,6 @@
         size="large"
         class="m-4 flex justify-between items-center"
         @click="handleSync"
-        :disabled="isSyncing"
     >
       <v-icon name="bi-arrow-repeat" scale="1.5" class="me-1" />
       Đồng bộ
@@ -65,23 +64,17 @@
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
-import { ERROR_MESSAGE } from "@/constants/message.constant";
 import { DepartmentResponse } from "@/services/api/admin/department.api";
-import { useDepartmentCampusSynchronize, useDepartmentSynchronize } from "@/services/service/admin/department.action";
+import {  useDepartmentSynchronize } from "@/services/service/admin/department.action";
 import { BookOutlined, EyeOutlined, GoldOutlined } from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
-import { computed, h } from "vue";
+import { h } from "vue";
+import { useMajorSynchronize } from "@/services/service/admin/major.action";
 import { toast } from "vue3-toastify";
-import {useQueryClient} from "@tanstack/vue-query";
-import { queryKey } from "@/constants/queryKey";
-import { useMajorCampusSynchronize, useMajorSynchronize } from "@/services/service/admin/major.action";
-import { useAuthStore } from "@/stores/auth";
-import { useStaffSynchronize } from "@/services/service/admin/staff.action";
 
-const auth = useAuthStore();
-const userInfo = computed(() => auth.user);
 
-const props = defineProps({
+
+defineProps({
   dataSource: Array as () => DepartmentResponse[],
   loading: Boolean,
   paginationParams: Object as () => any,
@@ -94,42 +87,31 @@ const emit = defineEmits([
   "handleOpenModalAdd",
   "handleOpenMajorListModal",
   "handleOpenDepartmentsFacilityListModal",
-  "syncSuccess",
+  "syncSuccess"
 ]);
 
-const queryClient = useQueryClient();
-
-const { mutate: onSyncDepartment, isLoading: isSyncing } = useDepartmentSynchronize();
+const { mutate: onSyncDepartment } = useDepartmentSynchronize();
 const { mutate: onSyncMajor } = useMajorSynchronize();
-const { mutate: onSyncStaff } = useStaffSynchronize();
-const { mutate: onSyncDepartmentCampus } = useDepartmentCampusSynchronize();
-const { mutate: onSyncCampusSynchronize } = useMajorCampusSynchronize();
-
 const handleSync = async () => {
   try {
+    await new Promise((resolve, reject) => {
+      onSyncDepartment(undefined, {
+        onSuccess: resolve,
+        onError: reject,
+      });
+    });
 
-    // await onSyncStaff(userInfo.value?.facilityCode);
-    await onSyncDepartment();
-    toast.success("Đồng bộ bộ môn thành công");
+    await new Promise((resolve, reject) => {
+      onSyncMajor(undefined, {
+        onSuccess: resolve,
+        onError: reject,
+      });
+    });
 
-    await onSyncMajor();
-    toast.success("Đồng bộ chuyên ngành thành công");
+    emit("syncSuccess")
 
-    await onSyncDepartmentCampus();
-    toast.success("Đồng bộ bộ môn theo cơ sở thành công");
-
-    await onSyncCampusSynchronize();
-    toast.success("Đồng bộ chuyên ngành theo cơ sở thành công");
-
-    await queryClient.invalidateQueries({ queryKey: [queryKey.admin.department.departmentList] });
-    await queryClient.refetchQueries({ queryKey: [queryKey.admin.department.departmentList] });
-
-    emit('syncSuccess');
-  } catch (error: any) {
-    console.error("🚀 ~ handleSync ~ error:", error);
-    toast.error(
-        error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-    );
+  } catch (error) {
+    console.log("Có lỗi xảy ra trong quá trình đồng bộ: " + error.message);
   }
 };
 

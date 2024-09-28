@@ -4,6 +4,9 @@ import jakarta.validation.Valid;
 import udpm.hn.server.core.admin.departments.department.model.request.CreateUpdateDepartmentRequest;
 import udpm.hn.server.core.admin.departments.department.model.request.FindDepartmentsRequest;
 import udpm.hn.server.core.common.base.ResponseObject;
+import udpm.hn.server.entity.Department;
+
+import java.util.List;
 
 public interface DepartmentService {
 
@@ -19,5 +22,7 @@ public interface DepartmentService {
     ResponseObject<?> deleteDepartment(String id);
 
     ResponseObject<?> synchronize();
+
+    ResponseObject<?> getDepartmentsManagedByStaff(String staffId);
 
 }

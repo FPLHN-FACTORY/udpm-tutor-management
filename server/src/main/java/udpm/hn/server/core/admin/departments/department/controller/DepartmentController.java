@@ -47,6 +47,11 @@ public class DepartmentController {
         return Helper.createResponseEntity(departmentService.deleteDepartment(id));
     }
 
+    @PutMapping("/staff/{staffId}")
+    public ResponseEntity<?> getDepartmentsManagedByStaff(@PathVariable String staffId) {
+        return Helper.createResponseEntity(departmentService.getDepartmentsManagedByStaff(staffId));
+    }
+
     @GetMapping("/synchronize")
     public ResponseEntity<?> synchronize() {
         return Helper.createResponseEntity(departmentService.synchronize());

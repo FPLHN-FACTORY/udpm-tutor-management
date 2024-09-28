@@ -65,6 +65,24 @@ export const ROUTES_CONSTANTS = {
       },
     },
   },
+  HEAD_SUBJECT: {
+    path: "/head-subject",
+    name: "head-subject",
+    children: {
+      PLAN: {
+        path: "subject-plan",
+        name: "subject-plan",
+      },
+      HEAD_SUBJECT_DETAIL: {
+        path: "subject-plan/:planId",
+        name: "detailSubjectPlan",
+      },
+      HEAD_TUTOR_CLASS_DETAIL: {
+        path: "subject-tutor-detail/:tutorClassId",
+        name: "detailTutorClassDetail",
+      },
+    },
+  },
   NOT_FOUND: {
     path: "/:pathMatch(.*)*",
     name: "NotFound",

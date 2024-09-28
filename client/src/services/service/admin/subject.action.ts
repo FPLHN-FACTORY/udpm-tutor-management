@@ -2,6 +2,7 @@ import { queryKey } from "@/constants/queryKey.ts";
 import {
   createSubject,
   CreateUpdateSubjectParams,
+  getAllSubjectByStaffId,
   getDetailSubject,
   getSubjects,
   ParamsGetSubjects,
@@ -71,6 +72,22 @@ export const useDetailSubject = (
   return useQuery({
     queryKey: [queryKey.admin.subject.subjectDetail, subjectId],
     queryFn: () => getDetailSubject(subjectId.value),
+    ...options,
+  });
+};
+
+
+export const useGetAllSubjectByStaffId = (
+  staffId: string,
+  options?: any
+): UseQueryReturnType<
+  Awaited<ReturnType<typeof getAllSubjectByStaffId>>,
+  Error
+> => {
+  return useQuery({
+    queryKey: [queryKey.admin.subject.subjectManagedByStaff, staffId],
+    queryFn: () => getAllSubjectByStaffId(staffId),
+    enabled: !!staffId,
     ...options,
   });
 };

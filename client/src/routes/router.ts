@@ -115,6 +115,41 @@ export const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: ROUTES_CONSTANTS.HEAD_SUBJECT.path,
+    redirect: `${ROUTES_CONSTANTS.HEAD_SUBJECT.path}/${ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLAN.path}`,
+    component: () => import("@/layout/LayoutHeadSubject.vue"),
+    children: [
+      {
+        path: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLAN
+            .path,
+        name: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLAN
+            .name,
+        component: () =>
+            import(
+                "@/pages/headsubject/HeadSubject.vue"
+                ),
+      },
+      {
+        path: ROUTES_CONSTANTS.HEAD_SUBJECT.children.HEAD_SUBJECT_DETAIL.path,
+        name: ROUTES_CONSTANTS.HEAD_SUBJECT.children.HEAD_SUBJECT_DETAIL.name,
+        component: () => import("@/pages/headsubject/HeadSubjectDetail.vue"),
+        meta: {
+          requiresRole: ROLES.ADMIN,
+          requiresAuth: true,
+        },
+      },
+      {
+        path: ROUTES_CONSTANTS.HEAD_SUBJECT.children.HEAD_TUTOR_CLASS_DETAIL.path,
+        name: ROUTES_CONSTANTS.HEAD_SUBJECT.children.HEAD_TUTOR_CLASS_DETAIL.name,
+        component: () => import("@/pages/headsubject/TutorClassDetal.vue"),
+        meta: {
+          requiresRole: ROLES.ADMIN,
+          requiresAuth: true,
+        },
+      },
+    ],
+  },
+  {
     path: ROUTES_CONSTANTS.PLANNER.path,
     redirect: `${ROUTES_CONSTANTS.PLANNER.path}/${ROUTES_CONSTANTS.PLANNER.children.PLAN.path}`,
     component: () => import("@/layout/Planner.vue"),
@@ -140,6 +175,8 @@ export const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  
+ 
 ];
 
 export const router = createRouter({

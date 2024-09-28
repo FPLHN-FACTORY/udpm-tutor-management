@@ -36,6 +36,10 @@ public final class MappingConstants {
     public static final String API_HEAD_DEPARTMENT_HEAD_SUBJECT = API_HEAD_DEPARTMENT_PREFIX + "/head-of-subjects";
     public static final String API_PLANNER_PLAN = API_PLANNER_PREFIX + "/plans";
 
+    public static final String API_HEAD_SUBJECT_TUTOR = API_HEAD_SUBJECT_PREFIX + "/tutors";
+
+    public static final String API_HEAD_SUBJECT_TUTOR_DETAIL = API_HEAD_SUBJECT_PREFIX + "/tutor-detail";
+
     /* AUTHENTICATION */
     public static final String API_AUTH_PREFIX = API_VERSION_PREFIX + "/auth";
 

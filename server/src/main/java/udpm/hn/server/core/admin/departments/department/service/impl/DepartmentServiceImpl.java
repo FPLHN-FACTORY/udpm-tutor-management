@@ -56,6 +56,12 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    public ResponseObject<?> getDepartmentsManagedByStaff(String staffId) {
+        return new ResponseObject<>(departmentExtendRepository.getDepartmentsManagedByStaff(staffId),  HttpStatus.OK, "Lấy thành công danh sách bộ môn theo trưởng môn");
+    }
+
+
+    @Override
     public ResponseObject<?> addDepartment(@Valid CreateUpdateDepartmentRequest request) {
         String code = Helper.generateCodeFromName((request.getDepartmentCode().trim()));
         request.setDepartmentName(request.getDepartmentName().replaceAll("\\s+", " "));

@@ -9,6 +9,7 @@ export const queryKey = {
     subject: {
       subjectList: "subjectListKey",
       subjectDetail: "subjectDetailKey",
+      subjectManagedByStaff: "subjectManagedByStaffKey",
     },
     role: {
       roleList: "roleListKey",
@@ -18,6 +19,7 @@ export const queryKey = {
       departmentList: "departmentListKey",
       departmentDetail: "departmentDetailKey",
       departmentSynchronize: "departmentSynchronizeKey",
+      departmentManagedByStaff: "departmentManagedByStaffKey",
     },
     major: {
       majorList: "majorListKey",
@@ -72,6 +74,15 @@ export const queryKey = {
       semesterInfo: "semesterInfo",
       planInfo: "planInfo",
       planDetail: "planDetailKey",
+    },
+  },
+  headSubject: {
+    tutor: {
+      tutorList: "tutorListKey"
+    },
+    tutorDetail: {
+      tutorDetailList: "tutorDetailListKey",
+      tutorDetail: "tutorDetailKey"
     },
   }
 };

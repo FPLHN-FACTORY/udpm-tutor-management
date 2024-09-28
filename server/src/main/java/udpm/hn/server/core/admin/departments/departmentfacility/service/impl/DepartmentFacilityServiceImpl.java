@@ -186,21 +186,25 @@ public class DepartmentFacilityServiceImpl implements DepartmentFacilityService 
             List<DepartmentFacility> departmentFacilities = dfDepartmentFacilityExtendRepository.findAll();
 
             // xóa DepartmentFacility chưa được đồng bộ (các bảng ghi chưa có hoặc không trùng DepartmentFacilityIdentityId)
-            for(DepartmentFacility departmentFacility : departmentFacilities) {
-                boolean existsInCampusData = departmentCampusData.stream().anyMatch(departmentCampusResponse
-                        -> departmentCampusResponse.getDepartmentCampusId()
-                        .equals(departmentFacility.getDepartmentFacilityIdentityId()));
-                if(!existsInCampusData) {
-                    departmentFacilityRepository.delete(departmentFacility);
-                }
-            }
+//            for(DepartmentFacility departmentFacility : departmentFacilities) {
+//                boolean existsInCampusData = departmentCampusData.stream().anyMatch(departmentCampusResponse
+//                        -> departmentCampusResponse.getDepartmentCampusId()
+//                        .equals(departmentFacility.getDepartmentFacilityIdentityId()));
+//                if(!existsInCampusData) {
+//                    departmentFacilityRepository.delete(departmentFacility);
+//                }
+//            }
 
             for (DepartmentCampusResponse departmentCampusResponse : departmentCampusData) {
                 Department department = departmentRepository.findDepartmentByDepartmentIdentityId(departmentCampusResponse.getDepartmentId()).orElse(null);
-                Facility facility = facilityRepository.findMajorByFacilityIdentityId(departmentCampusResponse.getCampusId()).orElse(null);
+                Facility facility = facilityRepository.findFacilityByFacilityIdentityId(departmentCampusResponse.getCampusId()).orElse(null);
 
-                if (department == null || facility == null) {
-                    return ResponseObject.errorForward("ERROR-SYNCHRONIZED-DEPARTMENT-CAMPUS", HttpStatus.INTERNAL_SERVER_ERROR);
+                if (department == null) {
+                    return ResponseObject.errorForward("Vui lòng đồng bộ bộ môn", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+
+                if (facility == null) {
+                    return ResponseObject.errorForward("Vui lòng đồng bộ cơ sở", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
 
                 if (departmentFacilities.isEmpty()) {
@@ -211,8 +215,9 @@ public class DepartmentFacilityServiceImpl implements DepartmentFacilityService 
                 }
             }
 
-            System.out.println("Đồng bộ bộ môn theo cơ sở thành công");
-            return ResponseObject.successForward(null, "Đồng bộ môn và cơ sở thành công!");
+            return ResponseObject.successForward(null, "Đồng bộ môn theo cơ sở thành công!");
+        } catch (RuntimeException e) {
+            return ResponseObject.errorForward(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseObject.errorForward("Đồng bộ bộ môn và cơ sở không thành công! Đã xảy ra lỗi.", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -227,16 +232,11 @@ public class DepartmentFacilityServiceImpl implements DepartmentFacilityService 
             postDepartmentFacility = departmentFacilityRepository.findDepartmentFacilityByDepartmentFacility(departmentCampusResponse.getDepartmentCampusId())
                     .orElseGet(DepartmentFacility::new);
         }
-        Staff staff = (departmentFacility != null && departmentFacility.getStaff() != null && departmentFacility.getStaff().getId() != null)
-                ? staffRepository.findById(departmentFacility.getStaff().getId()).orElse(null)
-                : null;
-
-        if (staff != null) {
-            staff.setEmailFpt(departmentCampusResponse.getEmailHeadDepartmentFpt());
-            staff.setEmailFe(departmentCampusResponse.getEmailHeadDepartmentFe());
-            staffRepository.save(staff);
+        Optional<Staff> staff = staffRepository.findStaffByEmail(departmentCampusResponse.getEmailHeadDepartmentFpt(), departmentCampusResponse.getEmailHeadDepartmentFe());
+        if(staff.isEmpty()) {
+            throw new RuntimeException("Dữ liệu nhân viên chưa được đồng bộ, vui lòng đồng dữ liệu nhân viên");
         }
-        postDepartmentFacility.setStaff(staff);
+        postDepartmentFacility.setStaff(staff.get());
         postDepartmentFacility.setDepartmentFacilityIdentityId(departmentCampusResponse.getDepartmentCampusId());
         postDepartmentFacility.setDepartment(department);
         postDepartmentFacility.setFacility(facility);

@@ -9,6 +9,7 @@ import udpm.hn.server.core.admin.departments.department.model.request.FindDepart
 import udpm.hn.server.core.admin.departments.department.model.response.DepartmentResponse;
 import udpm.hn.server.core.admin.departments.department.model.response.DetailDepartmentResponse;
 import udpm.hn.server.core.admin.departments.department.model.response.ListDepartmentResponse;
+import udpm.hn.server.entity.Department;
 import udpm.hn.server.repository.DepartmentRepository;
 
 import java.util.List;
@@ -68,5 +69,19 @@ public interface DepartmentExtendRepository extends DepartmentRepository {
             FROM department d
             """, nativeQuery = true)
     List<ListDepartmentResponse> getListDepartment();
+
+    @Query("""
+        SELECT d.id AS id,
+            	d.code AS departmentCode,
+            	d.name AS departmentName
+        FROM Department d
+        JOIN DepartmentFacility df ON d.id = df.department.id
+        JOIN Staff s ON df.staff.id = s.id
+        JOIN StaffRole sr ON s.id = sr.staff.id
+        JOIN Role r ON sr.role.id = r.id
+        WHERE r.code = 'TRUONG_MON'
+        AND s.id = :staffId
+        """)
+    List<DetailDepartmentResponse> getDepartmentsManagedByStaff(String staffId);
 
 }

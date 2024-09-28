@@ -1,3 +1,4 @@
+import { ERROR_MESSAGE } from "@/constants/message.constant";
 import { PREFIX_API_SUBJECT_ADMIN } from "@/constants/url.ts";
 import request from "@/services/request.ts";
 import {
@@ -8,6 +9,7 @@ import {
 } from "@/types/api.common.ts";
 import { AxiosResponse } from "axios";
 import { Ref } from "vue";
+import { toast } from "vue3-toastify";
 
 export interface ParamsGetSubjects extends PaginationParams {
   subjectCode?: string | null;
@@ -45,6 +47,19 @@ export const getSubjects = async (params: Ref<ParamsGetSubjects>) => {
   >;
 
   return res.data;
+};
+
+export const getAllSubjectByStaffId = async (staffId: string) => {
+  try {
+    const res = (await request({
+      url: `${PREFIX_API_SUBJECT_ADMIN}/staff/${staffId}`,
+      method: "GET",
+    })) as AxiosResponse<DefaultResponse<Array<SubjectResponse>>>;
+    return res.data;
+  } catch (error) {
+   
+    throw error;
+  }
 };
 
 export interface CreateUpdateSubjectParams {

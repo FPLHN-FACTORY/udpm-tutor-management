@@ -1,3 +1,4 @@
+import { ERROR_MESSAGE } from "@/constants/message.constant";
 import {PREFIX_API_MAJOR_ADMIN, PREFIX_API_MAJOR_FACILITY_ADMIN } from "@/constants/url.ts";
 import request from "@/services/request.ts";
 import {
@@ -85,10 +86,14 @@ export const getMajorSynchronize = async () => {
       url: `${PREFIX_API_MAJOR_ADMIN}/synchronize`,
       method: 'GET',
     });
+    toast.success("Đồng bộ bộ môn và chuyên ngành thành công");
     return res.data;
   } catch (error) {
-    console.error('Lỗi đồng bộ chuyên ngành:', error);
-    throw error; 
+      // Hiển thị thông báo lỗi và ném lỗi để có thể được bắt trong handleSync
+      toast.error(
+          error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+      );
+      throw error; // Ném lỗi để catch ở hàm gọi
   }
 };
 
@@ -98,10 +103,12 @@ export const getMajorCampusSynchronize = async () => {
       url: `${PREFIX_API_MAJOR_FACILITY_ADMIN}/synchronize`,
       method: 'GET',
     });
-
+    toast.success("Đồng bộ bộ môn và chuyên ngành theo cơ sở thành công");
     return res.data;
   } catch (error) {
-    console.error('Lỗi đồng bộ chuyên ngành theo cơ sở:', error);
-    throw error;
+      toast.error(
+        error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+    );
+    throw error; // Ném lỗi để catch ở hàm gọi
   }
 };

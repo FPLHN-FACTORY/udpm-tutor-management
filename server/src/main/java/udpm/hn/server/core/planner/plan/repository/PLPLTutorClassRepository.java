@@ -16,6 +16,7 @@ public interface PLPLTutorClassRepository extends TutorClassRepository {
                 tc.number_of_classes AS numberClasses,
                 sj.name AS subjectName,
                 tc.format AS format,
+                tc.id as id,
                 CONCAT(st.staff_code, ' - ', st.name) AS headSubject
             FROM
                 tutor_class tc
@@ -45,6 +46,7 @@ public interface PLPLTutorClassRepository extends TutorClassRepository {
                 tc.number_of_classes AS numberClasses,
                 sj.name AS subjectName,
                 tc.format AS format,
+                tc.id as id,
                 CONCAT(st.staff_code, ' - ', st.name) AS headSubject
             FROM
                 tutor_class tc

@@ -18,4 +18,6 @@ public interface MajorRepository extends JpaRepository<Major, String> {
             """)
     Optional<Major> findMajorByMajorIdentityId(Long majorIdentityId);
 
+    Optional<Major> findByCode(String code);
+
 }
