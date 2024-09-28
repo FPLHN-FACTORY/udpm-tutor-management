@@ -141,23 +141,16 @@ public class MajorServiceImpl implements MajorService {
             List<MajorResponse> majorData = identityConnection.getMajors();
             List<Major> majors = majorRepository.findAll();
 
-            for (MajorResponse majorResponse : majorData) {
-                Department department = departmentExtendRepository.findDepartmentByDepartmentIdentityId(majorResponse.getDepartmentId()).orElse(null);
-                if (department == null) {
-                    return ResponseObject.successForward(null, "Để chắc chắn dữ liệu chính sác xin vui lòng đồng bộ dữ liệu ở bộ môn.");
-                }
-                if (majors.isEmpty()) {
-                    syncMajor(null, majorResponse);
-                } else {
-                    for (Major major : majors) {
-                        syncMajor(major, majorResponse);
-                    }
-                }
+            if (majors.isEmpty()) {
+                majorData.forEach(majorResponse -> syncMajor(null, majorResponse));
+            } else {
+                majorData.forEach(majorResponse -> {
+                    majors.forEach(major -> syncMajor(major, majorResponse));
+                });
             }
-
-            System.out.println("Đồng bộ chuyên ngành thành công");
-            return ResponseObject.successForward(null, "Đồng chuyên ngành thành công!");
-
+            return ResponseObject.successForward(null, "Đồng bộ chuyên ngành thành công!");
+        } catch (RuntimeException e) {
+            return ResponseObject.errorForward(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseObject.errorForward("Đồng bộ chuyên ngành không thành công! Đã xảy ra lỗi.", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -169,14 +162,18 @@ public class MajorServiceImpl implements MajorService {
         if (major == null) {
             postMajor = new Major();
         } else {
-            Optional<Major> majorOptional = majorRepository.findMajorByMajorIdentityId(
-                    majorResponse.getMajorId());
+            Optional<Major> majorOptional = majorRepository.findByCode(
+                    majorResponse.getMajorCode());
             postMajor = majorOptional.orElseGet(Major::new);
+        }
+        Department department = departmentExtendRepository.findDepartmentByDepartmentIdentityId(majorResponse.getDepartmentId()).orElse(null);
+        if(department==null) {
+            throw new RuntimeException("Dữ liệu bộ môn chưa được đồng bộ, vui lòng đồng dữ liệu bộ môn");
         }
         postMajor.setName(majorResponse.getMajorName());
         postMajor.setCode(majorResponse.getMajorCode());
         postMajor.setMajorIdentityId(majorResponse.getMajorId());
-        postMajor.setDepartment(departmentExtendRepository.findDepartmentByDepartmentIdentityId(majorResponse.getDepartmentId()).orElse(null));
+        postMajor.setDepartment(department);
         majorRepository.save(postMajor);
     }
 

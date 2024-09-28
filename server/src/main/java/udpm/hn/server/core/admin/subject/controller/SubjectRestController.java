@@ -44,4 +44,9 @@ public class SubjectRestController {
         return Helper.createResponseEntity(subjectService.getSubjectById(subjectId));
     }
 
+    @GetMapping("/staff/{staffId}")
+    public ResponseEntity<?> getAllSubjectByStaffId(@PathVariable String staffId) {
+        return Helper.createResponseEntity(subjectService.getAllSubjectByStaffId(staffId));
+    }
+
 }

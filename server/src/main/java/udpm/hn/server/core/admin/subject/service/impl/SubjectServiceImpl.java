@@ -103,4 +103,12 @@ public class SubjectServiceImpl implements SubjectService {
                 .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Môn học không tồn tại"));
     }
 
+    @Override
+    public ResponseObject<?> getAllSubjectByStaffId(String staffId) {
+        return new ResponseObject<>(subjectExtendRepository.getAllSubjectByStaffId(staffId),
+                HttpStatus.OK,
+                "Lấy danh sách môn học thành công"
+        );
+    }
+
 }

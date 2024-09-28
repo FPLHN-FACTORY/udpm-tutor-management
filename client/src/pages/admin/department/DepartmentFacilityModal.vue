@@ -36,7 +36,7 @@
         :total-pages="totalPages"
         @update:pagination-params="handlePaginationChange"
         @handleGetMajorFacility="handleGetMajorFacility"
-        @dataSynced="refreshData"
+        @dataSynced="refreshDepartmentFacilityData"
       />
     </div>
   </a-modal>
@@ -162,13 +162,9 @@ const currentFilter = computed(() => {
   return currentView.value === 'department' ? DepartmentFacilityFilter : MajorFacilityFilter;
 });
 
-const refreshData = () => {
-  console.log(currentDepartmentId.value)
-  if (currentView.value === 'department') {
-    refetchDepartment(); 
-  } else {
-    refetchMajor();
-  }
+
+const refreshDepartmentFacilityData = () => {
+ refetchDepartment();
 };
 
 </script>

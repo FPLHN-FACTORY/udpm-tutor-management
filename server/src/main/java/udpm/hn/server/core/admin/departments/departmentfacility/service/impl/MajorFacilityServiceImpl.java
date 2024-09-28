@@ -201,13 +201,13 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
             List<MajorFacility> majorFacilities = majorFacilityExtendRepository.findAll();
 
             // xóa MajorFacility chưa được đồng bộ (các bảng ghi chưa có hoặc không trùng getMajorFacilityIdentityId)
-            for (MajorFacility majorFacility : majorFacilities) {
-                boolean existsInCampusData = majorCampusData.stream()
-                        .anyMatch(majorCampusResponse -> majorCampusResponse.getMajorCampusId().equals(majorFacility.getMajorFacilityIdentityId()));
-                if (!existsInCampusData) {
-                    majorFacilityExtendRepository.delete(majorFacility);
-                }
-            }
+//            for (MajorFacility majorFacility : majorFacilities) {
+//                boolean existsInCampusData = majorCampusData.stream()
+//                        .anyMatch(majorCampusResponse -> majorCampusResponse.getMajorCampusId().equals(majorFacility.getMajorFacilityIdentityId()));
+//                if (!existsInCampusData) {
+//                    majorFacilityExtendRepository.delete(majorFacility);
+//                }
+//            }
 
             for (MajorCampusResponse majorCampusResponse : majorCampusData) {
                 DepartmentFacility departmentFacility = departmentFacilityRepository
@@ -217,8 +217,12 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
                         .findMajorByMajorIdentityId(majorCampusResponse.getMajorId())
                         .orElse(null);
 
-                if (departmentFacility == null || major == null) {
-                    return ResponseObject.errorForward("ERROR-SYNCHRONIZED-MAJOR-CAMPUS", HttpStatus.INTERNAL_SERVER_ERROR);
+                if (major == null) {
+                    return ResponseObject.errorForward("Vui lòng đồng bộ bộ môn và chuyên ngành", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+
+                if (departmentFacility == null) {
+                    return ResponseObject.errorForward("Vui lòng đồng bộ bộ môn theo cơ sở", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
 
                 if(majorFacilities.isEmpty()) {
@@ -229,9 +233,10 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
                 }
             }
 
-            System.out.println("Đồng bộ chuyên ngành theo cơ sở thành công");
-            return ResponseObject.successForward(null, "Đồng chuyên ngành và cơ sở thành công!");
+            return ResponseObject.successForward(null, "Đồng chuyên ngành theo cơ sở thành công!");
 
+        } catch (RuntimeException e) {
+            return ResponseObject.errorForward(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseObject.errorForward("Đồng bộ chuyên ngành và cơ sở không thành công! Đã xảy ra lỗi.", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -249,19 +254,15 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
                     .findMajorFacilityByMajorFacilityIdentityId(majorCampusResponse.getMajorCampusId())
                     .orElseGet(MajorFacility::new);
         }
-        Staff staff = (departmentFacility != null && departmentFacility.getStaff() != null && departmentFacility.getStaff().getId() != null)
-                ? staffRepository.findById(departmentFacility.getStaff().getId()).orElse(null)
-                : null;
-
-        if (staff != null) {
-            staff.setEmailFpt(majorCampusResponse.getEmailHeadDepartmentFpt());
-            staff.setEmailFe(majorCampusResponse.getEmailHeadDepartmentFe());
-            staffRepository.save(staff);
+        Optional<Staff> staff = staffRepository.findById(departmentFacility.getStaff().getId());
+        if(staff.isEmpty()) {
+            throw new RuntimeException("Vui lòng đồng bộ nhân viên");
         }
-        posMajorFacility.setStaff(staff);
+        posMajorFacility.setStaff(staff.get());
         posMajorFacility.setMajorFacilityIdentityId(majorCampusResponse.getDepartmentCampusId());
         posMajorFacility.setDepartmentFacility(departmentFacility);
         posMajorFacility.setMajor(major);
+        majorFacilityRepository.save(posMajorFacility);
     }
 
 

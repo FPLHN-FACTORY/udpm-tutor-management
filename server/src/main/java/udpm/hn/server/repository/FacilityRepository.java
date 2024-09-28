@@ -14,6 +14,6 @@ public interface FacilityRepository extends JpaRepository<Facility, String> {
             FROM Facility f
             WHERE f.facilityIdentityId = :facilityIdentityId
             """)
-    Optional<Facility> findMajorByFacilityIdentityId(Long facilityIdentityId);
+    Optional<Facility> findFacilityByFacilityIdentityId(Long facilityIdentityId);
 
 }

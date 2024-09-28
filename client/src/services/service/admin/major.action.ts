@@ -61,8 +61,6 @@ export function useMajorCampusSynchronize() {
       return data;
     },
     onError: (error) => {
-      // Handle error
-      console.error('Error during synchronization:', error);
       throw error;
     }
   });

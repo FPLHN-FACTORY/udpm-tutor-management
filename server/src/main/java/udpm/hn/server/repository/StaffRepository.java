@@ -16,6 +16,14 @@ public interface StaffRepository extends JpaRepository<Staff, String> {
             FROM Staff s
             WHERE s.staffIdentityId = :staffIdentityId
             """)
-    Optional<Major> findMajorByStaffIdentityId(Long staffIdentityId);
+    Optional<Staff> findStaffByStaffIdentityId(Long staffIdentityId);
+
+    @Query("""
+    SELECT s
+    FROM Staff s
+    WHERE (:emailHeadDepartmentFe IS NULL OR :emailHeadDepartmentFe = '' OR s.emailFe = :emailHeadDepartmentFe) 
+      AND (:emailHeadDepartmentFpt IS NULL OR :emailHeadDepartmentFpt = '' OR s.emailFpt = :emailHeadDepartmentFpt)
+    """)
+    Optional<Staff> findStaffByEmail(String emailHeadDepartmentFpt, String emailHeadDepartmentFe);
 
 }

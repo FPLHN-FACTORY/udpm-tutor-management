@@ -10,6 +10,7 @@ import { AxiosResponse } from "axios";
 import { Ref } from "vue";
 import { MajorFacilityResponse } from "./major.api";
 import { toast } from "vue3-toastify";
+import { ERROR_MESSAGE } from "@/constants/message.constant";
 
 export interface ParamsGetDepartment extends PaginationParams {
   departmentCode?: string | null;
@@ -60,6 +61,22 @@ export const getDepartments = async (params: Ref<ParamsGetDepartment>) => {
   >;
 
   return res.data;
+};
+
+export const getDepartmentsManagedByStaff = async (staffId: string) => {
+  try {
+    const res = (await request({
+      url: `${PREFIX_API_DEPARTMENT_ADMIN}/staff/${staffId}`,
+      method: "GET",
+    })) as AxiosResponse<DefaultResponse<Array<DetailDepartmentResponse>>>;
+
+    return res.data;
+  } catch (error) {
+    toast.error(
+      error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+    );
+    throw error;
+  }
 };
 
 export const getDepartmentFacility = async (departmentId: Ref<string | null>, params: Ref<ParamsGetDepartmentFacility>) => {
@@ -120,10 +137,12 @@ export const getDepartmentSynchronize = async () => {
       url: `${PREFIX_API_DEPARTMENT_ADMIN}/synchronize`,
       method: 'GET',
     });
-
+    // toast.success("Đồng bộ bộ môn thành công");
     return res.data;
   } catch (error) {
-    console.error('Lỗi đồng bộ bộ môn:', error);
+    toast.error(
+        error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+    );
     throw error; 
   }
 };
@@ -134,10 +153,12 @@ export const getDepartmentCampusSynchronize = async () => {
       url: `${PREFIX_API_DEPARTMENT_FACILITY_ADMIN}/synchronize`,
       method: 'GET',
     });
-
+    // toast.success("Đồng bộ bộ môn theo cơ sở thành công");
     return res.data;
   } catch (error) {
-    console.error('Lỗi đồng bộ bộ môn theo chuyên ngành:', error);
-    throw error;
+    toast.error(
+        error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+    );
+    throw error; 
   }
 };
