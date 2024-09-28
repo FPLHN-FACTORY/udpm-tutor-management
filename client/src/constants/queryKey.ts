@@ -66,6 +66,12 @@ export const queryKey = {
       staffByHeadOfSubject: " staffByHeadOfSubjectKey",
       headOfSubjectDetail: "headOfSubjectDetailKey",
     },
+    headOfPlan: {
+      headOfPlanList: "headOfPlanListKey",
+      planByHeadOfPlan: " planByHeadOfPlanKey",
+      staffByHeadOfPlan: " staffByHeadOfPlanKey",
+      headOfPlanDetail: "headOfPlanDetailKey",
+    },
   },
   planner: {
     plan: {

@@ -112,6 +112,16 @@ export const routes: RouteRecordRaw[] = [
                 "@/pages/headdepartment/headsubject/HeadSubject.vue"
                 ),
       },
+      {
+        path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_PLAN
+            .path,
+        name: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_PLAN
+            .name,
+        component: () =>
+            import(
+                "@/pages/headdepartment/headplan/HeadPlan.vue"
+                ),
+      },
     ],
   },
   {
