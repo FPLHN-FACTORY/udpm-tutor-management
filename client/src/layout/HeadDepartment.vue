@@ -15,6 +15,12 @@ const itemsHeadDepartment = [
     text: "Quản lý trưởng môn",
     path: "/head-department/head-subject",
   },
+  {
+    key: "2",
+    icon: UserSwitchOutlined,
+    text: "Quản lý kế hoạch",
+    path: "/head-department/head-plan",
+  },
 ];
 
 const selectedKeys = computed(() => {

@@ -49,6 +49,10 @@ export const ROUTES_CONSTANTS = {
         path: "head-subject",
         name: "head-subject",
       },
+      HEAD_PLAN: {
+        path: "head-plan",
+        name: "head-plan",
+      },
     },
   },
   PLANNER: {
