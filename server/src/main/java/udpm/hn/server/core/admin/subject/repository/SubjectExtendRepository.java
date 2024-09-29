@@ -20,7 +20,7 @@ public interface SubjectExtendRepository extends SubjectRepository {
                     SELECT
                         ROW_NUMBER() OVER (ORDER BY s.created_date DESC ) as orderNumber,
                         s.id as id,
-                        s.subject_code as subjectCode,
+                        s.code as subjectCode,
                         s.name as subjectName,
                         d.name as departmentName,
                         s.subject_type as subjectType,
@@ -30,7 +30,7 @@ public interface SubjectExtendRepository extends SubjectRepository {
                     LEFT JOIN
                         department d on s.id_department = d.id
                     WHERE
-                        (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE CONCAT('%',:#{#request.subjectCode},'%'))
+                        (:#{#request.subjectCode} IS NULL OR s.code LIKE CONCAT('%',:#{#request.subjectCode},'%'))
                         AND (:#{#request.subjectName} IS NULL OR s.name LIKE CONCAT('%',:#{#request.subjectName},'%'))
                         AND (:#{#request.departmentId} IS NULL OR s.id_department = :#{#request.departmentId})
                         AND (:#{#request.subjectType} IS NULL OR s.subject_type = :#{#request.subjectType})
@@ -46,7 +46,7 @@ public interface SubjectExtendRepository extends SubjectRepository {
                     LEFT JOIN
                         department d on s.id_department = d.id
                     WHERE
-                        (:#{#request.subjectCode} IS NULL OR s.subject_code LIKE CONCAT('%',:#{#request.subjectCode},'%'))
+                        (:#{#request.subjectCode} IS NULL OR s.code LIKE CONCAT('%',:#{#request.subjectCode},'%'))
                         AND (:#{#request.subjectName} IS NULL OR s.name LIKE CONCAT('%',:#{#request.subjectName},'%'))
                         AND (:#{#request.departmentId} IS NULL OR s.id_department = :#{#request.departmentId})
                         AND (:#{#request.subjectType} IS NULL OR s.subject_type = :#{#request.subjectType})
@@ -56,13 +56,13 @@ public interface SubjectExtendRepository extends SubjectRepository {
     )
     Page<SubjectResponse> getAllSubject(Pageable pageable, SubjectRequest request);
 
-    Optional<Subject> findBySubjectCode(String subjectCode);
+    Optional<Subject> findByCode(String subjectCode);
 
     @Query(
             value = """
                     SELECT
                         s.id as id,
-                        s.subject_code as subjectCode,
+                        s.code as subjectCode,
                         s.name as subjectName,
                         s.id_department as departmentId,
                         s.subject_type as subjectType,

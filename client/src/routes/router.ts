@@ -136,13 +136,13 @@ export const routes: RouteRecordRaw[] = [
             .name,
         component: () =>
             import(
-                "@/pages/headsubject/HeadSubject.vue"
+                "@/pages/headsubject/plan/HeadSubject.vue"
                 ),
       },
       {
         path: ROUTES_CONSTANTS.HEAD_SUBJECT.children.HEAD_SUBJECT_DETAIL.path,
         name: ROUTES_CONSTANTS.HEAD_SUBJECT.children.HEAD_SUBJECT_DETAIL.name,
-        component: () => import("@/pages/headsubject/HeadSubjectDetail.vue"),
+        component: () => import("@/pages/headsubject/plan/HeadSubjectDetail.vue"),
         meta: {
           requiresRole: ROLES.ADMIN,
           requiresAuth: true,
@@ -151,7 +151,7 @@ export const routes: RouteRecordRaw[] = [
       {
         path: ROUTES_CONSTANTS.HEAD_SUBJECT.children.HEAD_TUTOR_CLASS_DETAIL.path,
         name: ROUTES_CONSTANTS.HEAD_SUBJECT.children.HEAD_TUTOR_CLASS_DETAIL.name,
-        component: () => import("@/pages/headsubject/TutorClassDetal.vue"),
+        component: () => import("@/pages/headsubject/plan/TutorClassDetail.vue"),
         meta: {
           requiresRole: ROLES.ADMIN,
           requiresAuth: true,

@@ -42,7 +42,7 @@ public class PlansServiceImpl implements PlansService {
     private final PLPLStaffsRepository plplStaffsRepository;
     private final PLPLDepartmentFacilitysRepository plplDepartmentFacilitysRepository;
     private final PLPLBlocksRepository blocksRepository;
-    private final EmailService emailService;
+//    private final EmailService emailService;
     private final PLPLTutorClassRepository plplTutorClassRepository;
 
     @Override
@@ -91,10 +91,10 @@ public class PlansServiceImpl implements PlansService {
         plan.setPlanner(staffOptional.get());
         plplPlansRepository.save(plan);
 
-        Department department = departmentFacilityOptional.get().getDepartment();
-        Facility facility = departmentFacilityOptional.get().getFacility();
-        List<String> list = plplStaffsRepository.getAllHeadSubjectsByDepartment(department.getCode(), facility.getCode(),request.getSemesterId());
-        emailService.sendEmailToHeadSubjectAboutPlan("Kế hoạch học kì xxx block xxx đã được tạo. Trưởng môn hãy kiểm tra và xếp môn tutor cho học kỳ xxx block xxx",list);
+//        Department department = departmentFacilityOptional.get().getDepartment();
+//        Facility facility = departmentFacilityOptional.get().getFacility();
+//        List<String> list = plplStaffsRepository.getAllHeadSubjectsByDepartment(department.getCode(), facility.getCode(),request.getSemesterId());
+//        emailService.sendEmailToHeadSubjectAboutPlan("Kế hoạch học kì xxx block xxx đã được tạo. Trưởng môn hãy kiểm tra và xếp môn tutor cho học kỳ xxx block xxx",list);
 
         return new ResponseObject<>(null, HttpStatus.CREATED, "Tạo kế hoạch thành công");
     }

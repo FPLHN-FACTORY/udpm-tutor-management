@@ -15,7 +15,6 @@ public interface PLPLTutorClassRepository extends TutorClassRepository {
                 ROW_NUMBER() OVER(ORDER BY tc.id DESC) AS orderNumber,
                 tc.number_of_classes AS numberClasses,
                 sj.name AS subjectName,
-                tc.format AS format,
                 tc.id as id,
                 CONCAT(st.staff_code, ' - ', st.name) AS headSubject
             FROM
@@ -45,7 +44,6 @@ public interface PLPLTutorClassRepository extends TutorClassRepository {
                 ROW_NUMBER() OVER(ORDER BY tc.created_date DESC) AS orderNumber,
                 tc.number_of_classes AS numberClasses,
                 sj.name AS subjectName,
-                tc.format AS format,
                 tc.id as id,
                 CONCAT(st.staff_code, ' - ', st.name) AS headSubject
             FROM

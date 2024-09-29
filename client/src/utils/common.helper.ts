@@ -23,10 +23,6 @@ export const getDateFormat = (unix: number, showTime: boolean = false) => {
   return dayjs(unix).format(showTime ? "DD/MM/YYYY HH:mm:ss" : "DD/MM/YYYY");
 };
 
-export const getFormatted = (status: number): string => {
-  return status === 0 ? 'ONLINE' : 'OFFLINE';
-};
-
 export const getTagColor = (status: string): string => {
   switch (status) {
     case 'PLANNING':

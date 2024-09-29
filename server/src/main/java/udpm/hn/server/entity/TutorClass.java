@@ -37,7 +37,7 @@ public class TutorClass extends PrimaryEntity implements Serializable {
     @Column(name = "number_of_classes")
     private Integer numberOfClasses;
 
-    @Column(name = "format")
-    private PlanFormat planFormat;
+    @Column(name = "tutor_class_status")
+    private Integer tutorClassStatus;
 
 }

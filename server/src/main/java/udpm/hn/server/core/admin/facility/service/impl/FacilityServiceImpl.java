@@ -144,6 +144,7 @@ public class FacilityServiceImpl implements FacilityService {
         }
 
         postFacility.setName(campusResponse.getCampusName());
+        postFacility.setFacilityIdentityId(campusResponse.getCampusId());
         postFacility.setCode(campusResponse.getCampusCode());
         postFacility.setStatus(EntityStatus.ACTIVE);
         postFacility.setFacilityIdentityId(campusResponse.getCampusId());

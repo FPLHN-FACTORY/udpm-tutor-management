@@ -41,7 +41,7 @@ import { h } from "vue";
 import { formatBlockName, getTagColor, getTagStatus } from "@/utils/common.helper.ts";
 import { useApprovePlan } from "@/services/service/headdepartment/head-plan.action";
 import { toast } from "vue3-toastify";
-import { HeadPlanResponse } from "@/services/api/headdepartment/head-plan.api";
+import { HeadPlanResponse } from "@/services/api/headdepartment/plan.api.ts";
 
 defineProps({
     dataSource: Array<HeadPlanResponse>,
@@ -68,8 +68,6 @@ const handleApprovePlan = (id: string) => {
         },
     });
 }
-
-
 
 const columnsSubject: ColumnType[] = [
     {
