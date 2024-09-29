@@ -197,14 +197,14 @@ public class IdentityConnection {
 
             Map<String, Object> requestBody = getCurrentClientAuthorizeProps();
 
-            Mono<List<CampusResponse>> responseMono = webClient
-                    .post()
+            ResponseObject<List<CampusResponse>> responseMono = webClient.post()
+                    .contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(requestBody))
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<>() {
-                    });
+                    .bodyToMono(new ParameterizedTypeReference<ResponseObject<List<CampusResponse>>>() {
+                    }).block();;
 
-            return responseMono.block();
+            return responseMono.getData();
         } catch (Exception e) {
             e.printStackTrace(System.out);
             throw new RestApiException(Message.Exception.CALL_API_FAIL);
@@ -380,7 +380,7 @@ public class IdentityConnection {
 
         public static final String CONNECTOR = "/api/connector";
 
-        public static final String PREFIX_STAFF = CONNECTOR + "/staffs";
+        public static final String  PREFIX_STAFF = CONNECTOR + "/staffs";
 
         public static final String PREFIX_STAFF_ROLE = CONNECTOR + "/staffs/roles";
 

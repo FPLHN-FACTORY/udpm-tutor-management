@@ -7,7 +7,6 @@ public interface PLPLTutorClassResponse extends IsIdentify, HasOrderNumber {
 
     String getSubjectName();
     String getNumberClasses();
-    String getFormat();
     String getHeadSubject();
 
 }

@@ -150,7 +150,6 @@ export const createPlan = async (params: CreateUpdatePlanParams) => {
 export const updatePlan = async (planId: string, params: CreateUpdatePlanParams) => {
 
   try {
-    console.log(params);
     const res = (await request({
       url: `${PREFIX_API_PLANNER_PLAN}/${planId}`,
       method: "PUT",

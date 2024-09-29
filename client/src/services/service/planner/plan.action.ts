@@ -35,7 +35,6 @@ export const useGetSemesterInfo = (
     params: ParamsGetPlans,
     options?: any
 ): UseQueryReturnType<Awaited<ReturnType<typeof getSemesterInfo>>, Error> => {
-  console.log(params);
   return useQuery({
     queryKey: [queryKey.planner.plan.semesterInfo, params],
     queryFn: () => getSemesterInfo(params),
@@ -47,7 +46,6 @@ export const useGetPlanInfo = (
     params: ParamsGetPlans,
     options?: any
 ): UseQueryReturnType<Awaited<ReturnType<typeof getPlanInfo>>, Error> => {
-  console.log(params);
   return useQuery({
     queryKey: [queryKey.planner.plan.planInfo, params],
     queryFn: () => getPlanInfo(params),

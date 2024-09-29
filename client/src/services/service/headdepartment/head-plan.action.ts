@@ -1,5 +1,5 @@
 import { queryKey } from "@/constants/queryKey";
-import { approvePlan, getPlans, ParamsGetPlans } from "@/services/api/headdepartment/head-plan.api";
+import { approvePlan, getPlans, ParamsGetPlans } from "@/services/api/headdepartment/plan.api.ts";
 import { useMutation, useQuery, useQueryClient, UseQueryReturnType } from "@tanstack/vue-query";
 import { Ref } from "vue";
 

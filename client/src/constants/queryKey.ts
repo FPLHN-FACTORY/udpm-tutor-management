@@ -83,6 +83,13 @@ export const queryKey = {
     },
   },
   headSubject: {
+    plan: {
+      planList: "hSPlPlanListKey",
+      tutorClassList: "hSPlTutorClassListKey",
+      semesterInfo: "hSPlSemesterInfo",
+      planInfo: "hSPlPlanInfo",
+      planDetail: "hSPlPlanDetailKey",
+    },
     tutor: {
       tutorList: "tutorListKey"
     },

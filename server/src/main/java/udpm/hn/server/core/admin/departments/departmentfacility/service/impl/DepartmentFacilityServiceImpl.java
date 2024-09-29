@@ -185,16 +185,6 @@ public class DepartmentFacilityServiceImpl implements DepartmentFacilityService 
             List<DepartmentCampusResponse> departmentCampusData = identityConnection.getDepartmentCampuses();
             List<DepartmentFacility> departmentFacilities = dfDepartmentFacilityExtendRepository.findAll();
 
-            // xóa DepartmentFacility chưa được đồng bộ (các bảng ghi chưa có hoặc không trùng DepartmentFacilityIdentityId)
-//            for(DepartmentFacility departmentFacility : departmentFacilities) {
-//                boolean existsInCampusData = departmentCampusData.stream().anyMatch(departmentCampusResponse
-//                        -> departmentCampusResponse.getDepartmentCampusId()
-//                        .equals(departmentFacility.getDepartmentFacilityIdentityId()));
-//                if(!existsInCampusData) {
-//                    departmentFacilityRepository.delete(departmentFacility);
-//                }
-//            }
-
             for (DepartmentCampusResponse departmentCampusResponse : departmentCampusData) {
                 Department department = departmentRepository.findDepartmentByDepartmentIdentityId(departmentCampusResponse.getDepartmentId()).orElse(null);
                 Facility facility = facilityRepository.findFacilityByFacilityIdentityId(departmentCampusResponse.getCampusId()).orElse(null);
@@ -242,6 +232,5 @@ public class DepartmentFacilityServiceImpl implements DepartmentFacilityService 
         postDepartmentFacility.setFacility(facility);
         departmentFacilityRepository.save(postDepartmentFacility);
     }
-
 
 }
