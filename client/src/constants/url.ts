@@ -50,7 +50,5 @@ export const PREFIX_API_HEAD_OF_PLAN_HEAD_DEPARTMENT = `${API_URL}/head-departme
 // PLANNER API
 export const PREFIX_API_PLANNER_PLAN = `${API_URL}/planner/plans` as string;
 
-export const PREFIX_API_HEAD_SUBJECT_TUTOR = `${API_URL}/head-subject/tutors` as string;
-
-export const PREFIX_API_HEAD_SUBJECT_TUTOR_DETAIL = `${API_URL}/head-subject/tutor-detail` as string;
+export const PREFIX_API_HEAD_SUBJECT_PLAN = `${API_URL}/head-subject/plans` as string;
 

@@ -3,9 +3,11 @@ package udpm.hn.server.core.admin.staff.repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import udpm.hn.server.core.admin.staff.model.response.HORoleFacilityResponse;
+import udpm.hn.server.entity.Facility;
 import udpm.hn.server.repository.FacilityRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface HOStaffFacilityRepository extends FacilityRepository {
@@ -32,5 +34,7 @@ public interface HOStaffFacilityRepository extends FacilityRepository {
                              AND smf.id_staff LIKE :idStaff)
             """, nativeQuery = true)
     List<HORoleFacilityResponse> getFacilitiesSelect(String idStaff);
+
+    Optional<Facility> findByCode(String code);
 
 }

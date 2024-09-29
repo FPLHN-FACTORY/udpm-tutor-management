@@ -76,7 +76,7 @@ import PlanTable from "@/pages/planner/plan/PlanTable.vue";
 import PlanForm from "@/pages/planner/plan/PlanForm.vue";
 import PlanFilter from "@/pages/planner/plan/PlanFilter.vue";
 import CreatePlanModal from "@/pages/planner/plan/CreatePlanModal.vue";
-import { ParamsGetPlans, PlanResponse } from "@/services/api/planner/plan.api";
+import { ParamsGetPlans, PlanResponse } from "@/services/api/planner/plan.api.ts";
 import {
   useDetailPlan, useGetPlanInfo,
   useGetPlans, useGetSemesterInfo,

@@ -10,6 +10,7 @@ import udpm.hn.server.core.admin.staff.model.request.HOSaveStaffRequest;
 import udpm.hn.server.core.admin.staff.model.request.HOStaffRequest;
 import udpm.hn.server.core.admin.staff.model.response.HOStaffDepartmentFacilityResponse;
 import udpm.hn.server.core.admin.staff.repository.HOStaffDepartmentFacilityRepository;
+import udpm.hn.server.core.admin.staff.repository.HOStaffFacilityRepository;
 import udpm.hn.server.core.admin.staff.repository.HOStaffMajorFacilityRepository;
 import udpm.hn.server.core.admin.staff.repository.HOStaffMajorFacilityStaffRepository;
 import udpm.hn.server.core.admin.staff.repository.HOStaffRepository;
@@ -17,6 +18,7 @@ import udpm.hn.server.core.admin.staff.repository.HOStaffRoleRepository;
 import udpm.hn.server.core.admin.staff.service.HOStaffService;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
+import udpm.hn.server.entity.Facility;
 import udpm.hn.server.entity.MajorFacility;
 import udpm.hn.server.entity.Role;
 import udpm.hn.server.entity.Staff;
@@ -36,6 +38,7 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class HOStaffServiceImpl implements HOStaffService {
+
     private final RoleRepository roleRepository;
 
     private final HOStaffRepository staffRepo;
@@ -49,6 +52,8 @@ public class HOStaffServiceImpl implements HOStaffService {
     private final HOStaffRoleRepository staffRoleRepo;
 
     private final IdentityConnection identityConnection;
+
+    private final HOStaffFacilityRepository facilityRepository;
 
     @Override
     public ResponseObject<?> getStaffByRole(HOStaffRequest hoRoleStaffRequest) {
@@ -166,6 +171,7 @@ public class HOStaffServiceImpl implements HOStaffService {
         String departmentCode = majorDepartmentCampus.getDepartmentCampus().getDepartmentCode();
         String campusCode = majorDepartmentCampus.getCampus().getCampusCode();
         String majorCode = majorDepartmentCampus.getMajorCampus().getMajorCode();
+        Facility facility = facilityRepository.findByCode(campusCode).orElse(null);
 
         Optional<HOStaffDepartmentFacilityResponse> departmentFacilities = departmentFacilityRepo.getDepartmentFacilities(departmentCode, campusCode);
         if (departmentFacilities.isEmpty()) {
@@ -213,19 +219,34 @@ public class HOStaffServiceImpl implements HOStaffService {
                         .anyMatch(role -> role.getRole().getCode().equals(staffRoleResponse.getRoleCode()));
 
                 if (!exists) {
-                    Optional<Role> role = roleRepository.findByCode(staffRoleResponse.getRoleCode());
-                    role.ifPresent(value -> {
+                    Optional<Role> roleOptional = roleRepository.findByCode(staffRoleResponse.getRoleCode());
+                    roleOptional.ifPresent(value -> {
                         StaffRole newStaffRole = new StaffRole();
                         newStaffRole.setStaff(savedStaff);
                         newStaffRole.setRole(value);
                         newStaffRole.setStatus(EntityStatus.ACTIVE);
                         staffRoleRepo.save(newStaffRole);
                     });
+
+                    // Nếu role không tồn tại, tạo role mới
+                    if (!roleOptional.isPresent()) {
+                        Role newRole = new Role();
+                        newRole.setCode(staffRoleResponse.getRoleCode());
+                        newRole.setName(staffRoleResponse.getRoleName()); // Giả định bạn có tên role
+                        newRole.setFacility(facility);
+                        // Thiết lập các thuộc tính khác của Role nếu cần
+                        roleRepository.save(newRole);
+
+                        // Tạo StaffRole mới với role vừa được thêm
+                        StaffRole newStaffRole = new StaffRole();
+                        newStaffRole.setStaff(savedStaff);
+                        newStaffRole.setRole(newRole);
+                        newStaffRole.setStatus(EntityStatus.ACTIVE);
+                        staffRoleRepo.save(newStaffRole);
+                    }
                 }
             });
         }
     }
-
-
 
 }
