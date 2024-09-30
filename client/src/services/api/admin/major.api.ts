@@ -81,34 +81,19 @@ export const getDetailMajor = async (id: string | null) => {
 
 
 export const getMajorSynchronize = async () => {
-  try {
     const res: AxiosResponse<DefaultResponse<string>> = await request({
       url: `${PREFIX_API_MAJOR_ADMIN}/synchronize`,
       method: 'GET',
     });
-    toast.success("Đồng bộ bộ môn và chuyên ngành thành công");
+
     return res.data;
-  } catch (error) {
-      // Hiển thị thông báo lỗi và ném lỗi để có thể được bắt trong handleSync
-      toast.error(
-          error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-      );
-      throw error; // Ném lỗi để catch ở hàm gọi
-  }
 };
 
 export const getMajorCampusSynchronize = async () => {
-  try {
     const res: AxiosResponse<DefaultResponse<string>> = await request({
       url: `${PREFIX_API_MAJOR_FACILITY_ADMIN}/synchronize`,
       method: 'GET',
     });
-    toast.success("Đồng bộ bộ môn và chuyên ngành theo cơ sở thành công");
+
     return res.data;
-  } catch (error) {
-      toast.error(
-        error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-    );
-    throw error; // Ném lỗi để catch ở hàm gọi
-  }
 };

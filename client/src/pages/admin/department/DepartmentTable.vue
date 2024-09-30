@@ -75,8 +75,7 @@ import { ColumnType } from "ant-design-vue/es/table";
 import { h } from "vue";
 import { useMajorSynchronize } from "@/services/service/admin/major.action";
 import { toast } from "vue3-toastify";
-
-
+import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
 
 defineProps({
   dataSource: Array as () => DepartmentResponse[],
@@ -98,19 +97,27 @@ const { mutate: onSyncDepartment } = useDepartmentSynchronize();
 const { mutate: onSyncMajor } = useMajorSynchronize();
 const handleSync = async () => {
   try {
-    await new Promise((resolve, reject) => {
       onSyncDepartment(undefined, {
-        onSuccess: resolve,
-        onError: reject,
+        onSuccess: () => {
+        },
+        onError: (error) => {
+          toast.error(
+              error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+          )
+          return;
+        },
       });
-    });
 
-    await new Promise((resolve, reject) => {
       onSyncMajor(undefined, {
-        onSuccess: resolve,
-        onError: reject,
+        onSuccess: () => {
+          toast.success("Đồng bộ bộ môn, chuyên ngành  thành công");
+        },
+        onError: (error) => {
+          toast.error(
+              error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+          )
+        },
       });
-    });
 
     emit("syncSuccess")
 

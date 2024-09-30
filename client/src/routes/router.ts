@@ -119,7 +119,7 @@ export const routes: RouteRecordRaw[] = [
             .name,
         component: () =>
             import(
-                "@/pages/headdepartment/headplan/HeadPlan.vue"
+                "@/pages/headdepartment/plan/HeadPlan.vue"
                 ),
       },
     ],

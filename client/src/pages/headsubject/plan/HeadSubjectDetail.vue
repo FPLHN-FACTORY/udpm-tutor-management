@@ -65,6 +65,8 @@ import {
   useGetTutorClass,
   useUpdateStatusApproveTutorClassHeadSubject
 } from "@/services/service/headsubject/tutor-class.action.ts";
+import {toast} from "vue3-toastify";
+import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
 
 const route = useRoute();
 let planId = computed(() => {
@@ -128,7 +130,17 @@ const { mutate: updateStatus } = useUpdateStatusApproveTutorClassHeadSubject();
 
 const handleApproveTutorClass = async (id: string) => {
   try {
-    await updateStatus(id);
+    updateStatus(id, {
+      onSuccess: () => {
+        toast.success("Xắc nhận phê duyệt lớp môn thành công");
+        handleClose();
+      },
+      onError: (error) => {
+        toast.error(
+            error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+        )
+      },
+    });
   } catch (error) {
     console.error(error);
   }

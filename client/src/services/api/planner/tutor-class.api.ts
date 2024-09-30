@@ -5,7 +5,6 @@ import request from "@/services/request.ts";
 import { DefaultResponse, PaginationParams, PaginationResponse, ResponseList } from "@/types/api.common";
 import { AxiosResponse } from "axios";
 import { Ref } from "vue";
-import { toast } from "vue3-toastify";
 
 export type DetailSubjectTutorResponse = {
   numberOfClasses: number;
@@ -22,20 +21,12 @@ export type TutorClassDetailResponse = {
 };
 
 export const getDetailTutorClass = async (planId: string | null) => {
-  try {
     const res = (await request({
       url: `${PREFIX_API_PLANNER_PLAN}/tutor/${planId}`,
       method: "GET",
     })) as AxiosResponse<DefaultResponse<DetailSubjectTutorResponse>>;
 
     return res.data; // Return the response data
-  } catch (error) {
-    toast.error(
-      error?.response?.data?.message ||
-        "Có lỗi xảy ra trong quá trình lấy thông tin lớp tutor"
-    );
-    throw error; 
-  }
 };
 
 export interface ParamsGetTutorClass extends PaginationParams {

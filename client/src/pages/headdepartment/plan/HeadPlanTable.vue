@@ -39,9 +39,10 @@ import { EditOutlined } from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { h } from "vue";
 import { formatBlockName, getTagColor, getTagStatus } from "@/utils/common.helper.ts";
-import { useApprovePlan } from "@/services/service/headdepartment/head-plan.action";
+import { useApprovePlan } from "@/services/service/headdepartment/plan.action.ts";
 import { toast } from "vue3-toastify";
 import { HeadPlanResponse } from "@/services/api/headdepartment/plan.api.ts";
+import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
 
 defineProps({
     dataSource: Array<HeadPlanResponse>,
@@ -63,8 +64,10 @@ const handleApprovePlan = (id: string) => {
             toast.success("Phê duyệt thành công!");
             emit('update:approvePlan');
         },
-        onError: () => {
-            toast.error("Có lỗi xảy ra khi phê duyệt.");
+        onError: (error) => {
+          toast.error(
+              error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+          )
         },
     });
 }

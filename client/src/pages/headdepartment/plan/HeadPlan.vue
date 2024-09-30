@@ -18,7 +18,7 @@ import HeadPlanFilter from "./HeadPlanFilter.vue";
 import HeadPlanTable from "./HeadPlanTable.vue";
 import { computed, ref } from "vue";
 import { ParamsGetPlans } from "@/services/api/headdepartment/plan.api.ts";
-import { useGetPlans } from "@/services/service/headdepartment/head-plan.action";
+import { useGetPlans } from "@/services/service/headdepartment/plan.action.ts";
 import { keepPreviousData } from "@tanstack/vue-query";
 
 const params = ref<ParamsGetPlans>({

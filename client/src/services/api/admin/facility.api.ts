@@ -24,10 +24,6 @@ export type FacilityDetailResponse = {
     createdDate: number
 }
 
-export interface CreateUpdateFacilityParams {
-    facilityName: string
-}
-
 export const getFacilities = async (parmas: Ref<ParamsGetFacility>) => {
     const res = (await request({
         url: `${PREFIX_API_FACILITY_ADMIN}`,
@@ -50,15 +46,10 @@ export const getDetailFacility = async (facilityId: string | null) => {
 };
 
 export const getFacilitySynchronize = async () => {
-    try {
-        const res: AxiosResponse<DefaultResponse<string>> = await request({
-            url: `${PREFIX_API_FACILITY_ADMIN}/synchronize`,
-            method: 'GET',
-        });
+    const res: AxiosResponse<DefaultResponse<string>> = await request({
+        url: `${PREFIX_API_FACILITY_ADMIN}/synchronize`,
+        method: 'GET',
+    });
 
-        return res.data;
-    } catch (error) {
-        console.error('Error during synchronization:', error);
-        throw error; // Ném lỗi để xử lý ở nơi gọi
-    }
+    return res.data;
 };

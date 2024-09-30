@@ -56,6 +56,8 @@ import {computed, h} from "vue";
 import {useRouter} from "vue-router";
 import {useStaffSynchronize} from "@/services/service/admin/staff.action.ts";
 import {useAuthStore} from "@/stores/auth.ts";
+import {toast} from "vue3-toastify";
+import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
 
 const router = useRouter();
 // Khởi tạo Auth Store và lấy thông tin người dùng
@@ -81,7 +83,19 @@ const { mutate: onSync } = useStaffSynchronize();
 
 // Handle button click
 const handleSync = async () => {
-    await onSync(userInfo.value?.facilityCode)
+  try {
+    onSync(userInfo.value?.facilityCode, {
+      onSuccess: () => {
+        toast.success("Đồng bộ nhân viên thành công");
+      },
+      onError: (error) => {
+        toast.error(
+            error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+        )
+      },
+    })
+  }catch (error) {
+  }
 };
 
 const columnsStaff: ColumnType[] = [

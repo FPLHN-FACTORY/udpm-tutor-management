@@ -3,7 +3,6 @@ import {Ref} from "vue";
 import {AxiosResponse} from "axios";
 import {PREFIX_API_PLANNER_PLAN} from "@/constants/url.ts";
 import request from "@/services/request.ts";
-import {toast} from "vue3-toastify";
 
 export interface ParamsGetPlans extends PaginationParams {
   semesterId?: string | null;
@@ -113,35 +112,23 @@ export interface CreateUpdatePlanParams {
 }
 
 export const createPlan = async (params: CreateUpdatePlanParams) => {
-
-  try {
     const res = (await request({
       url: `${PREFIX_API_PLANNER_PLAN}`,
       method: "POST",
       data: params,
     })) as AxiosResponse<DefaultResponse<null>>;
-    toast.success("Thêm kế hoạch thành công");
+
     return res.data;
-  } catch (error) {
-    toast.error(error?.response?.data?.message || "Có lỗi xảy ra trong quá trình đồng bộ");
-    throw error;  // Ném lại lỗi để xử lý ở nơi gọi
-  }
 };
 
 export const updatePlan = async (planId: string, params: CreateUpdatePlanParams) => {
-
-  try {
     const res = (await request({
       url: `${PREFIX_API_PLANNER_PLAN}/${planId}`,
       method: "PUT",
       data: params,
     })) as AxiosResponse<DefaultResponse<null>>;
-    toast.success("Sửa hoạch thành công");
+
     return res.data;
-  } catch (error) {
-    toast.error(error?.response?.data?.message || "Có lỗi xảy ra trong quá trình đồng bộ");
-    throw error;  // Ném lại lỗi để xử lý ở nơi gọi
-  }
 };
 
 export type DetailPlanResponse = {

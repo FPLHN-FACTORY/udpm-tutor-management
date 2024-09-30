@@ -5,7 +5,6 @@ import {
   getDepartmentCampusSynchronize,
   getDepartmentFacility,
   getDepartments,
-  getDepartmentsManagedByStaff,
   getDepartmentSynchronize,
   getDetailDepartment,
   ParamsGetDepartment,
@@ -137,19 +136,3 @@ export function useDepartmentCampusSynchronize() {
     },
   });
 }
-
-
-export const useGetDepartmentsManagedByStaff = (
-  staffId: Ref<string | null>,
-  options?: any
-): UseQueryReturnType<
-  Awaited<ReturnType<typeof getDepartmentsManagedByStaff>>,
-  Error
-> => {
-  return useQuery({
-    queryKey: [queryKey.admin.department.departmentManagedByStaff, staffId],
-    queryFn: () => getDepartmentsManagedByStaff(staffId.value),
-    enabled: !!staffId.value, // Only run query if staffId is provided
-    ...options,
-  });
-};

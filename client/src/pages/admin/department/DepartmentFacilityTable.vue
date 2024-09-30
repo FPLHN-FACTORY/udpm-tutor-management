@@ -47,7 +47,6 @@ import { FacilityResponse } from "@/services/api/admin/department.api";
 import { useDepartmentCampusSynchronize } from "@/services/service/admin/department.action";
 import { useMajorCampusSynchronize } from "@/services/service/admin/major.action";
 import { EyeOutlined } from "@ant-design/icons-vue";
-import { useQueryClient } from "@tanstack/vue-query";
 import { ColumnType } from "ant-design-vue/es/table";
 import { h } from "vue";
 import { toast } from "vue3-toastify";
@@ -70,28 +69,45 @@ const { mutate: onSyncDepartmentCampus, isLoading: isSyncing } = useDepartmentCa
 const { mutate: onSyncMajorCampusSynchronize, } = useMajorCampusSynchronize();
 
 const handleSync = async () => {
-
   try {
-
-  await new Promise((resolve, reject) => {
-    onSyncDepartmentCampus(undefined, {
-        onSuccess: resolve,
-        onError: reject,
+    // Gọi hàm đồng bộ bộ môn và chờ cho nó hoàn thành
+    await new Promise((resolve, reject) => {
+      onSyncDepartmentCampus(undefined, {
+        onSuccess: () => {
+          resolve(); // Nếu thành công, gọi resolve
+        },
+        onError: (error) => {
+          toast.error(
+              error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+          );
+          reject(new Error("Department sync failed")); // Nếu có lỗi, gọi reject
+        },
       });
     });
 
+    // Nếu hàm trên thành công, gọi hàm đồng bộ chuyên ngành
     await new Promise((resolve, reject) => {
       onSyncMajorCampusSynchronize(undefined, {
-        onSuccess: resolve,
-        onError: reject,
+        onSuccess: () => {
+          toast.success("Đồng bộ chuyên ngành theo cơ sở thành công!");
+          resolve(); // Nếu thành công, gọi resolve
+        },
+        onError: (error) => {
+          toast.error(
+              error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+          );
+          reject(new Error("Major sync failed")); // Nếu có lỗi, gọi reject
+        },
       });
     });
-    emit("dataSynced")
-    } catch (error) {
-      console.log("Có lỗi xảy ra trong quá trình đồng bộ: " + error.message);
-    }
 
+    // Phát sự kiện đồng bộ thành công
+    emit("dataSynced");
+  } catch (error) {
+    console.log("Có lỗi xảy ra trong quá trình đồng bộ: " + error.message);
+  }
 };
+
 
 const columnsDepartmentFacility: ColumnType[] = [
   {

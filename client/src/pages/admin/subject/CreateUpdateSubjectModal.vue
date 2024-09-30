@@ -199,38 +199,45 @@ const handleAddOrUpdate = () => {
     centered: true,
     async onOk() {
       try {
-        await validate();
+        await validate(); // Kiểm tra tính hợp lệ
+
         const payload = {
           ...modelRef,
           startDate: dayjs(modelRef.startDate).toDate().getTime(),
         };
-        props.subjectDetail
-          ? updateSubject({
+
+        // Tạo biến để giữ thông tin về hành động (cập nhật hay tạo mới)
+        const actionParams = props.subjectDetail
+            ? {
               subjectId: props.subjectDetail.subjectId,
-              // @ts-ignore
               params: payload,
-            })
-          : // @ts-ignore
-            createSubject(payload);
-        toast.success(
-        props.subjectDetail
-          ? "Cập nhật môn học thành công"
-          : "Thêm môn học thành công"
-      );
-        emit("handleClose");
+            }
+            : payload;
+
+        // Gọi hàm phù hợp dựa vào subjectDetail
+        const action = props.subjectDetail ? updateSubject : createSubject;
+        const message = props.subjectDetail ? "Cập nhật môn học thành công!" : "Tạo môn học thành công!";
+
+        await action(actionParams, {
+          onSuccess: () => {
+            toast.success(message);
+            handleClose();
+          },
+          onError: (error) => {
+            toast.error(
+                error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+            )
+          },
+        }); // Ch
       } catch (error: any) {
         console.error("🚀 ~ handleAddOrUpdate ~ error:", error);
-        toast.error(
-          error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-        );
       }
     },
     cancelText: 'Huỷ',
     onCancel() {
       Modal.destroyAll();
     },
-  });
-  
+  })
 };
 
 const handleClose = () => {

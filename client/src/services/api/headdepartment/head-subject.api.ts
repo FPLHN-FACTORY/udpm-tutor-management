@@ -8,14 +8,12 @@ import {
 } from "@/types/api.common.ts";
 import { AxiosResponse } from "axios";
 import {Ref} from "vue";
-import {toast} from "vue3-toastify";
 
 export interface ParamsGetHeadOfSubjects extends PaginationParams {
     currentSemesterId: string | null,
     currentFacilityCode: string | null,
     currentDepartmentCode: string | null,
     currentUserId: string | null,
-    q: string | null,
 }
 
 export interface ParamsGetSubjectsByHeadSubject extends PaginationParams {
@@ -137,54 +135,39 @@ export const getStaffByHeadSubject = async (
 export const reassignSubjectForAnotherHeadSubject = async (
     params: ParamsReassignSubjectForAnotherHeadSubject
 ) => {
-    try {
-        const res = await request({
-            url: `${PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT}/subjects/reassign`,
-            method: "PUT",
-            data: params,
-        }) as AxiosResponse<{ status: string; data: string; message: string; timestamp: string; success: boolean }>;
+     const res = await request({
+        url: `${PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT}/subjects/reassign`,
+        method: "PUT",
+        data: params,
+     }) as AxiosResponse<{ status: string; data: string; message: string; timestamp: string; success: boolean }>;
 
-        return res.data; // Bây giờ res.data sẽ là "OK"
-    } catch (error) {
-        console.error("Error in reassignSubjectForAnotherHeadSubject:", error);
-        throw error;  // Ném lại lỗi để xử lý ở nơi gọi
-    }
+     return res.data; // Bây giờ res.data sẽ là "OK"
 };
 
 export const assignSubjectForHeadSubject = async (
     params: ParamsAssignOrUnAssignSubject,
     headSubjectId: string | null
 ) => {
-    try {
-        const res = await request({
-            url: `${PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT}/${headSubjectId}/subjects/assign`,
-            method: "PUT",
-            data: params,
-        }) as AxiosResponse<{ status: string; data: string; message: string; timestamp: string; success: boolean }>;
+    const res = await request({
+        url: `${PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT}/${headSubjectId}/subjects/assign`,
+        method: "PUT",
+        data: params,
+    }) as AxiosResponse<{ status: string; data: string; message: string; timestamp: string; success: boolean }>;
 
-        return res.data; // Bây giờ res.data sẽ là "OK"
-    } catch (error) {
-        console.error("Error in reassignSubjectForAnotherHeadSubject:", error);
-        throw error;  // Ném lại lỗi để xử lý ở nơi gọi
-    }
+    return res.data; // Bây giờ res.data sẽ là "OK"
 };
 
 export const unAssignSubjectForHeadSubject = async (
     params: ParamsAssignOrUnAssignSubject,
     headSubjectId: string | null
 ) => {
-    try {
-        const res = await request({
-            url: `${PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT}/${headSubjectId}/subjects/assign`,
-            method: "DELETE",
-            data: params,
-        }) as AxiosResponse<{ status: string; data: string; message: string; timestamp: string; success: boolean }>;
+   const res = await request({
+        url: `${PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT}/${headSubjectId}/subjects/assign`,
+        method: "DELETE",
+        data: params,
+   }) as AxiosResponse<{ status: string; data: string; message: string; timestamp: string; success: boolean }>;
 
-        return res.data; // Bây giờ res.data sẽ là "OK"
-    } catch (error) {
-        console.error("Error in reassignSubjectForAnotherHeadSubject:", error);
-        throw error;  // Ném lại lỗi để xử lý ở nơi gọi
-    }
+   return res.data; // Bây giờ res.data sẽ là "OK"
 };
 
 export const checkCurrentSemesterHasHeadSubject = async (
@@ -207,17 +190,12 @@ export const checkCurrentSemesterHasHeadSubject = async (
 export const syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemester = async (
     semesterId: string
 ) => {
-    try {
-        const res = await request({
-            url: `${PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT}/subjects/sync`,
-            method: "GET",
-            params: { semesterId },
-        }) as AxiosResponse<DefaultResponse<Object>>;
-        toast.success("Đồng bộ dữ liệu trưởng môn thành công");
-        return res.data; // res.data sẽ là phản hồi từ API (VD: "OK")
-    } catch (error) {
-        toast.error(error?.response?.data?.message || "Có lỗi xảy ra trong quá trình đồng bộ");
-        throw error;  // Ném lại lỗi để xử lý ở nơi gọi
-    }
+    const res = await request({
+        url: `${PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT}/subjects/sync`,
+        method: "GET",
+        params: { semesterId },
+    }) as AxiosResponse<DefaultResponse<Object>>;
+
+    return res.data; // res.data sẽ là phản hồi từ API (VD: "OK")
 };
 

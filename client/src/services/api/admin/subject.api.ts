@@ -9,7 +9,6 @@ import {
 } from "@/types/api.common.ts";
 import { AxiosResponse } from "axios";
 import { Ref } from "vue";
-import { toast } from "vue3-toastify";
 
 export interface ParamsGetSubjects extends PaginationParams {
   subjectCode?: string | null;

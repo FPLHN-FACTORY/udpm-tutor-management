@@ -41,7 +41,6 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
 import { keepPreviousData } from '@tanstack/vue-query';
-
 import DepartmentDetailModal from '@/pages/admin/department/DepartmentDetailModal.vue';
 import DepartmentFilter from '@/pages/admin/department/DepartmentFilter.vue';
 import DepartmentTable from '@/pages/admin/department/DepartmentTable.vue';
