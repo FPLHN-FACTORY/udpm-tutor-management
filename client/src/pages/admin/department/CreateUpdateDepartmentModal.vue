@@ -43,8 +43,9 @@ import {
   useCreateDepartment,
   useUpdateDepartment,
 } from "@/services/service/admin/department.action.ts";
-import { Form } from "ant-design-vue";
-import { computed, reactive, watch } from "vue";
+import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
+import { Form, Modal } from "ant-design-vue";
+import { computed, createVNode, reactive, watch } from "vue";
 import { toast } from "vue3-toastify";
 
 interface DepartmentForm {
@@ -119,33 +120,44 @@ const formFields = computed(() => [
   },
 ]);
 
-const handleAddOrUpdate = async () => {
-  try {
-    await validate();
-    props.departmentDetail
-      ? updateDepartment({
-          departmentId: props.departmentDetail.departmentId,
-          params: {
-            departmentCode: modelRef.departmentCode,
-            departmentName: modelRef.departmentName,
-          },
-        })
-      : createDepartment({
-          departmentCode: modelRef.departmentCode,
-          departmentName: modelRef.departmentName,
-        });
-    toast.success(
-      props.departmentDetail
-        ? "Cập nhật bộ môn thành công"
-        : "Thêm bộ môn thành công"
-    );
-    emit("handleClose");
-  } catch (error: any) {
-    console.error("🚀 ~ handleAddOrUpdate ~ error:", error);
-    toast.error(
-      error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-    );
-  }
+const handleAddOrUpdate = () => {
+  Modal.confirm({
+    content: 'Bạn chắc chắn muốn thêm chứ',
+    icon: createVNode(ExclamationCircleOutlined),
+    centered: true,
+    async onOk() {
+      try {
+        await validate();
+        props.departmentDetail
+          ? updateDepartment({
+              departmentId: props.departmentDetail.departmentId,
+              params: {
+                departmentCode: modelRef.departmentCode,
+                departmentName: modelRef.departmentName,
+              },
+            })
+          : createDepartment({
+              departmentCode: modelRef.departmentCode,
+              departmentName: modelRef.departmentName,
+            });
+        toast.success(
+          props.departmentDetail
+            ? "Cập nhật bộ môn thành công"
+            : "Thêm bộ môn thành công"
+        );
+        emit("handleClose");
+      } catch (error: any) {
+        console.error("🚀 ~ handleAddOrUpdate ~ error:", error);
+        toast.error(
+          error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+        );
+      }
+    },
+    cancelText: 'Huỷ',
+    onCancel() {
+      Modal.destroyAll();
+    },
+  });
 };
 
 const handleClose = () => {
