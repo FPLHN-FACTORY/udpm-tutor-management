@@ -125,18 +125,15 @@ const handleReassignSubject = async () => {
       return;
     }
     isReassigning.value = true; // Bật trạng thái loading khi phân công
-    await reassignSubjectForAnotherHeadSubject({
+    reassignSubjectForAnotherHeadSubject({
       semesterId: props.semesterId,
       facilityId: userInfo.value?.facilityId,
       currentHeadSubjectId: props.headSubjectId,
       newHeadSubjectId: newHeadSubject.value,
-    });
-    toast.success("Chuyển môn học cho trưởng bộ môn khác thành công");
+    }, );
     handleClose();
   } catch (error) {
     toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
-  } finally {
-    isReassigning.value = false; // Tắt trạng thái loading sau khi hoàn tất
   }
 };
 

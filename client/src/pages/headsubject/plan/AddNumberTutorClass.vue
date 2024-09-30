@@ -37,6 +37,8 @@ import { UpdateHeadSubjectTutorDetailParams } from "@/services/api/headsubject/t
 import { useUpdateHeadSubjectTutorDetail } from "@/services/service/headsubject/tutor-class.action.ts";
 import { Form } from "ant-design-vue";
 import { reactive, computed, watch } from "vue";
+import {toast} from "vue3-toastify";
+import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
 
 const props = defineProps({
   open: Boolean,
@@ -55,7 +57,6 @@ const modelRef = reactive({
 const rulesRef = reactive({
   numberOfClasses: [
     { required: true, message: "Vui lòng nhập số lớp", trigger: "blur" },
-    { type: 'number', min: 1, message: "Số lớp phải lớn hơn 0", trigger: "blur" },
   ],
 });
 
@@ -85,9 +86,17 @@ const handleAddOrUpdate = async () => {
       planeId: props.planId,
       subjectId: props.subjectId,
     };
-    await mutate(params);
-    emit("handleClose");
-    emit("resetTable");
+    await mutate(params, {
+      onSuccess: () => {
+        toast.success("Cập nhật lớp môn thành công");
+        handleClose();
+      },
+      onError: (error) => {
+        toast.error(
+            error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+        )
+      },
+    });
   } catch (error) {
     console.error("Validation failed:", error);
   }
