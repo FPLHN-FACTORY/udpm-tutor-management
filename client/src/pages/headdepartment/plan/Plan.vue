@@ -23,7 +23,7 @@
           <div class="mt-4">
             <template v-if="planInfoData && planInfoData.length > 0">
               <a-tabs v-model:activeKey="activeKey">
-                <template v-for="(plan) in planInfoData" :key="index">
+                <template v-for="(plan, index) in planInfoData" :key="index">
                   <a-tab-pane :tab="`Kế hoạch block ${formatBlockName(plan.blockName)}`" force-render>
                     <plan-form :plan="plan" />
                   </a-tab-pane>
@@ -44,67 +44,71 @@
         </template>
       </div>
     </div>
-    <plan-filter
+    <head-plan-filter
+        :semester-options="semesterOptions"
         @filter="handleFilter"
-        :semesterOptions="semesterOptions"
-        :currentSemester="userInfo?.semesterId"
+        :currentSemester="userInfo.semesterId"
     />
-    <plan-table
+    <head-plan-table
         :data-source="planData"
         :loading="isLoading || isFetching"
         :pagination-params="params"
         :total-pages="totalPages"
-        @update:pagination-params="handlePaginationChange"
-        @handleOpenModalUpdate="handleOpenModalUpdate"
-        @handleOpenModalAdd="handleOpenModalAdd"
-    />
-    <create-plan-modal
-        :open="open"
-        @handleClose="handleClose"
-        @cancel="open = false"
-        :plan-detail="planDetail || null"
-        :is-loading-detail="isLoadingDetail || false"
-        :semesterOptions="semesterOptions"
-        :semesterId="userInfo?.semesterId || null"
-        :blockId="userInfo?.blockId || null"
+         @update:pagination-params="handlePaginationChange"
+         @update:approve-plan="handleRefetch"
     />
   </div>
 </template>
 
 <script lang="ts" setup>
-import PlanTable from "@/pages/planner/plan/PlanTable.vue";
-import PlanForm from "@/pages/planner/plan/PlanForm.vue";
-import PlanFilter from "@/pages/planner/plan/PlanFilter.vue";
-import CreatePlanModal from "@/pages/planner/plan/CreatePlanModal.vue";
-import { ParamsGetPlans, PlanResponse } from "@/services/api/planner/plan.api.ts";
-import {
-  useDetailPlan, useGetPlanInfo,
-  useGetPlans, useGetSemesterInfo,
-} from "@/services/service/planner/plan.action";
+import { useGetSemesterOptions } from "@/services/service/common.action";
+import HeadPlanFilter from "./PlanFilter.vue";
+import HeadPlanTable from "./PlanTable.vue";
+import PlanForm from "@/pages/headdepartment/plan/PlanForm.vue";
+import { computed, ref } from "vue";
+import { ParamsGetPlans } from "@/services/api/headdepartment/plan.api.ts";
+import { useGetPlans, useGetPlanInfo, useGetSemesterInfo } from "@/services/service/headdepartment/plan.action.ts";
 import { keepPreviousData } from "@tanstack/vue-query";
-import {computed, ref, watch} from "vue";
-import { useGetSemesterOptions } from "@/services/service/common.action.ts";
-import { useAuthStore } from "@/stores/auth.ts";
+import {useAuthStore} from "@/stores/auth.ts";
 import {formatBlockName, getDateFormat} from "@/utils/common.helper.ts";
 
 const auth = useAuthStore();
 const userInfo = computed(() => auth.user);
-const open = ref(false);
-const planId = ref<string | null>(null);
-const activeKey = ref('1'); // Default to the first tab (0-indexed)
+const activeKey = ref('1');
 
 const params = ref<ParamsGetPlans>({
   page: 1,
-  size: 10,
+  size: 5,
   semesterId: userInfo.value?.semesterId,
   departmentCode: userInfo.value?.departmentCode,
   facilityCode: userInfo.value?.facilityCode
-});
+})
 
-const { data, isLoading, isFetching } = useGetPlans(params, {
+const { data: semesterOptionsData } = useGetSemesterOptions();
+
+const { data, isLoading, isFetching, refetch } = useGetPlans(params, {
   refetchOnWindowFocus: false,
   placeholderData: keepPreviousData,
 });
+
+const handleFilter = (newParams: ParamsGetPlans) => {
+  params.value = { ...params.value, ...newParams };
+};
+
+const handlePaginationChange = (newParams: ParamsGetPlans) => {
+  params.value = { ...params.value, ...newParams };
+};
+
+const handleRefetch = () => {
+  refetch();
+}
+
+const semesterOptions = computed(() =>
+  semesterOptionsData?.value?.data.map((semester) => ({
+    value: semester.id,
+    label: semester.name,
+  }))
+);
 
 const { data: semesterInfo } = useGetSemesterInfo(params.value, {
   refetchOnWindowFocus: false,
@@ -116,67 +120,8 @@ const { data: planInfo, refetch: refetchPlanInfo } = useGetPlanInfo(params.value
   enabled: () => !!params.value.semesterId,
 });
 
-const { data: dataDetail, isLoading: isLoadingDetail } = useDetailPlan(
-    planId,
-    {
-      refetchOnWindowFocus: false,
-      enabled: () => !!planId.value,
-    }
-);
-
-const handlePaginationChange = (newParams: ParamsGetPlans) => {
-  params.value = { ...params.value, ...newParams };
-};
-
-const handleFilter = (newParams: ParamsGetPlans) => {
-  params.value = { ...params.value, ...newParams };
-};
-
-const handleClose = () => {
-  open.value = false;
-  planId.value = null;
-};
-
-const handleOpenModalAdd = () => {
-  open.value = true;
-  planId.value = null;
-};
-
-const handleOpenModalUpdate = (record: PlanResponse) => {
-  planId.value = record.id;
-  open.value = true;
-};
-
-const { data: semesterOptionsData } = useGetSemesterOptions();
-
-const semesterOptions = computed(() =>
-    semesterOptionsData?.value?.data.map((semester) => ({
-      value: semester.id,
-      label: semester.name,
-    }))
-);
-
-watch(
-    () => data.value,
-    (newData) => {
-      if (newData) {
-        // Gọi refetch khi data thay đổi
-        refetchPlanInfo();
-      }
-    },
-    { immediate: true } // Optional: Call the function immediately on component mount
-);
-
-const planData = computed(() => data?.value?.data?.data || []);
 const semesterData = computed(() => semesterInfo.value?.data);
 const planInfoData = computed(() => planInfo.value?.data || null);
+const planData = computed(() => data?.value?.data?.data || []);
 const totalPages = computed(() => data?.value?.data?.totalPages || 0);
-const planDetail = computed(() =>
-    planId.value
-        ? {
-          ...dataDetail.value?.data,
-          planId: planId.value,
-        }
-        : null
-);
 </script>

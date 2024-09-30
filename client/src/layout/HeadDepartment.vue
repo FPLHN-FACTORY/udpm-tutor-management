@@ -19,7 +19,7 @@ const itemsHeadDepartment = [
     key: "2",
     icon: UserSwitchOutlined,
     text: "Quản lý kế hoạch",
-    path: "/head-department/head-plan",
+    path: "/head-department/plan",
   },
 ];
 

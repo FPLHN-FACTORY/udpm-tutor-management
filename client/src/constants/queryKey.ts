@@ -66,11 +66,14 @@ export const queryKey = {
       staffByHeadOfSubject: " staffByHeadOfSubjectKey",
       headOfSubjectDetail: "headOfSubjectDetailKey",
     },
-    headOfPlan: {
-      headOfPlanList: "headOfPlanListKey",
-      planByHeadOfPlan: " planByHeadOfPlanKey",
-      staffByHeadOfPlan: " staffByHeadOfPlanKey",
-      headOfPlanDetail: "headOfPlanDetailKey",
+    plan: {
+      planList: "hDPlPlanListKey",
+      semesterInfo: "hDPlSemesterInfo",
+      planInfo: "hDPlPlanInfo",
+      planDetail: "hDPlPlanDetailKey",
+      tutorClassList: "hDPlTutorClassListKey",
+      tutorDetail: "hDPlTutorDetailKey",
+      tutorList: "hDPlTutorListKey"
     },
   },
   planner: {

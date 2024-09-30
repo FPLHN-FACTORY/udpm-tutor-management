@@ -10,17 +10,12 @@ import udpm.hn.server.core.planner.plan.model.request.PLPLUpdatePlanRequest;
 public interface PLPLPlansService {
 
     ResponseObject<?> getAllPlans(PLPLPlanListRequest request);
-
     ResponseObject<?> createPlan(PLPLCreatePlanRequest request);
-
     ResponseObject<?> updatePlan(String planId, PLPLUpdatePlanRequest request);
-
     ResponseObject<?> getPlansDetail(String planId);
-
     ResponseObject<?> getPlansBySemester(PLPLPlanInfoRequest request);
-
     ResponseObject<?> getPlansInfo(PLPLPlanInfoRequest request);
-
     ResponseObject<?> getPlansInfoById(String id);
+    ResponseObject<?> approvePlan(String planId);
 
 }

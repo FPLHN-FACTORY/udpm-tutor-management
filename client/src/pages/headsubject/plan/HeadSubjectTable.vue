@@ -19,8 +19,6 @@
         >
           <template #bodyCell="{ column, record }">
             <div v-if="column.key === 'action'" class="space-x-2 flex items-center justify-center">
-            <a-tooltip title="Thêm môn học cho kế hoạch" color="#FFC26E">
-            </a-tooltip>
             <a-tooltip title="Chi tiết kế hoạch" color="#FFC26E">
               <a-button
                   class="flex items-center justify-center"

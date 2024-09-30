@@ -99,7 +99,7 @@ export const routes: RouteRecordRaw[] = [
   },
   {
     path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.path,
-    redirect: `${ROUTES_CONSTANTS.HEAD_DEPARTMENT.path}/${ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_SUBJECT.path}`,
+    redirect: `${ROUTES_CONSTANTS.HEAD_DEPARTMENT.path}/${ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLAN.path}`,
     component: () => import("@/layout/HeadDepartment.vue"),
     children: [
       {
@@ -113,14 +113,32 @@ export const routes: RouteRecordRaw[] = [
                 ),
       },
       {
-        path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_PLAN
+        path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLAN
             .path,
-        name: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_PLAN
+        name: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLAN
             .name,
         component: () =>
             import(
-                "@/pages/headdepartment/plan/HeadPlan.vue"
+                "@/pages/headdepartment/plan/Plan.vue"
                 ),
+      },
+      {
+        path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLAN_DETAIL.path,
+        name: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLAN_DETAIL.name,
+        component: () => import("@/pages/headdepartment/plan/PlanDetail.vue"),
+        meta: {
+          requiresRole: ROLES.HEAD_DEPARTMENT,
+          requiresAuth: true,
+        },
+      },
+      {
+        path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.TUTOR_CLASS_DETAIL.path,
+        name: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.TUTOR_CLASS_DETAIL.name,
+        component: () => import("@/pages/headdepartment/plan/TutorClassDetail.vue"),
+        meta: {
+          requiresRole: ROLES.HEAD_DEPARTMENT,
+          requiresAuth: true,
+        },
       },
     ],
   },

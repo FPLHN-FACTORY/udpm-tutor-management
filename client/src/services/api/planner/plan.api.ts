@@ -1,7 +1,7 @@
 import {DefaultResponse, PaginationParams, PaginationResponse, ResponseList} from "@/types/api.common.ts";
 import {Ref} from "vue";
 import {AxiosResponse} from "axios";
-import {PREFIX_API_PLANNER_PLAN} from "@/constants/url.ts";
+import { PREFIX_API_PLANNER_PLAN } from "@/constants/url.ts";
 import request from "@/services/request.ts";
 
 export interface ParamsGetPlans extends PaginationParams {
@@ -12,12 +12,6 @@ export interface ParamsGetPlans extends PaginationParams {
 
 export interface ParamsGetTutorClass extends PaginationParams {
   planId?: string | null;
-}
-
-export interface ParamsGetSemesterInfo {
-  semesterId?: string | null;
-  departmentCode?: string | null;
-  facilityCode?: string | null;
 }
 
 export type PlanResponse = ResponseList & {
@@ -112,23 +106,23 @@ export interface CreateUpdatePlanParams {
 }
 
 export const createPlan = async (params: CreateUpdatePlanParams) => {
-    const res = (await request({
-      url: `${PREFIX_API_PLANNER_PLAN}`,
-      method: "POST",
-      data: params,
-    })) as AxiosResponse<DefaultResponse<null>>;
+  const res = (await request({
+    url: `${PREFIX_API_PLANNER_PLAN}`,
+    method: "POST",
+    data: params,
+  })) as AxiosResponse<DefaultResponse<null>>;
 
-    return res.data;
+  return res.data;
 };
 
 export const updatePlan = async (planId: string, params: CreateUpdatePlanParams) => {
-    const res = (await request({
-      url: `${PREFIX_API_PLANNER_PLAN}/${planId}`,
-      method: "PUT",
-      data: params,
-    })) as AxiosResponse<DefaultResponse<null>>;
+  const res = (await request({
+    url: `${PREFIX_API_PLANNER_PLAN}/${planId}`,
+    method: "PUT",
+    data: params,
+  })) as AxiosResponse<DefaultResponse<null>>;
 
-    return res.data;
+  return res.data;
 };
 
 export type DetailPlanResponse = {
@@ -146,6 +140,17 @@ export const getDetailPlan = async (planId: string | null) => {
     url: `${PREFIX_API_PLANNER_PLAN}/${planId}`,
     method: "GET",
   })) as AxiosResponse<DefaultResponse<DetailPlanResponse>>;
+
+  return res.data;
+};
+
+export const approvePlan = async (planId: string) => {
+  const res = (await request({
+    url: `${PREFIX_API_PLANNER_PLAN}/status/${planId}`,
+    method: "PUT",
+  })) as AxiosResponse<
+      DefaultResponse<DefaultResponse<null>>
+  >;
 
   return res.data;
 };

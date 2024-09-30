@@ -1,4 +1,5 @@
 import {
+  approvePlan,
   createPlan,
   CreateUpdatePlanParams,
   getDetailPlan, getPlanInfo, getPlanInfoById,
@@ -19,17 +20,6 @@ export const useGetPlans = (
     ...options,
   });
 };
-
-// export const useGetTutorClass = (
-//     params: Ref<ParamsGetTutorClass>,
-//     options?: any
-// ): UseQueryReturnType<Awaited<ReturnType<typeof getTutorClass>>, Error> => {
-//   return useQuery({
-//     queryKey: [queryKey.planner.plan.tutorClassList, params],
-//     queryFn: () => getTutorClass(params),
-//     ...options,
-//   });
-// };
 
 export const useGetSemesterInfo = (
     params: ParamsGetPlans,
@@ -102,12 +92,28 @@ export const useUpdatePlan = () => {
 };
 
 export const useDetailPlan = (
-  planId: Ref<string | null>,
-  options?: any
+    planId: Ref<string | null>,
+    options?: any
 ): UseQueryReturnType<Awaited<ReturnType<typeof getDetailPlan>>, Error> => {
   return useQuery({
     queryKey: [queryKey.planner.plan.planDetail, planId],
     queryFn: () => getDetailPlan(planId.value),
     ...options,
+  });
+};
+
+export const useApprovePlan = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (planId: string) => approvePlan(planId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKey.planner.plan.planList],
+      });
+    },
+    onError: (error) => {
+      console.log("🚀 ~ useApprovePlan ~ error:", error);
+    },
   });
 };

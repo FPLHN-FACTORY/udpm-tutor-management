@@ -26,6 +26,15 @@
       >
         <template #bodyCell="{ column, record }">
           <div v-if="column.key === 'action'" class="space-x-2 flex items-center justify-center">
+            <a-tooltip v-if="record.status === 'PLANNING'" title="Phê duyệt kế hoạch" color="#FFC26E">
+              <a-button
+                  class="flex items-center justify-center"
+                  type="primary"
+                  size="large"
+                  @click="handleApprovePlan(record.id)"
+                  :icon="h(CheckCircleOutlined)"
+              />
+            </a-tooltip>
             <a-tooltip title="Chi tiết kế hoạch" color="#FFC26E">
               <a-button
                   class="flex items-center justify-center"
@@ -71,17 +80,35 @@
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
-import {DownloadOutlined, EditOutlined, EyeOutlined} from "@ant-design/icons-vue";
+import {CheckCircleOutlined, DownloadOutlined, EditOutlined, EyeOutlined} from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { h } from "vue";
 import {PlanResponse} from "@/services/api/planner/plan.api.ts";
 import {useRouter} from "vue-router";
 import {formatBlockName, getTagColor, getTagStatus} from "@/utils/common.helper.ts";
+import {useApprovePlan} from "@/services/service/planner/plan.action.ts";
+import {toast} from "vue3-toastify";
+import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
 
 const router = useRouter();
 
 const goToDetail = (planId: string) => {
   router.push({ name: 'detailPlan', params: { planId } });
+}
+
+const { mutate: approvePlan } = useApprovePlan();
+
+const handleApprovePlan = (id: string) => {
+  approvePlan(id, {
+    onSuccess: () => {
+      toast.success("Phê duyệt thành công!");
+    },
+    onError: (error) => {
+      toast.error(
+          error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+      )
+    },
+  });
 }
 
 defineProps({
