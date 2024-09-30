@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UpdateNumberOfClassesRequest {
+public class HSPLUpdateNumberOfClassesRequest {
 
     private String tutorClassId;
     private Integer numberOfClasses;

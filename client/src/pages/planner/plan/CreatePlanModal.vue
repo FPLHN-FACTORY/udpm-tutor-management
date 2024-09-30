@@ -187,7 +187,6 @@ const formFields = computed(() => [
 // Handle form submission
 const handleAddOrUpdate = async () => {
   try {
-    console.log(modelRef)
     const payload = {
       ...modelRef,
     };

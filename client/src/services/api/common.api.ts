@@ -45,7 +45,6 @@ export const getSemesterOptions = async (query?: string) => {
 };
 
 export const getBlockOptions = async (semesterId?: string) => {
-  console.log(semesterId)
   const res = (await request({
     url: `${PREFIX_API_COMMON}/block`,
     params: {

@@ -6,10 +6,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import udpm.hn.server.core.headsubject.plan.model.request.HSPLPlanListRequest;
 import udpm.hn.server.core.headsubject.plan.model.request.HSPLPlanInfoRequest;
-import udpm.hn.server.core.planner.plan.model.response.PLPLPlanDetailResponse;
-import udpm.hn.server.core.planner.plan.model.response.PLPLPlanInfoResponse;
-import udpm.hn.server.core.planner.plan.model.response.PLPLPlanListResponse;
-import udpm.hn.server.core.planner.plan.model.response.PLPLSemesterInfoResponse;
+import udpm.hn.server.core.headsubject.plan.model.response.HSPLPlanDetailResponse;
+import udpm.hn.server.core.headsubject.plan.model.response.HSPLPlanInfoResponse;
+import udpm.hn.server.core.headsubject.plan.model.response.HSPLPlanListResponse;
+import udpm.hn.server.core.headsubject.plan.model.response.HSPLSemesterInfoResponse;
 import udpm.hn.server.entity.Block;
 import udpm.hn.server.entity.DepartmentFacility;
 import udpm.hn.server.entity.Plan;
@@ -86,7 +86,7 @@ public interface HSPLPlansRepository extends PlanRepository {
                 AND (:#{#request.departmentCode} IS NULL OR d.code LIKE :#{#request.departmentCode})
                 AND (:#{#request.planStatus} IS NULL OR pl.plan_status LIKE :#{#request.planStatus})
             """, nativeQuery = true)
-    Page<PLPLPlanListResponse> getAllPlanning(Pageable pageable, HSPLPlanListRequest request);
+    Page<HSPLPlanListResponse> getAllPlanning(Pageable pageable, HSPLPlanListRequest request);
 
     @Query(value = """
             SELECT
@@ -122,7 +122,7 @@ public interface HSPLPlansRepository extends PlanRepository {
             WHERE
                 pl.id = :planId
             """, nativeQuery = true)
-    Optional<PLPLPlanDetailResponse> getPlanById(String planId);
+    Optional<HSPLPlanDetailResponse> getPlanById(String planId);
 
     @Query(value = """
             SELECT
@@ -139,7 +139,7 @@ public interface HSPLPlansRepository extends PlanRepository {
                 d.code = :#{#request.departmentCode}
                 where s.id = :#{#request.semesterId}
             """, nativeQuery = true)
-    Optional<PLPLSemesterInfoResponse> getSemesterInfo(HSPLPlanInfoRequest request);
+    Optional<HSPLSemesterInfoResponse> getSemesterInfo(HSPLPlanInfoRequest request);
 
     @Query(value = """
             SELECT
@@ -172,7 +172,7 @@ public interface HSPLPlansRepository extends PlanRepository {
             AND (:#{#request.departmentCode} IS NULL OR d.code LIKE :#{#request.departmentCode})
             ORDER BY b.start_time
             """, nativeQuery = true)
-    List<PLPLPlanInfoResponse> getPlanInfo(HSPLPlanInfoRequest request);
+    List<HSPLPlanInfoResponse> getPlanInfo(HSPLPlanInfoRequest request);
 
     @Query(value = """
             SELECT
@@ -204,7 +204,7 @@ public interface HSPLPlansRepository extends PlanRepository {
                 d.id = df.id_department
             where pl.id = :planId
             """, nativeQuery = true)
-    Optional<PLPLPlanInfoResponse> getPlanInfoById(String planId);
+    Optional<HSPLPlanInfoResponse> getPlanInfoById(String planId);
 
     Optional<Plan> findByBlockAndDepartmentFacility(Block block, DepartmentFacility departmentFacility);
 

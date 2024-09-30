@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateTutorClassRequest {
+public class HSPLCreateTutorClassRequest {
 
     private String planeId;
     private String subjectId;

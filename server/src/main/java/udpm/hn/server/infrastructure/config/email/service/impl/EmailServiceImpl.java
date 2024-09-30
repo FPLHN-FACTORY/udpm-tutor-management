@@ -42,8 +42,6 @@ public class EmailServiceImpl implements EmailService {
             ClassPathResource resource = new ClassPathResource(MailConstant.LOGO_PATH);
 
             for (String toEmail : recipientEmails) {
-                System.out.println(toEmail);
-                System.out.println("xxxxxxxxxxxxxxxxxx");
                 mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.toString());
                 mimeMessageHelper.setFrom(fromEmail);
                 mimeMessageHelper.setTo(toEmail);

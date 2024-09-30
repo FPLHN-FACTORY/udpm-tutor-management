@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import udpm.hn.server.core.headsubject.plan.model.request.CreateTutorClassRequest;
+import udpm.hn.server.core.headsubject.plan.model.request.HSPLCreateTutorClassRequest;
 import udpm.hn.server.core.headsubject.plan.model.request.HSPLSubjectListRequest;
-import udpm.hn.server.core.headsubject.plan.model.request.TutorClassDetailRequest;
+import udpm.hn.server.core.headsubject.plan.model.request.HSPLTutorClassDetailRequest;
 import udpm.hn.server.core.headsubject.plan.service.HSPLTutorClassService;
 import udpm.hn.server.infrastructure.constant.MappingConstants;
 import udpm.hn.server.utils.Helper;
@@ -33,7 +33,7 @@ public class HSPLTutorClassRestController {
     }
 
     @PutMapping("/tutor")
-    public ResponseEntity<?> updateTutorClass(@RequestBody CreateTutorClassRequest request) {
+    public ResponseEntity<?> updateTutorClass(@RequestBody HSPLCreateTutorClassRequest request) {
         return Helper.createResponseEntity(hsTutorClassService.updateNumberOfClassesTutorClass(request));
     }
 
@@ -43,7 +43,7 @@ public class HSPLTutorClassRestController {
     }
 
     @GetMapping("/tutor-detail")
-    public ResponseEntity<?> getAllTutorClassDetail(TutorClassDetailRequest request) {
+    public ResponseEntity<?> getAllTutorClassDetail(HSPLTutorClassDetailRequest request) {
         return Helper.createResponseEntity(hsTutorClassService.getTutorClassDetailByTutorClassId(request));
     }
 

@@ -39,6 +39,7 @@ public interface PLPLTutorClassRepository extends TutorClassRepository {
                 st.id = hsbs.id_staff                       
             WHERE
                 :planId IS NULL OR pl.id LIKE CONCAT('%', :planId, '%')
+                AND tc.tutor_class_status = 1
             """, countQuery = """
             SELECT
                 ROW_NUMBER() OVER(ORDER BY tc.created_date DESC) AS orderNumber,
@@ -68,7 +69,17 @@ public interface PLPLTutorClassRepository extends TutorClassRepository {
                 st.id = hsbs.id_staff               
             WHERE
                 :planId IS NULL OR pl.id LIKE CONCAT('%', :planId, '%')
+                AND tc.tutor_class_status = 1
             """, nativeQuery = true)
     Page<PLPLTutorClassResponse> getTutorClasses(Pageable pageable, String planId);
+
+    @Query(value = """
+            SELECT tc.id AS id, tc.number_of_classes AS numberOfClasses,CONCAT(sj.subject_code,  ' - ', sj.name) AS subjectName
+            FROM tutor_class tc
+            LEFT JOIN subject sj ON
+                sj.id = tc.subject_id
+            WHERE tc.id = :id
+        """, nativeQuery = true)
+    PLPLTutorClassResponse getDetailTutorClass(String id);
 
 }

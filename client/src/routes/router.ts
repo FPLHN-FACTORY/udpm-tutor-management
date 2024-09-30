@@ -183,6 +183,15 @@ export const routes: RouteRecordRaw[] = [
           requiresAuth: true,
         },
       },
+      {
+        path: ROUTES_CONSTANTS.PLANNER.children.TUTOR_CLASS_DETAIL.path,
+        name: ROUTES_CONSTANTS.PLANNER.children.TUTOR_CLASS_DETAIL.name,
+        component: () => import("@/pages/planner/plan/TutorClassDetail.vue"),
+        meta: {
+          requiresRole: ROLES.ADMIN,
+          requiresAuth: true,
+        },
+      },
     ],
   },
   

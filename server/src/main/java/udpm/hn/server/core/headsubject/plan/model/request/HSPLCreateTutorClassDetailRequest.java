@@ -8,7 +8,7 @@ import udpm.hn.server.entity.TutorClass;
 
 @Getter
 @Setter
-public class CreateTutorClassDetailRequest {
+public class HSPLCreateTutorClassDetailRequest {
 
     private Integer numberOfClasses;
     private String tutorClassId;
