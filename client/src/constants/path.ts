@@ -67,6 +67,10 @@ export const ROUTES_CONSTANTS = {
         path: "plan/:planId",
         name: "detailPlan",
       },
+      TUTOR_CLASS_DETAIL: {
+        path: "plan/tutor-class-detail/:tutorClassId",
+        name: "detailTutorClassDetail",
+      },
     },
   },
   HEAD_SUBJECT: {

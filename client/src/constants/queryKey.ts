@@ -75,11 +75,13 @@ export const queryKey = {
   },
   planner: {
     plan: {
-      planList: "planListKey",
-      tutorClassList: "tutorClassListKey",
-      semesterInfo: "semesterInfo",
-      planInfo: "planInfo",
-      planDetail: "planDetailKey",
+      planList: "pLPlPlanListKey",
+      semesterInfo: "pLPlSemesterInfo",
+      planInfo: "pLPlPlanInfo",
+      planDetail: "pLPlPlanDetailKey",
+      tutorClassList: "pLPlTutorClassListKey",
+      tutorDetail: "pLPlTutorDetailKey",
+      tutorList: "pLPlTutorListKey"
     },
   },
   headSubject: {

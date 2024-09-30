@@ -18,6 +18,7 @@
                   class="flex items-center justify-center"
                   type="primary"
                   size="large"
+                  @click="goToDetail(record.id)"
                   :icon="h(EyeOutlined)"
               />
             </a-tooltip>
@@ -33,7 +34,8 @@ import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
 import {EyeOutlined} from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { h } from "vue";
-import {TutorClassResponse} from "@/services/api/planner/plan.api.ts";
+import {router} from "@/routes/router.ts";
+import {TutorClassResponse} from "@/services/api/planner/tutor-class.api.ts";
 
 defineProps({
   dataSource: Array<TutorClassResponse>,
@@ -47,6 +49,11 @@ defineEmits([
   "handleOpenModalUpdate",
   "handleOpenModalAdd",
 ]);
+
+const goToDetail = (tutorClassId: string) => {
+  router.push({ name: 'detailTutorClassDetail', params: { tutorClassId } });
+}
+
 
 const columnsSubject: ColumnType[] = [
   {

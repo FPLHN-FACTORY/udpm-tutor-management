@@ -1,9 +1,9 @@
-package udpm.hn.server.core.headsubject.plan.model.response;
+package udpm.hn.server.core.planner.plan.model.response;
 
 import udpm.hn.server.core.common.base.HasOrderNumber;
 import udpm.hn.server.core.common.base.IsIdentify;
 
-public interface TutorClassDetailResponse extends IsIdentify, HasOrderNumber {
+public interface PLPLTutorClassDetailResponse extends IsIdentify, HasOrderNumber {
 
     String getTutorClassCode();
     String getTeacherTutor();

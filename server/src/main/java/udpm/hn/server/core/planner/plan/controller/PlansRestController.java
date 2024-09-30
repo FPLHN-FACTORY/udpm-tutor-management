@@ -14,7 +14,7 @@ import udpm.hn.server.core.planner.plan.model.request.PLPLPlanInfoRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLPlanListRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLTutorListRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLUpdatePlanRequest;
-import udpm.hn.server.core.planner.plan.service.PlansService;
+import udpm.hn.server.core.planner.plan.service.PLPLPlansService;
 import udpm.hn.server.infrastructure.constant.MappingConstants;
 import udpm.hn.server.utils.Helper;
 
@@ -23,18 +23,11 @@ import udpm.hn.server.utils.Helper;
 @RequiredArgsConstructor
 public class PlansRestController {
 
-    private final PlansService headSubjectsService;
+    private final PLPLPlansService headSubjectsService;
 
     @GetMapping
     public ResponseEntity<?> getPlans(PLPLPlanListRequest request) {
         return Helper.createResponseEntity(headSubjectsService.getAllPlans(request));
-    }
-
-    @GetMapping("/tutor")
-    public ResponseEntity<?> getPlans(PLPLTutorListRequest request) {
-        System.out.println("xxxxxxxxxxxxxxxxxxxxxxxx");
-        System.out.println(request.getPlanId());
-        return Helper.createResponseEntity(headSubjectsService.getTutorClasses(request));
     }
 
     @GetMapping("/{id}")

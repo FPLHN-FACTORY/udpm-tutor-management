@@ -7,11 +7,9 @@ import udpm.hn.server.core.planner.plan.model.request.PLPLPlanListRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLTutorListRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLUpdatePlanRequest;
 
-public interface PlansService {
+public interface PLPLPlansService {
 
     ResponseObject<?> getAllPlans(PLPLPlanListRequest request);
-
-    ResponseObject<?> getTutorClasses(PLPLTutorListRequest request);
 
     ResponseObject<?> createPlan(PLPLCreatePlanRequest request);
 

@@ -1,4 +1,4 @@
-package udpm.hn.server.core.headsubject.plan.model.request;
+package udpm.hn.server.core.planner.plan.model.request;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,8 +8,8 @@ import udpm.hn.server.core.common.base.PageableRequest;
 @Setter
 @Getter
 @ToString
-public class TutorClassDetailRequest extends PageableRequest {
+public class PLPLSubjectListRequest extends PageableRequest {
 
-    private String tutorClassId;
+    private String planId;
 
 }

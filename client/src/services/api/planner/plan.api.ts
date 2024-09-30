@@ -43,25 +43,6 @@ export const getPlans = async (params: Ref<ParamsGetPlans>) => {
   return res.data;
 };
 
-export type TutorClassResponse = ResponseList & {
-  subjectName: string;
-  numberClasses: string;
-  format: string;
-  headSubject: number;
-};
-
-export const getTutorClass = async (params: Ref<ParamsGetTutorClass>) => {
-  const res = (await request({
-    url: `${PREFIX_API_PLANNER_PLAN}/tutor`,
-    method: "GET",
-    params: params.value,
-  })) as AxiosResponse<
-      DefaultResponse<PaginationResponse<Array<TutorClassResponse>>>
-  >;
-
-  return res.data;
-};
-
 export type SemesterInfoResponse = {
   planName: string;
   departmentName: string;

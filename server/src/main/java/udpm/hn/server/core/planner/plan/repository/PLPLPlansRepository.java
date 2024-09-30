@@ -53,7 +53,7 @@ public interface PLPLPlansRepository extends PlanRepository {
                 (:#{#request.semesterId} IS NULL OR s.id LIKE CONCAT('%', :#{#request.semesterId}, '%'))
                 AND (:#{#request.facilityCode} IS NULL OR f.code LIKE :#{#request.facilityCode})
                 AND (:#{#request.departmentCode} IS NULL OR d.code LIKE :#{#request.departmentCode})
-                AND (:status IS NULL OR pl.status LIKE :status)
+                AND (:#{#request.planStatus} IS NULL OR pl.plan_status LIKE :#{#request.planStatus})
             """, countQuery = """
             SELECT
                 ROW_NUMBER() OVER(ORDER BY pl.created_date DESC) AS orderNumber,
@@ -85,9 +85,9 @@ public interface PLPLPlansRepository extends PlanRepository {
                 (:#{#request.semesterId} IS NULL OR s.id LIKE CONCAT('%', :#{#request.semesterId}, '%'))
                 AND (:#{#request.facilityCode} IS NULL OR f.code LIKE :#{#request.facilityCode})
                 AND (:#{#request.departmentCode} IS NULL OR d.code LIKE :#{#request.departmentCode})
-                AND (:status IS NULL OR pl.status LIKE :status)
+                AND (:#{#request.planStatus} IS NULL OR pl.plan_status LIKE :#{#request.planStatus})
             """, nativeQuery = true)
-    Page<PLPLPlanListResponse> getAllPlanning(Pageable pageable, PLPLPlanListRequest request, PlanStatus status);
+    Page<PLPLPlanListResponse> getAllPlanning(Pageable pageable, PLPLPlanListRequest request);
 
     @Query(value = """
             SELECT
@@ -206,6 +206,15 @@ public interface PLPLPlansRepository extends PlanRepository {
             where pl.id = :planId
             """, nativeQuery = true)
     Optional<PLPLPlanInfoResponse> getPlanInfoById(String planId);
+
+    @Query(value = """
+        SELECT count(tcd.id)
+        FROM plan pl
+        LEFT JOIN tutor_class tc ON tc.plan_id = pl.id
+        LEFT JOIN tutor_class_detail tcd ON tcd.tutor_class_id = tc.id
+        where pl.id = :planId
+            """, nativeQuery = true)
+    Long canUpdate(String planId);
 
     Optional<Plan> findByBlockAndDepartmentFacility(Block block, DepartmentFacility departmentFacility);
 }

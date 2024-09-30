@@ -1,12 +1,14 @@
-package udpm.hn.server.core.headsubject.plan.repository;
+package udpm.hn.server.core.planner.plan.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 import udpm.hn.server.core.planner.plan.model.response.PLPLTutorClassDetailResponse;
 import udpm.hn.server.repository.TutorClassDetailRepository;
 
-public interface HSPLTutorClassDetailRepository extends TutorClassDetailRepository {
+@Repository
+public interface PLPLTutorClassDetailRepository extends TutorClassDetailRepository {
 
     @Query(value = """
             SELECT

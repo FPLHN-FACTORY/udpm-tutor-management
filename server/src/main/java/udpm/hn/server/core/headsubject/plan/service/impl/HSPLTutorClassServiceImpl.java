@@ -7,12 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
-import udpm.hn.server.core.headsubject.plan.model.request.CreateTutorClassRequest;
+import udpm.hn.server.core.headsubject.plan.model.request.HSPLCreateTutorClassRequest;
 import udpm.hn.server.core.headsubject.plan.model.request.HSPLSubjectListRequest;
-import udpm.hn.server.core.headsubject.plan.model.request.TutorClassDetailRequest;
-import udpm.hn.server.core.headsubject.plan.model.response.TutorClassResponse;
+import udpm.hn.server.core.headsubject.plan.model.request.HSPLTutorClassDetailRequest;
+import udpm.hn.server.core.headsubject.plan.model.response.HSPLTutorClassResponse;
 import udpm.hn.server.core.headsubject.plan.repository.HSPLPlansRepository;
 import udpm.hn.server.core.headsubject.plan.repository.HSPLSubjectRepository;
+import udpm.hn.server.core.headsubject.plan.repository.HSPLTutorClassDetailRepository;
 import udpm.hn.server.core.headsubject.plan.repository.HSPLTutorClassRepository;
 import udpm.hn.server.core.headsubject.plan.service.HSPLTutorClassService;
 import udpm.hn.server.entity.Plan;
@@ -36,10 +37,10 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
 
     private final HSPLTutorClassRepository tutorClassRepository;
 
-    private final TutorClassDetailRepository tutorClassDetailRepository;
+    private final HSPLTutorClassDetailRepository tutorClassDetailRepository;
 
     @Override
-    public ResponseObject<?> updateNumberOfClassesTutorClass(CreateTutorClassRequest request) {
+    public ResponseObject<?> updateNumberOfClassesTutorClass(HSPLCreateTutorClassRequest request) {
         try {
             Plan plan = planRepository.findById(request.getPlaneId()).orElse(null);
             Subject subject = subjectRepository.findById(request.getSubjectId()).orElse(null);
@@ -92,7 +93,7 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
     @Override
     public ResponseObject<?> getDetailTutorClass(String id) {
         try {
-            TutorClassResponse tutorClass = tutorClassRepository.getDetailTutorClass(id);
+            HSPLTutorClassResponse tutorClass = tutorClassRepository.getDetailTutorClass(id);
             if (tutorClass == null) {
                 return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Không tồn tại");
             }
@@ -112,7 +113,7 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
     }
 
     @Override
-    public ResponseObject<?> getTutorClassDetailByTutorClassId(TutorClassDetailRequest request) {
+    public ResponseObject<?> getTutorClassDetailByTutorClassId(HSPLTutorClassDetailRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
         return new ResponseObject<>(
                 PageableObject.of(tutorClassDetailRepository.getTutorClassDetailByTutorClassId(pageable, request.getTutorClassId())),

@@ -27,7 +27,7 @@
     </div>
     <div class="shadow-md p-3 rounded-md mx-3 mt-10">
       <div class="p-5">
-        <subject-table
+        <tutor-class-table
             :data-source="planData"
             :loading="isLoading || isFetching"
             :pagination-params="params"
@@ -40,13 +40,14 @@
 </template>
 
 <script lang="ts" setup>
-import SubjectTable from "@/pages/planner/plan/SubjectTable.vue";
+import TutorClassTable from "@/pages/planner/plan/TutorClassTable.vue";
 import { useRoute } from "vue-router";
 import {computed, ref} from "vue";
-import {useGetPlanInfoById, useGetTutorClass} from "@/services/service/planner/plan.action.ts";
+import {useGetPlanInfoById} from "@/services/service/planner/plan.action.ts";
 import {formatBlockName, getDateFormat, getTagColor, getTagStatus} from "@/utils/common.helper.ts";
 import {ParamsGetPlans, ParamsGetTutorClass} from "@/services/api/planner/plan.api.ts";
 import {keepPreviousData} from "@tanstack/vue-query";
+import {useGetTutorClass} from "@/services/service/planner/tutor-class.action.ts";
 
 const route = useRoute();
 const planId = computed(() => {

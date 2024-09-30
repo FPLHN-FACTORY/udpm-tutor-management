@@ -86,7 +86,6 @@ const handlePaginationChange = (newParams: ParamsGetDepartmentFacility | ParamsG
     params.value = { ...params.value, ...newParams as ParamsGetDepartmentFacility };
   } else {
     paramsMajorFacility.value = { ...paramsMajorFacility.value, ...newParams as ParamsGetMajorFacility };
-    console.log("paramsMajorFacility", paramsMajorFacility);
   }
 };
 
@@ -121,7 +120,6 @@ const totalPages = computed(() => {
   if (currentView.value === 'department') {
     return departmentData?.value?.data?.totalPages || 0;
   } else {
-    console.log("majorData", majorData);
     return majorData?.value?.data?.majorFacilities?.totalPages || 0;
   }
 });

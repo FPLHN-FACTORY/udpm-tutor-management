@@ -18,25 +18,21 @@ import udpm.hn.server.core.planner.plan.repository.PLPLDepartmentFacilitysReposi
 import udpm.hn.server.core.planner.plan.repository.PLPLPlansRepository;
 import udpm.hn.server.core.planner.plan.repository.PLPLStaffsRepository;
 import udpm.hn.server.core.planner.plan.repository.PLPLTutorClassRepository;
-import udpm.hn.server.core.planner.plan.service.PlansService;
+import udpm.hn.server.core.planner.plan.service.PLPLPlansService;
 import udpm.hn.server.entity.Block;
-import udpm.hn.server.entity.Department;
 import udpm.hn.server.entity.DepartmentFacility;
-import udpm.hn.server.entity.Facility;
 import udpm.hn.server.entity.Plan;
 import udpm.hn.server.entity.Staff;
-import udpm.hn.server.infrastructure.config.email.service.EmailService;
 import udpm.hn.server.infrastructure.constant.PlanStatus;
 import udpm.hn.server.utils.Helper;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Validated
 @Slf4j
-public class PlansServiceImpl implements PlansService {
+public class PLPLPlansServiceImpl implements PLPLPlansService {
 
     private final PLPLPlansRepository plplPlansRepository;
     private final PLPLStaffsRepository plplStaffsRepository;
@@ -47,22 +43,11 @@ public class PlansServiceImpl implements PlansService {
 
     @Override
     public ResponseObject<?> getAllPlans(PLPLPlanListRequest request) {
-        PlanStatus planStatus = PlanStatus.fromString(request.getPlanStatus());
         Pageable pageable = Helper.createPageable(request, "createdDate");
         return new ResponseObject<>(
-                PageableObject.of(plplPlansRepository.getAllPlanning(pageable, request, planStatus)),
+                PageableObject.of(plplPlansRepository.getAllPlanning(pageable, request)),
                 HttpStatus.OK,
                 "Lấy danh sách kế hoach thành công!"
-        );
-    }
-
-    @Override
-    public ResponseObject<?> getTutorClasses(PLPLTutorListRequest request) {
-        Pageable pageable = Helper.createPageable(request, "createdDate");
-        return new ResponseObject<>(
-                PageableObject.of(plplTutorClassRepository.getTutorClasses(pageable, request.getPlanId())),
-                HttpStatus.OK,
-                "Lấy danh sách lớp môn thành công!"
         );
     }
 
@@ -101,6 +86,11 @@ public class PlansServiceImpl implements PlansService {
 
     @Override
     public ResponseObject<?> updatePlan(String planId, PLPLUpdatePlanRequest request) {
+        Long canUpdate = plplPlansRepository.canUpdate(planId);
+        if(canUpdate > 0){
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Không thể sửa kế hoạch khi trưởng môn đã thêm môn tutor!");
+        }
+
         Optional<Plan> planOptional = plplPlansRepository.findById(planId);
         if(planOptional.isEmpty()){
             return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch không tồn tại");

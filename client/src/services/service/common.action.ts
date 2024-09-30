@@ -55,8 +55,6 @@ export const useGetBlockOptions = (
     Awaited<ReturnType<typeof getBlockOptions>>,
     Error
 > => {
-  console.log(semesterId)
-  console.log("xxxxxxxxxxxxxxxxx")
   return useQuery({
     queryKey: [queryKey.common.blockOptions, semesterId],
     queryFn: () => getBlockOptions(semesterId),

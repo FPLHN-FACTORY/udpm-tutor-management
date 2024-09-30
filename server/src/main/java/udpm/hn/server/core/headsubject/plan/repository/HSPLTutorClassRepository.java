@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import udpm.hn.server.core.admin.subject.model.response.HSTutorClassResponse;
 import udpm.hn.server.core.headsubject.plan.model.request.HSPLSubjectListRequest;
-import udpm.hn.server.core.headsubject.plan.model.response.TutorClassResponse;
+import udpm.hn.server.core.headsubject.plan.model.response.HSPLTutorClassResponse;
 import udpm.hn.server.entity.Plan;
 import udpm.hn.server.entity.Subject;
 import udpm.hn.server.entity.TutorClass;
@@ -26,7 +26,7 @@ public interface HSPLTutorClassRepository extends TutorClassRepository {
                 sj.id = tc.subject_id
             WHERE tc.id = :id
         """, nativeQuery = true)
-    TutorClassResponse getDetailTutorClass(String id);
+    HSPLTutorClassResponse getDetailTutorClass(String id);
 
     @Query(value = """
             SELECT
