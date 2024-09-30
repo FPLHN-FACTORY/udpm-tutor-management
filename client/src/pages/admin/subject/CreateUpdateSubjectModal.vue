@@ -229,7 +229,6 @@ const handleAddOrUpdate = async () => {
   }
 };
 
-
 const handleClose = () => {
   emit("handleClose");
   resetFields();
