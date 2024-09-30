@@ -32,9 +32,9 @@ public class Subject extends PrimaryEntity implements Serializable {
     @Nationalized
     private String name;
 
-    @Column(name = "subject_code", length = EntityProperties.LENGTH_NAME)
+    @Column(name = "code", length = EntityProperties.LENGTH_NAME)
     @Nationalized
-    private String subjectCode;
+    private String code;
 
     @Column(name = "subject_type")
     @Enumerated(EnumType.STRING)

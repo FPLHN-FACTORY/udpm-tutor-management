@@ -59,7 +59,7 @@ const auth = useAuthStore();
 const userInfo = computed(() => auth.user);
 
 function goToDetail(staffId: string) {
-  router.push({ name: 'DetailStaff', params: { staffId } });
+  router.push({ name: 'detailStaff', params: { staffId } });
 }
 
 defineProps({

@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface SubjectRepository extends JpaRepository<Subject, String> {
 
     @Query("""
-    select s.subjectCode as subjectCode,
+    select s.code as subjectCode,
                s.name as subjectName,
                d.name as departmentName,
                s.subjectType as subjectType,
@@ -22,7 +22,7 @@ public interface SubjectRepository extends JpaRepository<Subject, String> {
                s.createdTime as createdDate,
                s.id as id
         from Subject s
-        left join HeadSubjectBySemester h on s.id = h.subject.id 
+        left join HeadSubjectBySemester h on s.id = h.subject.id
         left join Staff sf on sf.id = h.staff.id
         left join StaffRole sr on sr.staff.id = sf.id
         left join Role r on r.id = sr.role.id

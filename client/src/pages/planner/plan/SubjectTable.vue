@@ -22,9 +22,6 @@
               />
             </a-tooltip>
           </div>
-          <div v-else-if="column.key === 'format'" class="text-center">
-            <p>{{ getFormatted(record.format) }}</p>
-          </div>
         </template>
        </tutor-table>
       </div>
@@ -36,7 +33,6 @@ import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
 import {EyeOutlined} from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { h } from "vue";
-import {getFormatted} from "@/utils/common.helper.ts";
 import {TutorClassResponse} from "@/services/api/planner/plan.api.ts";
 
 defineProps({
@@ -70,13 +66,6 @@ const columnsSubject: ColumnType[] = [
     dataIndex: "numberClasses",
     key: "numberClasses",
     ellipsis: true,
-  },
-  {
-    title: "Hình thức",
-    dataIndex: "format",
-    key: "format",
-    ellipsis: true,
-    width: "120px",
   },
   {
     title: "Trưởng môn",

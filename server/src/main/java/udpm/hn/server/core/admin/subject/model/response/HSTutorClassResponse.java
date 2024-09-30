@@ -5,11 +5,11 @@ import udpm.hn.server.core.common.base.IsIdentify;
 
 public interface HSTutorClassResponse extends IsIdentify, HasOrderNumber {
 
+    String getSubjectId();
+    String getSubjectCode();
     String getSubjectName();
     String getNumberClasses();
-    String getFormat();
     String getHeadSubject();
-
     Long getStatus();
 
 }

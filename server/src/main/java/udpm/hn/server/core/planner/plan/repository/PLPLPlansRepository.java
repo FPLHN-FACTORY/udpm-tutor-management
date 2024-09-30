@@ -177,6 +177,7 @@ public interface PLPLPlansRepository extends PlanRepository {
 
     @Query(value = """
             SELECT
+            pl.id AS id,
             CONCAT(s.name, ' ', s.year) AS planName,
             b.name as blockName,
             pl.plan_status AS status,

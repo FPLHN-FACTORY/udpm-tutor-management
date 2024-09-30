@@ -17,7 +17,7 @@ import { useGetSemesterOptions } from "@/services/service/common.action";
 import HeadPlanFilter from "./HeadPlanFilter.vue";
 import HeadPlanTable from "./HeadPlanTable.vue";
 import { computed, ref } from "vue";
-import { ParamsGetPlans } from "@/services/api/headdepartment/head-plan.api";
+import { ParamsGetPlans } from "@/services/api/headdepartment/plan.api.ts";
 import { useGetPlans } from "@/services/service/headdepartment/head-plan.action";
 import { keepPreviousData } from "@tanstack/vue-query";
 
@@ -54,5 +54,4 @@ const semesterOptions = computed(() =>
 
 const planData = computed(() => data?.value?.data?.data || []);
 const totalPages = computed(() => data?.value?.data?.totalPages || 0);
-
 </script>

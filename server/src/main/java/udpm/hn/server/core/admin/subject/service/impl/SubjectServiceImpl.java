@@ -43,7 +43,7 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public ResponseObject<?> createSubject(@Valid CreateUpdateSubjectRequest request) {
 
-        Optional<Subject> subjectOptional = subjectExtendRepository.findBySubjectCode(request.getSubjectCode());
+        Optional<Subject> subjectOptional = subjectExtendRepository.findByCode(request.getSubjectCode());
         if (subjectOptional.isPresent()) {
             return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Mã môn học đã tồn tại");
         }
@@ -55,10 +55,10 @@ public class SubjectServiceImpl implements SubjectService {
 
         Subject subject = new Subject();
         subject.setName(request.getSubjectName());
-        subject.setSubjectCode(request.getSubjectCode());
+        subject.setCode(request.getSubjectCode());
         subject.setDepartment(department.get());
         subject.setSubjectType(SubjectType.valueOf(request.getSubjectType()));
-        subject.setSubjectCode(request.getSubjectCode());
+        subject.setCode(request.getSubjectCode());
         subject.setCreatedTime(request.getStartDate());
         subject.setStatus(EntityStatus.ACTIVE);
         Subject subjectSaved = subjectExtendRepository.save(subject);
@@ -78,7 +78,7 @@ public class SubjectServiceImpl implements SubjectService {
         Optional<Subject> subjectOptional = subjectExtendRepository.findById(subjectId)
                 .map(subject -> {
                     subject.setName(request.getSubjectName());
-                    subject.setSubjectCode(request.getSubjectCode());
+                    subject.setCode(request.getSubjectCode());
                     subject.setDepartment(department);
                     subject.setSubjectType(SubjectType.valueOf(request.getSubjectType()));
                     subject.setCreatedTime(request.getStartDate());

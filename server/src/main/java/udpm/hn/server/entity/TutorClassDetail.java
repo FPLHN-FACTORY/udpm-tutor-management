@@ -2,6 +2,8 @@ package udpm.hn.server.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -12,6 +14,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 import udpm.hn.server.entity.base.PrimaryEntity;
+import udpm.hn.server.infrastructure.constant.Shift;
 
 import java.io.Serializable;
 
@@ -24,6 +27,9 @@ import java.io.Serializable;
 @Table(name = "tutor_class_detail")
 @DynamicUpdate
 public class TutorClassDetail extends PrimaryEntity implements Serializable {
+
+    @Column(name = "code")
+    private String code;
 
     @ManyToOne
     @JoinColumn(name = "teacher_conduct_id")
@@ -45,4 +51,9 @@ public class TutorClassDetail extends PrimaryEntity implements Serializable {
 
     @Column(name = "end_date")
     private Long endDate;
+
+    @Column(name = "default_shift")
+    @Enumerated(EnumType.STRING)
+    private Shift shift;
+
 }
