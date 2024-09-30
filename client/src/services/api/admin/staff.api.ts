@@ -3,8 +3,6 @@ import {PREFIX_API_STAFF_ADMIN} from "@/constants/url.ts";
 import {Ref} from "vue";
 import request from "@/services/request.ts";
 import {AxiosResponse} from "axios";
-import {toast} from "vue3-toastify";
-import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
 
 export interface ParamsGetStaff extends PaginationParams {
     searchQuery?: string | null;
@@ -81,23 +79,13 @@ export const getStaffDepartmentMajor = async (id: string | null) => {
 };
 
 export const getStaffSynchronize = async (campusCode: string) => {
-    try {
-        const res: AxiosResponse<DefaultResponse<string>> = await request({
-            url: `${PREFIX_API_STAFF_ADMIN}/synchronize`,
-            method: 'GET',
-            params: { campusCode },
-        });
+    const res: AxiosResponse<DefaultResponse<string>> = await request({
+        url: `${PREFIX_API_STAFF_ADMIN}/synchronize`,
+        method: 'GET',
+        params: { campusCode },
+    });
 
-        // Hiển thị thông báo thành công sau khi nhận được phản hồi
-        toast.success("Đồng bộ nhân viên theo cơ sở thành công");
-        return res.data;
-    } catch (error) {
-        // Hiển thị thông báo lỗi và ném lỗi để có thể được bắt trong handleSync
-        toast.error(
-            error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-        );
-        throw error; // Ném lỗi để catch ở hàm gọi
-    }
+    return res.data;
 };
 
 

@@ -44,6 +44,8 @@ import {useCreatePlan, useUpdatePlan} from "@/services/service/planner/plan.acti
 import { useAuthStore } from "@/stores/auth.ts";
 import {filterOption, formatBlockName} from "@/utils/common.helper.ts";
 import { getBlockOptions } from "@/services/api/common.api.ts";
+import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
+import {toast} from "vue3-toastify";
 
 const auth = useAuthStore();
 const userInfo = computed(() => auth.user);
@@ -187,23 +189,40 @@ const formFields = computed(() => [
 // Handle form submission
 const handleAddOrUpdate = async () => {
   try {
+    await validate(); // Kiểm tra tính hợp lệ
+
     const payload = {
       ...modelRef,
     };
-    await validate();
-    props.planDetail
-        ? updatePlan({
+
+    // Tạo biến để giữ thông tin về hành động (cập nhật hay tạo mới)
+    const actionParams = props.planDetail
+        ? {
           planId: props.planDetail.planId,
-          // @ts-ignore
           params: payload,
-        })
-        : // @ts-ignore
-        createPlan(payload);
-    emit("handleClose"); // Close the modal
+        }
+        : payload;
+
+    // Gọi hàm phù hợp dựa vào planDetail
+    const action = props.planDetail ? updatePlan : createPlan;
+    const message = props.planDetail ? "Cập nhật kế hoạch thành công!" : "Tạo kế hoạch thành công!";
+
+    action(actionParams, {
+      onSuccess: () => {
+        toast.success(message); // Hiển thị thông báo thành công
+        handleClose(); // Đóng modal
+      },
+      onError: (error) => {
+        toast.error(
+            error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+        );
+      },
+    });
   } catch (error) {
-    console.error("Error in adding/updating plan:", error);
+    console.error("Error in adding/updating plan:", error); // Ghi log lỗi
   }
 };
+
 
 // Handle modal close
 const handleClose = () => {

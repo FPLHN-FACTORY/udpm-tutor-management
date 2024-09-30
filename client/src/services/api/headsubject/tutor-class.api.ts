@@ -5,7 +5,6 @@ import request from "@/services/request.ts";
 import { DefaultResponse, PaginationParams, PaginationResponse, ResponseList } from "@/types/api.common";
 import { AxiosResponse } from "axios";
 import { Ref } from "vue";
-import { toast } from "vue3-toastify";
 
 export interface UpdateHeadSubjectTutorDetailParams {
   planeId: string;
@@ -30,55 +29,31 @@ export type TutorClassDetailResponse = {
 export const updateNumberTutorClassHeadSubject = async (
   params: UpdateHeadSubjectTutorDetailParams
 ) => {
-  try {
     const res = (await request({
       url: `${PREFIX_API_HEAD_SUBJECT_PLAN}/tutor`,
       method: "PUT",
       data: params,
     })) as AxiosResponse<DefaultResponse<null>>;
-    toast.success("Cập nhật thành công");
+
     return res.data;
-  } catch (error) {
-    toast.error(
-      error?.response?.data?.message ||
-        "Có lỗi xảy ra trong quá trình cập nhật tutor"
-    );
-    throw error; // Ném lại lỗi để xử lý ở nơi gọi
-  }
 };
 
 export const updateStatusApproveTutorClassHeadSubject = async (id: string) => {
-  try {
     const res = (await request({
       url: `${PREFIX_API_HEAD_SUBJECT_PLAN}/tutor/${id}`,
       method: "PUT",
     })) as AxiosResponse<DefaultResponse<null>>;
-    toast.success("Duyêt thành công");
+
     return res.data;
-  } catch (error) {
-    toast.error(
-      error?.response?.data?.message ||
-        "Có lỗi xảy ra trong quá duyêt lớp học"
-    );
-    throw error; 
-  }
 };
 
 export const getDetailTutorClass = async (planId: string | null) => {
-  try {
     const res = (await request({
       url: `${PREFIX_API_HEAD_SUBJECT_PLAN}/tutor/${planId}`,
       method: "GET",
     })) as AxiosResponse<DefaultResponse<DetailSubjectTutorResponse>>;
 
     return res.data; // Return the response data
-  } catch (error) {
-    toast.error(
-      error?.response?.data?.message ||
-        "Có lỗi xảy ra trong quá trình lấy thông tin lớp tutor"
-    );
-    throw error; 
-  }
 };
 
 export interface ParamsGetTutorClass extends PaginationParams {

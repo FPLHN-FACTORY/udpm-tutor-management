@@ -64,6 +64,8 @@ import { ColumnType } from "ant-design-vue/es/table";
 import {h} from "vue";
 import {EyeOutlined} from "@ant-design/icons-vue";
 import {useSemesterSynchronize} from "@/services/service/admin/semester.action.ts";
+import {toast} from "vue3-toastify";
+import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
 
 defineProps({
   dataSource: Array<SemesterResponse>,
@@ -78,7 +80,16 @@ const { mutate: onSync } = useSemesterSynchronize();
 
 // Handle button click
 const handleSync = async () => {
-    await onSync(); // Chỉ gọi khi nhấn nút
+    await onSync(undefined, {
+      onSuccess: () => {
+        toast.success("Đồng bộ học kỳ thành công");
+      },
+      onError: (error) => {
+        toast.error(
+            error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+        )
+      },
+    }); // Chỉ gọi khi nhấn nút
 };
 
 const columnsSemester: ColumnType[] = [
