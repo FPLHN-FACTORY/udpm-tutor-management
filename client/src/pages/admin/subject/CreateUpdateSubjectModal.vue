@@ -54,10 +54,11 @@ import {
   useUpdateSubject,
 } from "@/services/service/admin/subject.action";
 import { filterOption } from "@/utils/common.helper";
-import { Form } from "ant-design-vue";
+import { Form, Modal } from "ant-design-vue";
 import dayjs from "dayjs";
-import { computed, reactive, watch } from "vue";
+import { computed, createVNode, reactive, watch } from "vue";
 import { toast } from "vue3-toastify";
+import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
 
 interface SubjectForm {
   subjectCode: string;
@@ -191,42 +192,52 @@ const formFields = computed(() => [
   },
 ]);
 
-const handleAddOrUpdate = async () => {
-  try {
-    await validate(); // Kiểm tra tính hợp lệ
+const handleAddOrUpdate = () => {
+  Modal.confirm({
+    content: 'Bạn chắc chắn muốn thêm chứ',
+    icon: createVNode(ExclamationCircleOutlined),
+    centered: true,
+    async onOk() {
+      try {
+        await validate(); // Kiểm tra tính hợp lệ
 
-    const payload = {
-      ...modelRef,
-      startDate: dayjs(modelRef.startDate).toDate().getTime(),
-    };
+        const payload = {
+          ...modelRef,
+          startDate: dayjs(modelRef.startDate).toDate().getTime(),
+        };
 
-    // Tạo biến để giữ thông tin về hành động (cập nhật hay tạo mới)
-    const actionParams = props.subjectDetail
-        ? {
-          subjectId: props.subjectDetail.subjectId,
-          params: payload,
-        }
-        : payload;
+        // Tạo biến để giữ thông tin về hành động (cập nhật hay tạo mới)
+        const actionParams = props.subjectDetail
+            ? {
+              subjectId: props.subjectDetail.subjectId,
+              params: payload,
+            }
+            : payload;
 
-    // Gọi hàm phù hợp dựa vào subjectDetail
-    const action = props.subjectDetail ? updateSubject : createSubject;
-    const message = props.subjectDetail ? "Cập nhật môn học thành công!" : "Tạo môn học thành công!";
+        // Gọi hàm phù hợp dựa vào subjectDetail
+        const action = props.subjectDetail ? updateSubject : createSubject;
+        const message = props.subjectDetail ? "Cập nhật môn học thành công!" : "Tạo môn học thành công!";
 
-    await action(actionParams, {
-      onSuccess: () => {
-        toast.success(message);
-        handleClose();
-      },
-      onError: (error) => {
-        toast.error(
-            error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-        )
-      },
-    }); // Chờ kết quả của hành động
-
-  } catch (error: any) {
-    console.error("🚀 ~ handleAddOrUpdate ~ error:", error);
-  }
+        await action(actionParams, {
+          onSuccess: () => {
+            toast.success(message);
+            handleClose();
+          },
+          onError: (error) => {
+            toast.error(
+                error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+            )
+          },
+        }); // Ch
+      } catch (error: any) {
+        console.error("🚀 ~ handleAddOrUpdate ~ error:", error);
+      }
+    },
+    cancelText: 'Huỷ',
+    onCancel() {
+      Modal.destroyAll();
+    },
+  })
 };
 
 const handleClose = () => {
