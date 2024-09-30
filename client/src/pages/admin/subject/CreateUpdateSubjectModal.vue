@@ -54,10 +54,11 @@ import {
   useUpdateSubject,
 } from "@/services/service/admin/subject.action";
 import { filterOption } from "@/utils/common.helper";
-import { Form } from "ant-design-vue";
+import { Form, Modal } from "ant-design-vue";
 import dayjs from "dayjs";
-import { computed, reactive, watch } from "vue";
+import { computed, createVNode, reactive, watch } from "vue";
 import { toast } from "vue3-toastify";
+import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
 
 interface SubjectForm {
   subjectCode: string;
@@ -191,33 +192,45 @@ const formFields = computed(() => [
   },
 ]);
 
-const handleAddOrUpdate = async () => {
-  try {
-    await validate();
-    const payload = {
-      ...modelRef,
-      startDate: dayjs(modelRef.startDate).toDate().getTime(),
-    };
-    props.subjectDetail
-      ? updateSubject({
-          subjectId: props.subjectDetail.subjectId,
-          // @ts-ignore
-          params: payload,
-        })
-      : // @ts-ignore
-        createSubject(payload);
-    toast.success(
-      props.subjectDetail
-        ? "Cập nhật môn học thành công"
-        : "Thêm môn học thành công"
-    );
-    emit("handleClose");
-  } catch (error: any) {
-    console.error("🚀 ~ handleAddOrUpdate ~ error:", error);
-    toast.error(
-      error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-    );
-  }
+const handleAddOrUpdate = () => {
+  Modal.confirm({
+    content: 'Bạn chắc chắn muốn thêm chứ',
+    icon: createVNode(ExclamationCircleOutlined),
+    centered: true,
+    async onOk() {
+      try {
+        await validate();
+        const payload = {
+          ...modelRef,
+          startDate: dayjs(modelRef.startDate).toDate().getTime(),
+        };
+        props.subjectDetail
+          ? updateSubject({
+              subjectId: props.subjectDetail.subjectId,
+              // @ts-ignore
+              params: payload,
+            })
+          : // @ts-ignore
+            createSubject(payload);
+        toast.success(
+        props.subjectDetail
+          ? "Cập nhật môn học thành công"
+          : "Thêm môn học thành công"
+      );
+        emit("handleClose");
+      } catch (error: any) {
+        console.error("🚀 ~ handleAddOrUpdate ~ error:", error);
+        toast.error(
+          error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+        );
+      }
+    },
+    cancelText: 'Huỷ',
+    onCancel() {
+      Modal.destroyAll();
+    },
+  });
+  
 };
 
 const handleClose = () => {
