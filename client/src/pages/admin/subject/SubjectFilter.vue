@@ -5,45 +5,45 @@
       <span class="ml-2 text-2xl">Bộ lọc</span>
     </h2>
     <a-form
-      layout="vertical"
-      class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 p-5"
+        layout="vertical"
+        class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 p-5"
     >
       <a-form-item
-        label="Mã môn học"
-        class="col-span-1 md:col-span-2 lg:col-span-1"
+          label="Mã môn học"
+          class="col-span-1 md:col-span-2 lg:col-span-1"
       >
         <a-input
-          :value="params.subjectCode"
-          @input="onChange('subjectCode', $event)"
-          placeholder="Mã môn học"
-          allowClear
+            :value="params.subjectCode"
+            @input="onChange('subjectCode', $event)"
+            placeholder="Mã môn học"
+            allowClear
         />
       </a-form-item>
       <a-form-item
-        label="Tên môn học"
-        class="col-span-1 md:col-span-2 lg:col-span-1"
+          label="Tên môn học"
+          class="col-span-1 md:col-span-2 lg:col-span-1"
       >
         <a-input
-          :value="params.subjectName"
-          @input="onChange('subjectName', $event)"
-          placeholder="Tên môn học"
-          allowClear
+            :value="params.subjectName"
+            @input="onChange('subjectName', $event)"
+            placeholder="Tên môn học"
+            allowClear
         />
       </a-form-item>
       <a-form-item
-        label="Loại môn học"
-        class="col-span-1 md:col-span-2 lg:col-span-1"
+          label="Loại môn học"
+          class="col-span-1 md:col-span-2 lg:col-span-1"
       >
         <a-select
-          :value="params.subjectType"
-          @change="onSelectChange('subjectType', $event)"
-          placeholder="Loại môn học"
-          allowClear
+            :value="params.subjectType"
+            @change="onSelectChange('subjectType', $event)"
+            placeholder="Loại môn học"
+            allowClear
         >
           <a-select-option
-            v-for="option in subjectTypeOptions"
-            :key="option.value"
-            :value="option.value"
+              v-for="option in subjectTypeOptions"
+              :key="option.value"
+              :value="option.value"
           >
             {{ option.label }}
           </a-select-option>

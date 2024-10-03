@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import udpm.hn.server.infrastructure.security.service.CustomUserDetailsService;
 import udpm.hn.server.infrastructure.security.service.TokenProvider;
+import udpm.hn.server.infrastructure.security.user.UserPrincipal;
 
 import java.io.IOException;
 

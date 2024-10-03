@@ -9,23 +9,37 @@
         destroyOnClose
         centered
     >
-      <div v-if="props.isLoadingDetail" class="flex justify-center items-center">
+      <div
+          v-if="props.isLoading"
+          class="flex justify-center items-center"
+      >
         <a-spin />
       </div>
       <div v-else>
         <a-form layout="vertical">
-          <a-form-item
-              label="Số lớp"
-              name="numberOfClasses"
-              v-bind="validateInfos.numberOfClasses"
-          >
-            <a-input-number
-                v-model:value="modelRef.numberOfClasses"
-                :min="1"
-                style="width: 100%;"
-                placeholder="Nhập số lớp"
-            />
-          </a-form-item>
+          <template v-for="field in formFields">
+            <a-form-item
+                :label="field.label"
+                :name="field.name"
+                v-bind="validateInfos[field.name]"
+            >
+              <component
+                  :is="field.component"
+                  v-bind="field.props"
+                  v-model:value="modelRef[field.name]"
+              >
+                <template
+                    v-if="field.options"
+                    v-for="option in field.options"
+                    :key="option.value"
+                >
+                  <a-select-option :value="option.value">
+                    {{ option.label }}
+                  </a-select-option>
+                </template>
+              </component>
+            </a-form-item>
+          </template>
         </a-form>
       </div>
     </a-modal>
@@ -33,74 +47,169 @@
 </template>
 
 <script lang="ts" setup>
-import { UpdateHeadSubjectTutorDetailParams } from "@/services/api/headsubject/tutor-class.api.ts";
-import { useUpdateHeadSubjectTutorDetail } from "@/services/service/headsubject/tutor-class.action.ts";
-import { Form } from "ant-design-vue";
-import { reactive, computed, watch } from "vue";
+import {Form, Modal} from "ant-design-vue";
+import {reactive, computed, watch, createVNode} from "vue";
 import {toast} from "vue3-toastify";
 import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
+import {ExclamationCircleOutlined} from "@ant-design/icons-vue";
+import {
+  useCreateTutorClass,
+  useUpdateTutorClass
+} from "@/services/service/headsubject/tutor-class.action.ts";
+
+interface TutorClassForm {
+  numberOfClasses: number;
+  numberOfLectures: number;
+  format: string;
+  planId?: string;
+  subjectId?: string;
+}
 
 const props = defineProps({
   open: Boolean,
-  isLoadingDetail: Boolean,
-  subjectId: String,
+  isLoading: Boolean,
   planId: String,
-  numberClasses: Number
+  subjectId: String,
+  tutorClass: Object as () => any | null,
 });
 
 const emit = defineEmits(["handleClose", "resetTable"]);
+const { mutate: createTutorClass } = useCreateTutorClass();
+const { mutate: updateTutorClass } = useUpdateTutorClass();
 
-const modelRef = reactive({
-  numberOfClasses: props.numberClasses,
+const modelRef = reactive<TutorClassForm>({
+  numberOfClasses: 1,
+  numberOfLectures: 8,
+  format: "ONLINE",
+  planId: props.planId,
+  subjectId: props.subjectId,
 });
 
 const rulesRef = reactive({
   numberOfClasses: [
     { required: true, message: "Vui lòng nhập số lớp", trigger: "blur" },
   ],
+  numberOfLectures: [
+    { required: true, message: "Vui lòng nhập số buổi", trigger: "blur" },
+  ],
+  format: [
+    { required: true, message: "Vui lòng chọn hình thức", trigger: "blur" },
+  ],
 });
 
-// Để sử dụng các tính năng của form
-const { resetFields, validate, validateInfos } = Form.useForm(modelRef, rulesRef);
+const { resetFields, validate, validateInfos } = Form.useForm(
+    modelRef,
+    rulesRef
+);
 
-const modalTitle = computed(() => "Nhập số lớp");
-const okText = computed(() => "Xác nhận");
+const modalTitle = computed(() =>
+    props.tutorClass ? "Cập nhật lớp môn" : "Thêm lớp môn"
+);
 
-const { mutate } = useUpdateHeadSubjectTutorDetail();
+const okText = computed(() =>
+    props.tutorClass ? "Cập nhật lớp môn thành công" : "Thêm lớp môn học thành công"
+);
 
 watch(
-    () => props.numberClasses,
-    (newValue) => {
-      if(newValue){
-        modelRef.numberOfClasses = newValue; // Cập nhật số lớp khi props.numberClasses thay đổi
+    () => props.tutorClass,
+    (newVal) => {
+      if (newVal) {
+        Object.assign(modelRef, {
+          numberOfClasses: newVal.numberClasses,
+          numberOfLectures: newVal.numberLectures,
+          format: newVal.format === 0 ? "ONLINE" : "OFFLINE",
+        });
+      } else {
+        resetFields();
       }
     },
     { immediate: true }
 );
 
-const handleAddOrUpdate = async () => {
-  try {
-    await validate();
-    const params: UpdateHeadSubjectTutorDetailParams = {
-      numberOfClasses: modelRef.numberOfClasses,
-      planeId: props.planId,
-      subjectId: props.subjectId,
-    };
-    await mutate(params, {
-      onSuccess: () => {
-        toast.success("Cập nhật lớp môn thành công");
-        handleClose();
-      },
-      onError: (error) => {
+const formFields = computed(() => [
+  {
+    label: "Số lớp",
+    name: "numberOfClasses",
+    component: "a-input",
+    props: {
+      type: "number", // Thiết lập type thành number
+      placeholder: "Nhập số lớp",
+      min: 1,
+      disabled: !!props.tutorClass,
+    },
+  },
+  {
+    label: "Số buổi",
+    name: "numberOfLectures",
+    component: "a-input",
+    props: {
+      type: "number", // Thiết lập type thành number
+      placeholder: "Nhập số buổi",
+      min: 1,
+    },
+  },
+  {
+    label: "Hình thức",
+    name: "format",
+    component: "a-select",
+    options: [
+      { value: "ONLINE", label: "ONLINE" },
+      { value: "OFFLINE", label: "OFFLINE" },
+    ],
+    props: { placeholder: "Chọn hình thức" },
+  },
+]);
+
+const handleAddOrUpdate = () => {
+  Modal.confirm({
+    content: 'Bạn chắc chắn muốn cập nhật chứ',
+    icon: createVNode(ExclamationCircleOutlined),
+    centered: true,
+    async onOk() {
+      try {
+        await validate(); // Kiểm tra tính hợp lệ
+
+        const payload = {
+          ...modelRef,
+          subjectId: props.subjectId
+        };
+
+        // Tạo biến để giữ thông tin về hành động (cập nhật hay tạo mới)
+        const actionParams = props.tutorClass
+            ? {
+              id: props.tutorClass.id,
+              params: payload,
+            }
+            : payload;
+
+        // Gọi hàm phù hợp dựa vào tutorClass
+        const action = props.tutorClass ? updateTutorClass : createTutorClass;
+        const message = props.tutorClass ? "Cập nhật môn học thành công!" : "Tạo môn học thành công!";
+
+        await action(actionParams, {
+          onSuccess: () => {
+            toast.success(message);
+            handleClose();
+          },
+          onError: (error) => {
+            toast.error(
+                error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+            )
+          },
+        })
+      } catch (error: any) {
+        console.error("🚀 ~ handleAddOrUpdate ~ error:", error);
         toast.error(
             error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-        )
-      },
-    });
-  } catch (error) {
-    console.error("Validation failed:", error);
-  }
-};
+        );
+      }
+    },
+    cancelText: 'Huỷ',
+    onCancel() {
+      Modal.destroyAll();
+    },
+  });
+}
 
 const handleClose = () => {
   emit("handleClose");

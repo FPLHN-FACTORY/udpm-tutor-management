@@ -55,3 +55,24 @@ export const getBlockOptions = async (semesterId?: string) => {
 
   return res.data;
 };
+
+export type ParamsStaffSearchByRole = {
+  role?: string[];
+  departmentCode?: string;
+  facilityCode?: string;
+};
+
+export const getStaffByRole = async (
+    params: ParamsStaffSearchByRole,
+) => {
+  const res = (await request({
+    url: `${PREFIX_API_COMMON}/staff/role`,  // Thay đổi URL nếu cần
+    params: {
+      departmentCode: params.departmentCode, // Đúng tên trường
+      facilityCode: params.facilityCode, // Đúng tên trường
+    },
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<Array<CommonOptionsResponse>>>;
+
+  return res.data;
+};

@@ -10,6 +10,11 @@ import udpm.hn.server.core.common.base.PageableRequest;
 @ToString
 public class HSPLTutorClassDetailRequest extends PageableRequest {
 
-    private String tutorClassId;
+    private String planId;
+    private String userId;
+    private String teacherId;
+    private String query;
+    private String semesterId;
+    private String facilityId;
 
 }

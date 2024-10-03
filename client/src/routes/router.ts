@@ -103,24 +103,22 @@ export const routes: RouteRecordRaw[] = [
     component: () => import("@/layout/HeadDepartment.vue"),
     children: [
       {
-        path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_SUBJECT
-            .path,
-        name: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_SUBJECT
-            .name,
-        component: () =>
-            import(
-                "@/pages/headdepartment/headsubject/HeadSubject.vue"
-                ),
+        path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_SUBJECT.path,
+        name: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_SUBJECT.name,
+        component: () => import("@/pages/headdepartment/headsubject/HeadSubject.vue"),
+        meta: {
+          requiresRole: ROLES.HEAD_DEPARTMENT,
+          requiresAuth: true,
+        },
       },
       {
-        path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLAN
-            .path,
-        name: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLAN
-            .name,
-        component: () =>
-            import(
-                "@/pages/headdepartment/plan/Plan.vue"
-                ),
+        path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLAN.path,
+        name: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLAN.name,
+        component: () => import("@/pages/headdepartment/plan/Plan.vue"),
+        meta: {
+          requiresRole: ROLES.HEAD_DEPARTMENT,
+          requiresAuth: true,
+        },
       },
       {
         path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLAN_DETAIL.path,
@@ -148,30 +146,20 @@ export const routes: RouteRecordRaw[] = [
     component: () => import("@/layout/LayoutHeadSubject.vue"),
     children: [
       {
-        path: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLAN
-            .path,
-        name: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLAN
-            .name,
-        component: () =>
-            import(
-                "@/pages/headsubject/plan/HeadSubject.vue"
-                ),
+        path: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLAN.path,
+        name: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLAN.name,
+        component: () => import("@/pages/headsubject/plan/HeadSubject.vue"),
+        meta: {
+          requiresRole: ROLES.HEAD_SUBJECT,
+          requiresAuth: true,
+        },
       },
       {
         path: ROUTES_CONSTANTS.HEAD_SUBJECT.children.HEAD_SUBJECT_DETAIL.path,
         name: ROUTES_CONSTANTS.HEAD_SUBJECT.children.HEAD_SUBJECT_DETAIL.name,
         component: () => import("@/pages/headsubject/plan/HeadSubjectDetail.vue"),
         meta: {
-          requiresRole: ROLES.ADMIN,
-          requiresAuth: true,
-        },
-      },
-      {
-        path: ROUTES_CONSTANTS.HEAD_SUBJECT.children.HEAD_TUTOR_CLASS_DETAIL.path,
-        name: ROUTES_CONSTANTS.HEAD_SUBJECT.children.HEAD_TUTOR_CLASS_DETAIL.name,
-        component: () => import("@/pages/headsubject/plan/TutorClassDetail.vue"),
-        meta: {
-          requiresRole: ROLES.ADMIN,
+          requiresRole: ROLES.HEAD_SUBJECT,
           requiresAuth: true,
         },
       },
@@ -183,21 +171,20 @@ export const routes: RouteRecordRaw[] = [
     component: () => import("@/layout/Planner.vue"),
     children: [
       {
-        path: ROUTES_CONSTANTS.PLANNER.children.PLAN
-            .path,
-        name: ROUTES_CONSTANTS.PLANNER.children.PLAN
-            .name,
-        component: () =>
-            import(
-                "@/pages/planner/plan/Plan.vue"
-                ),
+        path: ROUTES_CONSTANTS.PLANNER.children.PLAN.path,
+        name: ROUTES_CONSTANTS.PLANNER.children.PLAN.name,
+        component: () => import("@/pages/planner/plan/Plan.vue"),
+        meta: {
+          requiresRole: ROLES.PLANER,
+          requiresAuth: true,
+        },
       },
       {
         path: ROUTES_CONSTANTS.PLANNER.children.PLAN_DETAIL.path,
         name: ROUTES_CONSTANTS.PLANNER.children.PLAN_DETAIL.name,
         component: () => import("@/pages/planner/plan/PlanDetail.vue"),
         meta: {
-          requiresRole: ROLES.ADMIN,
+          requiresRole: ROLES.PLANER,
           requiresAuth: true,
         },
       },
@@ -206,14 +193,12 @@ export const routes: RouteRecordRaw[] = [
         name: ROUTES_CONSTANTS.PLANNER.children.TUTOR_CLASS_DETAIL.name,
         component: () => import("@/pages/planner/plan/TutorClassDetail.vue"),
         meta: {
-          requiresRole: ROLES.ADMIN,
+          requiresRole: ROLES.PLANER,
           requiresAuth: true,
         },
       },
     ],
   },
-  
- 
 ];
 
 export const router = createRouter({
@@ -224,7 +209,7 @@ export const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-  const requiresRole = to.matched.some((record) => record.meta.requiresRole);
+  // const requiresRole = to.matched.some((record) => record.meta.requiresRole);
   const userRole = authStore?.user?.rolesCodes;
 
   if (userRole === null && requiresAuth) {

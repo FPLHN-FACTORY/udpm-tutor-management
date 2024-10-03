@@ -54,10 +54,10 @@ const { data, isLoading, isFetching } = useGetSubject(params, {
 
 const { data: dataDetail, isLoading: isLoadingDetail } = useDetailSubject(
   subjectId,
-  {
-    refetchOnWindowFocus: false,
-    enabled: () => !!subjectId.value,
-  }
+    {
+      refetchOnWindowFocus: false,
+      enabled: () => !!subjectId.value,
+    }
 );
 
 const handlePaginationChange = (newParams: ParamsGetSubjects) => {

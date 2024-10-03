@@ -5,11 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class HSPLCreateTutorClassRequest {
+public class HSPLUpdateTutorClassRequest {
 
-    private String planId;
-    private String subjectId;
-    private Integer numberOfClasses;
     private Integer numberOfLectures;
     private String format;
 

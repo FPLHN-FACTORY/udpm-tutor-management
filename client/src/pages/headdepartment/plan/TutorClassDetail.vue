@@ -18,13 +18,6 @@
             @update:pagination-params="handlePaginationChange"
             @handleOpenModalUpdate="handleOpenModalUpdate"
         />
-        <update-sTutor-class-detail-modal
-            :open="open"
-            @handleClose="handleClose"
-            @cancel="open = false"
-            :subject-detail="subjectDetail || null"
-            :is-loading-detail="isLoadingDetail || false"
-        />
       </div>
     </div>
   </div>
@@ -36,7 +29,6 @@ import { keepPreviousData } from '@tanstack/vue-query';
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import TutorClassDetailTable from '@/pages/headdepartment/plan/TutorClassDetailTable.vue';
-import UpdateSTutorClassDetailModal from "@/pages/headdepartment/plan/UpdateSTutorClassDetailModal.vue";
 import { ParamsGetPlans } from '@/services/api/headdepartment/plan.api.ts';
 import {ParamsGetTutorClassDetail} from "@/services/api/headdepartment/tutor-class.api.ts";
 import {SubjectResponse} from "@/services/api/admin/subject.api.ts";
@@ -44,11 +36,6 @@ import {SubjectResponse} from "@/services/api/admin/subject.api.ts";
 const route = useRoute();
 const open = ref(false);
 const tutorClassDetailId = ref<string | null>(null);
-
-const handleClose = () => {
-  open.value = false;
-  tutorClassDetailId.value = null;
-};
 
 let tutorClassId = computed(() => {
   const id = route.params.tutorClassId;
