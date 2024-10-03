@@ -5,8 +5,9 @@ import {
   getPlans, getSemesterInfo,
   ParamsGetPlans
 } from "@/services/api/headsubject/plan.api.ts";
-import {useQuery} from "@tanstack/vue-query";
+import {useQuery, UseQueryReturnType} from "@tanstack/vue-query";
 import {queryKey} from "@/constants/queryKey.ts";
+import {Ref} from "vue";
 
 export const useGetPlans = (
     params: Ref<ParamsGetPlans>,
@@ -14,7 +15,7 @@ export const useGetPlans = (
 ): UseQueryReturnType<Awaited<ReturnType<typeof getPlans>>, Error> => {
   return useQuery({
     queryKey: [queryKey.headSubject.plan.planList, params],
-    queryFn: () => getPlans(params),
+    queryFn: () => getPlans(params.value),
     ...options,
   });
 };

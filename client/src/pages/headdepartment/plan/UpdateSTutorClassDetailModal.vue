@@ -146,7 +146,6 @@ const formFields = computed(() => [
       showSearch: true,
       filterOption: filterOption,
     },
-    // options: departmentOptions.value,
   },
   {
     label: "Sinh viên tutor",
@@ -157,32 +156,42 @@ const formFields = computed(() => [
       loading: false,
       showSearch: true,
       filterOption: filterOption,
+      disabled: false,
     },
   },
   {
     label: "Ngày bắt đầu - kết thúc",
     name: "startEndTime",
-    component: "a-select",
+    component: "a-range-picker",
+    props: {
+      class: "w-full",
+      format: "DD/MM/YYYY",
+      disabled: false,
+    },
   },
   {
     label: "Ca",
-    name: "subjectType",
+    name: "shift",
     component: "a-select",
-    props: { placeholder: "Chọn loại môn học" },
     options: [
-      { value: "TRADITIONAL", label: "Truyền thống" },
-      { value: "ONLINE", label: "Online" },
-      { value: "BLEND", label: "Blend" },
+      { value: "CA 1", label: "CA 1" },
+      { value: "CA 2", label: "CA 2" },
+      { value: "CA 3", label: "CA 3" },
+      { value: "CA 4", label: "CA 4" },
+      { value: "CA 5", label: "CA 5" },
+      { value: "CA 6", label: "CA 6" },
     ],
+    props: {
+      placeholder: "Chọn ca",
+      disabled: false, // Thay đổi thành true nếu bạn muốn disable trường này
+    },
   },
   {
-    label: "Lớp",
-    name: "startDate",
-    component: "a-date-picker",
+    label: "Phòng",
+    name: "class",
+    component: "a-input",
     props: {
-      placeholder: "Chọn ngày tạo",
-      class: "w-full",
-      format: "DD/MM/YYYY",
+      disabled: false, // Thay đổi thành true nếu bạn muốn disable trường này
     },
   },
 ]);
@@ -208,7 +217,7 @@ const handleAddOrUpdate = async () => {
     const action = props.subjectDetail ? updateSubject : createSubject;
     const message = props.subjectDetail ? "Cập nhật môn học thành công!" : "Tạo môn học thành công!";
 
-    await action(actionParams, {
+    action(actionParams, {
       onSuccess: () => {
         toast.success(message);
         handleClose();
@@ -218,8 +227,7 @@ const handleAddOrUpdate = async () => {
             error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
         )
       },
-    }); // Chờ kết quả của hành động
-
+    });
   } catch (error: any) {
     console.error("🚀 ~ handleAddOrUpdate ~ error:", error);
   }

@@ -1,5 +1,4 @@
 import {DefaultResponse, PaginationParams, PaginationResponse, ResponseList} from "@/types/api.common.ts";
-import {Ref} from "vue";
 import {AxiosResponse} from "axios";
 import {PREFIX_API_HEAD_SUBJECT_PLAN} from "@/constants/url.ts";
 import request from "@/services/request.ts";
@@ -20,11 +19,11 @@ export type PlanResponse = ResponseList & {
   status: string;
 };
 
-export const getPlans = async (params: Ref<ParamsGetPlans>) => {
+export const getPlans = async (params: ParamsGetPlans) => {
   const res = (await request({
     url: `${PREFIX_API_HEAD_SUBJECT_PLAN}`,
     method: "GET",
-    params: params.value,
+    params: params,
   })) as AxiosResponse<
       DefaultResponse<PaginationResponse<Array<PlanResponse>>>
   >;
@@ -54,7 +53,7 @@ export const getSemesterInfo = async (params: ParamsGetPlans) => {
     method: "GET",
     params: params,
   })) as AxiosResponse<
-      DefaultResponse<DefaultResponse<SemesterInfoResponse>>
+      DefaultResponse<SemesterInfoResponse>
   >;
 
   return res.data;
@@ -66,6 +65,14 @@ export type PlanInfoResponse = {
   facilityName: string;
   numberSubjects: number;
   numberClasses: number;
+  blockName: string;
+  startTime: number;
+  endTime: number;
+  numberStudents: number;
+  numberTeachers: number;
+  addedSubjects: string;
+  notAddedSubjects: string;
+  rating: number;
 };
 
 export const getPlanInfo = async (params: ParamsGetPlans) => {
@@ -74,7 +81,7 @@ export const getPlanInfo = async (params: ParamsGetPlans) => {
     method: "GET",
     params: params,
   })) as AxiosResponse<
-      DefaultResponse<DefaultResponse<PlanInfoResponse>>
+      DefaultResponse<Array<PlanInfoResponse>>
   >;
 
   return res.data;
@@ -87,6 +94,8 @@ export type PlanInfoDetailResponse = {
   facilityName: string;
   numberSubjects: number;
   numberClasses: number;
+  startTime: number;
+  endTime: number;
 };
 
 export const getPlanInfoById = async (planId: string | null) => {
@@ -94,7 +103,7 @@ export const getPlanInfoById = async (planId: string | null) => {
     url: `${PREFIX_API_HEAD_SUBJECT_PLAN}/info/${planId}`,
     method: "GET",
   })) as AxiosResponse<
-      DefaultResponse<DefaultResponse<PlanInfoDetailResponse>>
+      DefaultResponse<PlanInfoDetailResponse>
   >;
 
   return res.data;

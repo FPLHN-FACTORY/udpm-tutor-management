@@ -8,8 +8,9 @@ public interface HSTutorClassResponse extends IsIdentify, HasOrderNumber {
     String getSubjectId();
     String getSubjectCode();
     String getSubjectName();
-    String getNumberClasses();
+    Integer getNumberClasses();
     String getHeadSubject();
-    Long getStatus();
+    Integer getNumberLectures();
+    Integer getFormat();
 
 }

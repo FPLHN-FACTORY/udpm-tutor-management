@@ -2,9 +2,13 @@ import { queryKey } from "@/constants/queryKey";
 import {
   getBlockOptions,
   getDepartmentOptions,
-  getFacilityOptions, getSemesterOptions,
+  getFacilityOptions,
+  getSemesterOptions,
+  getStaffByRole,
+  ParamsStaffSearchByRole,
 } from "@/services/api/common.api";
 import { UseQueryReturnType, useQuery } from "@tanstack/vue-query";
+import {Ref} from "vue";
 
 export const useGetDepartmentOptions = (
   query?: string,
@@ -58,6 +62,20 @@ export const useGetBlockOptions = (
   return useQuery({
     queryKey: [queryKey.common.blockOptions, semesterId],
     queryFn: () => getBlockOptions(semesterId),
+    ...options,
+  });
+};
+
+export const useGetStaffByRoleOptions = (
+    params: Ref<ParamsStaffSearchByRole>,
+    options?: any
+): UseQueryReturnType<
+    Awaited<ReturnType<typeof getStaffByRole>>,
+    Error
+> => {
+  return useQuery({
+    queryKey: [queryKey.common.staffOptions],
+    queryFn: () => getStaffByRole(params.value),
     ...options,
   });
 };

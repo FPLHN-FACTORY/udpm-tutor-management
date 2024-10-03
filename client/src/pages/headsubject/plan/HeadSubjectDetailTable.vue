@@ -1,6 +1,5 @@
 <template>
     <div class="mt-10 rounded-md flex h-full flex-col">
-      <h2 class="text-center text-xl font-semibold mb-7">Danh sách môn học</h2>
         <div class="flex h-0 flex-1 flex-col">
           <tutor-table
           wrapperClassName="min-h-[410px]"
@@ -13,108 +12,95 @@
         >
           <template #bodyCell="{ column, record }">
             <div v-if="column.key === 'action'" class="space-x-2 flex items-center justify-center">
-              <a-tooltip v-if="record.status === 1" title="Xem chi tiết" color="#FFC26E">
-                <a-button
-                    class="flex items-center justify-center"
-                    type="primary"
-                    size="large"
-                    @click="goToDetail(record.id)"
-                    :icon="h(EyeOutlined)"
-                />
-              </a-tooltip>
-              <a-tooltip v-if="record.status === 0" title="Nhập số lượng lớp tutor" color="#FFC26E">
+              <a-tooltip title="Nhập số lượng lớp tutor" color="#FFC26E">
                 <a-button
                     class="flex items-center justify-center"
                     type="primary"
                     size="large"
                     @click="$emit('handleOpenModalAddNumberTutorClass', record)"
                     :icon="h(EditOutlined)"
-                />
-              </a-tooltip>
-              <a-tooltip v-if="record.status === 0" title="Phê duyệt" color="#FFC26E">
-                <a-button
-                    class="flex items-center justify-center"
-                    type="primary"
-                    size="large"
-                    @click="$emit('handleApproveTutorClass', record.id)"
-                    :icon="h(CheckCircleOutlined)"
+                    :disabled="canUpdate"
                 />
               </a-tooltip>
             </div>
-            <div v-if="column.key === 'status'" class="text-center">
-              <a-tag v-if="record.status === 1" color="success">Đã duyệt</a-tag>
-              <a-tag v-else-if="record.status === 0" color="error">Chưa duyệt</a-tag>
+            <div v-if="column.key === 'format'" class="text-center">
+              <a-tag v-if="record.format === 0" color="success">ONLINE</a-tag>
+              <a-tag v-else-if="record.format === 1" color="warning">OFFLINE</a-tag>
             </div>
           </template>
          </tutor-table>
         </div>
     </div>
   </template>
-  
+
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
-import {EyeOutlined, EditOutlined, CheckCircleOutlined} from "@ant-design/icons-vue";
+import { EditOutlined } from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { h } from "vue";
-import {TutorClassResponse} from "@/services/api/headsubject/plan.api.ts";
-import { router } from "@/routes/router.ts";
+import { TutorClassResponse } from "@/services/api/headsubject/plan.api.ts";
 
-  const goToDetail = (tutorClassId: string) => {
-    router.push({ name: 'detailTutorClassDetail', params: { tutorClassId } });
-  }
-  
-  defineProps({
-    dataSource: Array<TutorClassResponse>,
-    loading: Boolean,
-    paginationParams: Object,
-    totalPages: Number,
-  });
-  
-  defineEmits([
-    "update:paginationParams",
-    "handleOpenModalAddNumberTutorClass",
-    "handleApproveTutorClass"
-  ]);
-  
-  const columnsSubject: ColumnType[] = [
-    {
+defineProps({
+  dataSource: Array<TutorClassResponse>,
+  loading: Boolean,
+  paginationParams: Object,
+  totalPages: Number,
+  plan: Object as () => any | null,
+  canUpdate: Boolean
+});
+
+defineEmits([
+  "update:paginationParams",
+  "handleOpenModalAddNumberTutorClass",
+  "handleApproveTutorClass"
+]);
+
+const columnsSubject: ColumnType[] = [
+  {
       title: "STT",
       dataIndex: "orderNumber",
       key: "index",
       ellipsis: true,
-    },
-    {
-      title: "Mã môn học",
-      dataIndex: "subjectCode",
-      key: "subjectCode",
-      ellipsis: true,
-    },
-    {
-      title: "Tên môn học",
-      dataIndex: "subjectName",
-      key: "subjectName",
-      ellipsis: true,
-    },
-    {
-      title: "Số lớp",
-      dataIndex: "numberClasses",
-      key: "numberClasses",
-      ellipsis: true,
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      ellipsis: true,
-      width: "200px",
-      align: "center",
-    },
-    {
-      title: "Hành động",
-      key: "action",
-      align: "center",
-      width: "150px",
-    },
-  ];
+  },
+  {
+    title: "Mã môn học",
+    dataIndex: "subjectCode",
+    key: "subjectCode",
+    ellipsis: true,
+  },
+  {
+    title: "Tên môn học",
+    dataIndex: "subjectName",
+    key: "subjectName",
+    ellipsis: true,
+  },
+  {
+    title: "Số lớp",
+    dataIndex: "numberClasses",
+    key: "numberClasses",
+    ellipsis: true,
+  },
+  {
+    title: "Số buổi",
+    dataIndex: "numberLectures",
+    key: "numberLectures",
+    ellipsis: true,
+    width: "200px",
+    align: "center",
+  },
+  {
+    title: "Hình thức",
+    dataIndex: "format",
+    key: "format",
+    ellipsis: true,
+    width: "200px",
+    align: "center",
+  },
+  {
+    title: "Hành động",
+    key: "action",
+    align: "center",
+    width: "150px",
+  },
+];
 </script>
-  

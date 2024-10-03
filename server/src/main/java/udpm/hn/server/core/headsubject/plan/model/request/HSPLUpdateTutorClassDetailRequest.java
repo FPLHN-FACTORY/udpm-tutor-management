@@ -8,11 +8,8 @@ import udpm.hn.server.core.common.base.PageableRequest;
 @Setter
 @Getter
 @ToString
-public class HSPLSubjectListRequest extends PageableRequest {
+public class HSPLUpdateTutorClassDetailRequest{
 
-    private String planId;
-    private String facilityId;
-    private String semesterId;
-    private String userId;
+    private String staffId;
 
 }

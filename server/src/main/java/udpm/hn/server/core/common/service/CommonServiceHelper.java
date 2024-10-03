@@ -5,12 +5,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.core.common.model.request.CMOptionsFilterRequest;
+import udpm.hn.server.core.common.model.request.StaffSearchByRoleRequest;
 import udpm.hn.server.core.common.model.request.StaffSearchRequest;
 import udpm.hn.server.core.common.model.response.SemesterInfoResponse;
 import udpm.hn.server.core.common.repository.CMDepartmentExtendRepository;
 import udpm.hn.server.core.common.repository.CMFacilityExtendRepository;
 import udpm.hn.server.core.common.repository.CMSemesterExtendRepository;
 import udpm.hn.server.core.common.repository.CMStaffExtendRepository;
+
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -57,6 +60,15 @@ public class CommonServiceHelper {
     public ResponseObject<?> getStaffSearch(StaffSearchRequest request) {
         return new ResponseObject<>(
                 cMStaffExtendRepository.getStaffs(request),
+                HttpStatus.OK,
+                "Lấy thông tin nhân viên thành công"
+        );
+    }
+
+    public ResponseObject<?> getStaffSearchByRole(StaffSearchByRoleRequest request) {
+        request.setRole(Arrays.asList("GIAO_VIEN"));
+        return new ResponseObject<>(
+                cMStaffExtendRepository.getStaffsByRole(request),
                 HttpStatus.OK,
                 "Lấy thông tin nhân viên thành công"
         );

@@ -2,6 +2,8 @@ package udpm.hn.server.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -12,7 +14,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 import udpm.hn.server.entity.base.PrimaryEntity;
-import udpm.hn.server.infrastructure.constant.PlanFormat;
+import udpm.hn.server.infrastructure.constant.Format;
 
 import java.io.Serializable;
 
@@ -34,10 +36,13 @@ public class TutorClass extends PrimaryEntity implements Serializable {
     @JoinColumn(name = "subject_id")
     private Subject subject;
 
+    @Column(name = "format")
+    private Format format;
+
     @Column(name = "number_of_classes")
     private Integer numberOfClasses;
 
-    @Column(name = "tutor_class_status")
-    private Integer tutorClassStatus;
+    @Column(name = "number_of_lectures")
+    private Integer numberOfLectures;
 
 }
