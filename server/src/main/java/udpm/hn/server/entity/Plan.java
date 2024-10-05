@@ -49,4 +49,13 @@ public class Plan extends PrimaryEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private PlanStatus planStatus;
 
+    @Column(name = "reason_reject")
+    private String reason;
+
+    @Column(name = "start_date")
+    private Long startDate;
+
+    @Column(name = "end_date")
+    private Long endDate;
+
 }

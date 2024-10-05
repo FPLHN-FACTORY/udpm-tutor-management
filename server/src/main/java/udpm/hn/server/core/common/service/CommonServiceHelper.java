@@ -7,13 +7,14 @@ import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.core.common.model.request.CMOptionsFilterRequest;
 import udpm.hn.server.core.common.model.request.StaffSearchByRoleRequest;
 import udpm.hn.server.core.common.model.request.StaffSearchRequest;
+import udpm.hn.server.core.common.model.request.StudentSearchRequest;
 import udpm.hn.server.core.common.model.response.SemesterInfoResponse;
 import udpm.hn.server.core.common.repository.CMDepartmentExtendRepository;
 import udpm.hn.server.core.common.repository.CMFacilityExtendRepository;
 import udpm.hn.server.core.common.repository.CMSemesterExtendRepository;
 import udpm.hn.server.core.common.repository.CMStaffExtendRepository;
 import udpm.hn.server.core.common.repository.CMSubjectExtendResponse;
-
+import udpm.hn.server.core.common.repository.CMStudentTutorExtendRepository;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +26,8 @@ public class CommonServiceHelper {
     private final CMSemesterExtendRepository cMSemesterExtendRepository;
 
     private final CMStaffExtendRepository cMStaffExtendRepository;
+
+    private final CMStudentTutorExtendRepository cmStudentTutorExtendRepository;
 
     private final CMDepartmentExtendRepository cmDepartmentExtendRepository;
 
@@ -83,6 +86,14 @@ public class CommonServiceHelper {
                 subjectExtendResponse.getSubjectOptions(),
                 HttpStatus.OK,
                 "Lấy thông tin môn học thành công"
+        );
+    }
+
+    public ResponseObject<?> getStudentTutor(StudentSearchRequest request) {
+        return new ResponseObject<>(
+                cmStudentTutorExtendRepository.getStudentTutor(request),
+                HttpStatus.OK,
+                "Lấy thông tin sinh viên thành công"
         );
     }
 

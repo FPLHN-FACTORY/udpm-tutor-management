@@ -223,7 +223,7 @@ const handleAddOrUpdate = () => {
             toast.success(message);
             handleClose();
           },
-          onError: (error) => {
+          onError: (error: any) => {
             toast.error(
                 error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
             )

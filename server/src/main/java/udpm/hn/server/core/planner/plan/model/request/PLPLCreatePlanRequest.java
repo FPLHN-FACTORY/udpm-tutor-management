@@ -11,15 +11,12 @@ import udpm.hn.server.core.common.base.PageableRequest;
 public class PLPLCreatePlanRequest{
 
     private String blockId;
-
     private String semesterId;
-
     private String departmentCode;
-
     private String facilityCode;
-
     private String userCode;
-
     private String description;
+    private Long startTime;
+    private Long endTime;
 
 }

@@ -1,46 +1,70 @@
 <template>
-  <div class="mt-10 rounded-md flex h-full flex-col">
-    <h2 class="text-center text-xl font-semibold mb-7">Danh sách lớp tutor của môn học
-      <span class="text-xl font-semibold text-green-600">({{ tutorClassDetailData.subjectName }})</span>
-    </h2>
+  <div class="mt-5 rounded-md flex h-full flex-col">
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
-          wrapperClassName="min-h-[410px]"
           :columns="columnsTutorClassDetail"
           :data-source="dataSource"
           :loading="loading"
           :pagination-params="paginationParams || {}"
           :total-pages="totalPages || 0"
+          :scroll="{ x: 'max-content' }"
           @update:pagination-params="$emit('update:paginationParams', $event)"
       >
         <template #bodyCell="{ column, record }">
-          <div v-if="column.key === 'action'" class="space-x-2 flex items-center justify-center">
-            <a-tooltip
-                title="Cập nhật lớp tutor"
-                color="#FFC26E">
-              <a-button
-                  class="flex items-center justify-center"
-                  type="primary"
-                  size="large"
-                  @click="$emit('handleOpenModalUpdate', record)"
-                  :icon="h(EditOutlined)"/>
-            </a-tooltip>
+          <div v-if="column.key === 'studentTutor'">
+            <a-select
+                v-model:value="record.studentTutor"
+                placeholder="Chọn sinh viên"
+                style="width: 100%"
+                show-search
+                :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
+                disabled
+            >
+              <a-select-option
+                  v-for="student in studentOption"
+                  :key="student.value"
+                  :value="student.value"
+              >
+                {{ student.label }}
+              </a-select-option>
+            </a-select>
           </div>
-          <div v-if="column.key === 'status'" class="text-center">
-            <a-tag v-if="record.status === 0" color="success">Đã duyệt</a-tag>
-            <a-tag v-else-if="record.status === 1" color="error">Chưa duyệt</a-tag>
+          <div v-else-if="column.key === 'teacherTutor'">
+            <a-select
+                v-model:value="record.teacherTutor"
+                show-search
+                placeholder="Chọn giảng viên"
+                :options="teacherOption"
+                :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
+                style="width: 100%"
+                disabled
+            />
           </div>
-          <div v-else-if="column.key === 'startTime'" >
-            {{ record.startTime? getDateFormat(record.startTime, false) : '' }}
+          <div v-else-if="column.key === 'shift'">
+            <a-select
+                v-model:value="record.shift"
+                show-search
+                placeholder="Chọn ca"
+                :options="shiftOptions"
+                :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
+                style="width: 100%"
+                disabled
+            />
           </div>
-          <div v-else-if="column.key === 'endTime'" >
-            {{ record.endTime? getDateFormat(record.endTime, false) : '' }}
+          <div v-else-if="column.key === 'room'">
+            <a-input
+                v-model:value="record.room"
+                placeholder="Nhập phòng"
+                :disabled="canUpdate"
+            />
           </div>
-          <div v-else-if="column.key === 'studentTutor'" >
-            {{ record.studentTutor || 'Chưa phân công' }}
-          </div>
-          <div v-else-if="column.key === 'teacherTutor'" >
-            {{ record.teacherTutor || 'Chưa phân công' }}
+          <div v-else-if="column.key === 'time'">
+            <a-range-picker
+                :value="[record.startTime ? getDateFormat(record.startTime, false) : null,
+              record.endTime ? getDateFormat(record.endTime, false) : null]"
+                :placeholder="['Ngày bắt đầu', 'Ngày kết thúc']"
+                disabled
+            />
           </div>
         </template>
       </tutor-table>
@@ -51,23 +75,25 @@
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
 import { ColumnType } from "ant-design-vue/es/table";
-import { TutorClassDetailResponse } from "@/services/api/headsubject/tutor-class.api.ts";
-import {getDateFormat} from "@/utils/common.helper.ts";
-import {h} from "vue";
-import { EditOutlined } from "@ant-design/icons-vue";
+import { TutorClassDetailResponse } from "@/services/api/headdepartment/tutor-class.api.ts";
+import { getDateFormat } from "@/utils/common.helper.ts";
+import {defineProps} from "vue";
+import {FormatCommonOptionsResponse} from "@/services/api/common.api.ts";
 
 defineProps({
-  dataSource: Array<TutorClassDetailResponse>,
+  dataSource: Array as () => TutorClassDetailResponse[],
   loading: Boolean,
   paginationParams: Object,
   totalPages: Number,
-  tutorClassDetailData: Object as () => any | null,
+  studentOption: Array as () => FormatCommonOptionsResponse[],
+  teacherOption: Array as () => FormatCommonOptionsResponse[],
+  canUpdate: Boolean
 });
 
-defineEmits([
-  "update:paginationParams",
-  "handleOpenModalUpdate",
-]);
+const shiftOptions = Array.from({ length: 6 }, (_, index) => ({
+  value: `Ca ${index + 1}`,
+  label: `Ca ${index + 1}`,
+}));
 
 const columnsTutorClassDetail: ColumnType[] = [
   {
@@ -96,41 +122,29 @@ const columnsTutorClassDetail: ColumnType[] = [
     dataIndex: "teacherTutor",
     key: "teacherTutor",
     ellipsis: true,
-    width: "150px",
+    width: "100px",
   },
   {
     title: "Ca học",
     dataIndex: "shift",
     key: "shift",
     ellipsis: true,
-    width: "100px",
+    width: "80px",
   },
   {
     title: "Phòng",
-    dataIndex: "class",
-    key: "class",
+    dataIndex: "room",
+    key: "room",
     ellipsis: true,
-    width: "100px",
+    width: "80px",
   },
   {
-    title: "Ngày bắt đầu",
-    dataIndex: "startTime",
-    key: "startTime",
+    title: "Thời gian",
+    dataIndex: "time",
+    key: "time",
     ellipsis: true,
-    width: "120px",
-  },
-  {
-    title: "Ngày kết thúc",
-    dataIndex: "endTime",
-    key: "endTime",
-    ellipsis: true,
-    width: "120px",
-  },
-  {
-    title: "Hành động",
-    key: "action",
-    align: "center",
-    width: "150px",
+    width: "250px",
   },
 ];
+
 </script>

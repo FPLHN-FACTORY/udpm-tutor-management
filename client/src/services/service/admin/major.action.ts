@@ -42,7 +42,7 @@ export function useMajorSynchronize() {
       });
       return data;
     },
-    onError: (error) => {
+    onError: (error: any) => {
       // Handle error
       console.error('Error during synchronization:', error);
     }
@@ -60,7 +60,7 @@ export function useMajorCampusSynchronize() {
       });
       return data;
     },
-    onError: (error) => {
+    onError: (error: any) => {
       throw error;
     }
   });

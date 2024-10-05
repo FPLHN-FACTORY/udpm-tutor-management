@@ -20,12 +20,14 @@ public interface HDPLPlanExtendRepository extends PlanRepository {
 
     @Query(value = """
             SELECT
-                ROW_NUMBER() OVER(ORDER BY b.start_time DESC) AS orderNumber,
+                ROW_NUMBER() OVER(ORDER BY pl.id DESC) AS orderNumber,
                 pl.id AS id,
                 CONCAT(s.name, ' ', s.year) AS planName,
                 b.name AS blockName,
                 d.name AS departmentName,
                 f.name AS facilityName,
+                pl.start_date AS startTime,
+                pl.end_date AS endTime,                
                 COALESCE(tc.numberSubjects, 0) AS numberSubjects,
                 pl.plan_status AS status
             FROM
@@ -56,6 +58,8 @@ public interface HDPLPlanExtendRepository extends PlanRepository {
                 b.name AS blockName,
                 d.name AS departmentName,
                 f.name AS facilityName,
+                pl.start_date AS startTime,
+                pl.end_date AS endTime,
                 COALESCE(tc.numberSubjects, 0) AS numberSubjects,
                 pl.plan_status AS status
             FROM

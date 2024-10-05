@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import udpm.hn.server.core.common.model.request.CMOptionsFilterRequest;
 import udpm.hn.server.core.common.model.request.StaffSearchByRoleRequest;
 import udpm.hn.server.core.common.model.request.StaffSearchRequest;
+import udpm.hn.server.core.common.model.request.StudentSearchRequest;
 import udpm.hn.server.core.common.service.CommonServiceHelper;
 import udpm.hn.server.infrastructure.constant.MappingConstants;
 import udpm.hn.server.utils.Helper;
@@ -35,6 +36,11 @@ public class CommonRestController {
     @GetMapping("/staff/role")
     public ResponseEntity<?> searchStaffByRole(StaffSearchByRoleRequest request) {
         return Helper.createResponseEntity(commonServiceHelper.getStaffSearchByRole(request));
+    }
+
+    @GetMapping("/student/tutor")
+    public ResponseEntity<?> searchStudentTutor(StudentSearchRequest request) {
+        return Helper.createResponseEntity(commonServiceHelper.getStudentTutor(request));
     }
 
     @GetMapping("/department")

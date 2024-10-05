@@ -27,7 +27,7 @@ export const useCreateTutorClass = () => {
         },
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.log("🚀 ~ useUpdateHeadSubjectTutorDetail ~ error:", error);
     },
   });
@@ -46,7 +46,7 @@ export const useUpdateTutorClass = () => {
         queryKey: [queryKey.headSubject.plan.tutorClassList],
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.log("🚀 ~ useDeleteHeadSubjectTutorDetail ~ error:", error);
     },
   });
@@ -100,7 +100,7 @@ export const useUpdateTutorClassDetail = () => {
         queryKey: [queryKey.headSubject.plan.tutorClassDetailList],
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.log("🚀 ~ useDeleteHeadSubjectTutorDetail ~ error:", error);
     },
   });
@@ -120,7 +120,7 @@ export const useDeleteTutorClassDetail = () => {
         },
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.log("🚀 ~ useDeleteHeadSubjectTutorDetail ~ error:", error);
     },
   });
@@ -140,7 +140,7 @@ export const useAddTutorClassDetail = () => {
         },
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.log("🚀 ~ useDeleteHeadSubjectTutorDetail ~ error:", error);
     },
   });

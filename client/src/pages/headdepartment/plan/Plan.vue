@@ -17,8 +17,8 @@
             <a-descriptions-item label="Học kỳ">{{ semesterData?.planName }}</a-descriptions-item>
             <a-descriptions-item label="Bộ môn">{{ semesterData?.departmentName }}</a-descriptions-item>
             <a-descriptions-item label="Cơ sở">{{ semesterData?.facilityName }}</a-descriptions-item>
-            <a-descriptions-item label="Ngày bắt đầu">{{ getDateFormat(semesterData?.startTime, false) }}</a-descriptions-item>
-            <a-descriptions-item label="Ngày kết thúc">{{ getDateFormat(semesterData?.endTime, false) }}</a-descriptions-item>
+            <a-descriptions-item label="Ngày bắt đầu">{{ semesterData? getDateFormat(semesterData?.startTime, false) : "" }}</a-descriptions-item>
+            <a-descriptions-item label="Ngày kết thúc">{{ semesterData? getDateFormat(semesterData?.endTime, false) : "" }}</a-descriptions-item>
           </a-descriptions>
           <div class="mt-4">
             <template v-if="planInfoData && planInfoData.length > 0">
@@ -44,71 +44,54 @@
         </template>
       </div>
     </div>
-    <head-plan-filter
-        :semester-options="semesterOptions"
+    <plan-filter
         @filter="handleFilter"
-        :currentSemester="userInfo.semesterId"
+        :semesterOptions="semesterOptions"
+        :currentSemester="userInfo?.semesterId"
     />
-    <head-plan-table
+    <plan-table
         :data-source="planData"
         :loading="isLoading || isFetching"
         :pagination-params="params"
         :total-pages="totalPages"
-         @update:pagination-params="handlePaginationChange"
-         @update:approve-plan="handleRefetch"
+        @update:pagination-params="handlePaginationChange"
     />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { useGetSemesterOptions } from "@/services/service/common.action";
-import HeadPlanFilter from "./PlanFilter.vue";
-import HeadPlanTable from "./PlanTable.vue";
+import PlanTable from "@/pages/headdepartment/plan/PlanTable.vue";
 import PlanForm from "@/pages/headdepartment/plan/PlanForm.vue";
-import { computed, ref } from "vue";
-import { ParamsGetPlans } from "@/services/api/headdepartment/plan.api.ts";
-import { useGetPlans, useGetPlanInfo, useGetSemesterInfo } from "@/services/service/headdepartment/plan.action.ts";
+import PlanFilter from "@/pages/headdepartment/plan/PlanFilter.vue";
+import { ParamsGetPlans, PlanResponse } from "@/services/api/headdepartment/plan.api.ts";
+import {
+  useDetailPlan, useGetPlanInfo,
+  useGetPlans, useGetSemesterInfo,
+} from "@/services/service/headdepartment/plan.action";
 import { keepPreviousData } from "@tanstack/vue-query";
-import {useAuthStore} from "@/stores/auth.ts";
+import {computed, ref, watch} from "vue";
+import { useGetSemesterOptions } from "@/services/service/common.action.ts";
+import { useAuthStore } from "@/stores/auth.ts";
 import {formatBlockName, getDateFormat} from "@/utils/common.helper.ts";
 
 const auth = useAuthStore();
 const userInfo = computed(() => auth.user);
-const activeKey = ref('1');
+const open = ref(false);
+const planId = ref<string | null>(null);
+const activeKey = ref('1'); // Default to the first tab (0-indexed)
 
 const params = ref<ParamsGetPlans>({
   page: 1,
-  size: 5,
+  size: 10,
   semesterId: userInfo.value?.semesterId,
   departmentCode: userInfo.value?.departmentCode,
   facilityCode: userInfo.value?.facilityCode
-})
+});
 
-const { data: semesterOptionsData } = useGetSemesterOptions();
-
-const { data, isLoading, isFetching, refetch } = useGetPlans(params, {
+const { data, isLoading, isFetching } = useGetPlans(params, {
   refetchOnWindowFocus: false,
   placeholderData: keepPreviousData,
 });
-
-const handleFilter = (newParams: ParamsGetPlans) => {
-  params.value = { ...params.value, ...newParams };
-};
-
-const handlePaginationChange = (newParams: ParamsGetPlans) => {
-  params.value = { ...params.value, ...newParams };
-};
-
-const handleRefetch = () => {
-  refetch();
-}
-
-const semesterOptions = computed(() =>
-  semesterOptionsData?.value?.data.map((semester) => ({
-    value: semester.id,
-    label: semester.name,
-  }))
-);
 
 const { data: semesterInfo } = useGetSemesterInfo(params.value, {
   refetchOnWindowFocus: false,
@@ -120,8 +103,61 @@ const { data: planInfo, refetch: refetchPlanInfo } = useGetPlanInfo(params.value
   enabled: () => !!params.value.semesterId,
 });
 
+const { data: dataDetail } = useDetailPlan(
+    planId,
+    {
+      refetchOnWindowFocus: false,
+      enabled: () => !!planId.value,
+    }
+);
+
+const handlePaginationChange = (newParams: ParamsGetPlans) => {
+  params.value = { ...params.value, ...newParams };
+};
+
+const handleFilter = (newParams: ParamsGetPlans) => {
+  params.value = { ...params.value, ...newParams };
+};
+
+const handleOpenModalAdd = () => {
+  open.value = true;
+  planId.value = null;
+};
+
+const handleOpenModalUpdate = (record: PlanResponse) => {
+  planId.value = record.id;
+  open.value = true;
+};
+
+const { data: semesterOptionsData } = useGetSemesterOptions();
+
+const semesterOptions = computed(() =>
+    semesterOptionsData?.value?.data.map((semester) => ({
+      value: semester.id,
+      label: semester.name,
+    }))
+);
+
+watch(
+    () => data.value,
+    (newData) => {
+      if (newData) {
+        refetchPlanInfo();
+      }
+    },
+    { immediate: true } // Optional: Call the function immediately on component mount
+);
+
+const planData = computed(() => data?.value?.data?.data || []);
 const semesterData = computed(() => semesterInfo.value?.data);
 const planInfoData = computed(() => planInfo.value?.data || null);
-const planData = computed(() => data?.value?.data?.data || []);
 const totalPages = computed(() => data?.value?.data?.totalPages || 0);
+const planDetail = computed(() =>
+    planId.value
+        ? {
+          ...dataDetail.value?.data,
+          planId: planId.value,
+        }
+        : null
+);
 </script>

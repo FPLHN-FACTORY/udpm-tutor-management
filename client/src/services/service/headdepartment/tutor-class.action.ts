@@ -1,8 +1,5 @@
 import { queryKey } from "@/constants/queryKey";
-import {
-  useQuery,
-  UseQueryReturnType,
-} from "@tanstack/vue-query";
+import { useQuery, UseQueryReturnType } from "@tanstack/vue-query";
 import { ComputedRef, Ref} from "vue";
 import {
   getDetailTutorClass, getListTutorClassDetail,

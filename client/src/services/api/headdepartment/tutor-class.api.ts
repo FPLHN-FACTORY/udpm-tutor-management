@@ -1,5 +1,5 @@
 import {
-  PREFIX_API_HEAD_OF_PLAN_HEAD_DEPARTMENT,
+  PREFIX_API_HEAD_DEPARTMENT_PLAN,
 } from "@/constants/url";
 import request from "@/services/request.ts";
 import { DefaultResponse, PaginationParams, PaginationResponse, ResponseList } from "@/types/api.common";
@@ -12,17 +12,19 @@ export type DetailSubjectTutorResponse = {
   subjectName: string;
 };
 
-export type TutorClassDetailResponse = {
-  nameTutorClass: number;
-  headSubject: string;
-  numberOfLectures:  number;
+export type TutorClassDetailResponse = ResponseList & {
+  tutorClassCode: number;
+  studentTutor: string;
+  teacherTutor: string;
+  shift: string;
+  room: string;
   startTime: number;
   endTime: number;
 };
 
 export const getDetailTutorClass = async (planId: string | null) => {
     const res = (await request({
-      url: `${PREFIX_API_HEAD_OF_PLAN_HEAD_DEPARTMENT}/tutor/${planId}`,
+      url: `${PREFIX_API_HEAD_DEPARTMENT_PLAN}/tutor/${planId}`,
       method: "GET",
     })) as AxiosResponse<DefaultResponse<DetailSubjectTutorResponse>>;
 
@@ -45,7 +47,7 @@ export type TutorClassResponse = ResponseList & {
 
 export const getTutorClass = async (params: Ref<ParamsGetTutorClass>) => {
   const res = (await request({
-    url: `${PREFIX_API_HEAD_OF_PLAN_HEAD_DEPARTMENT}/tutor`,
+    url: `${PREFIX_API_HEAD_DEPARTMENT_PLAN}/tutor`,
     method: "GET",
     params: params.value,
   })) as AxiosResponse<
@@ -57,11 +59,16 @@ export const getTutorClass = async (params: Ref<ParamsGetTutorClass>) => {
 
 export interface ParamsGetTutorClassDetail extends PaginationParams {
   tutorClassId?: string | null;
+  planId?: string | null,
+  facilityId?: string | null,
+  semesterId?: string | null,
+  teacherId?: string | null,
+  query?: string | null,
 }
 
 export const getListTutorClassDetail = async (params: Ref<ParamsGetTutorClassDetail>) => {
   const res = (await request({
-    url: `${PREFIX_API_HEAD_OF_PLAN_HEAD_DEPARTMENT}/tutor-detail`,
+    url: `${PREFIX_API_HEAD_DEPARTMENT_PLAN}/tutor-detail`,
     method: "GET",
     params: params.value,
   })) as AxiosResponse<

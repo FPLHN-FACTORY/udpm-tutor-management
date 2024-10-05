@@ -59,13 +59,13 @@ export function useStaffSynchronize() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (campusCode: string) => getStaffSynchronize(campusCode),
+        mutationFn: (campusCode: string | null) => getStaffSynchronize(campusCode),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: [queryKey.admin.staff.staffList],
             });
         },
-        onError: (error) => {
+        onError: (error: any) => {
             // Handle error
             console.error('Error during synchronization:', error?.response?.data?.message);
         }

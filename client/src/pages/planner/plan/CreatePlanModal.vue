@@ -40,12 +40,13 @@
 <script lang="ts" setup>
 import { Form } from "ant-design-vue";
 import { computed, reactive, ref, watch } from "vue";
-import {useCreatePlan, useUpdatePlan} from "@/services/service/planner/plan.action.ts";
+import { useCreatePlan, useUpdatePlan } from "@/services/service/planner/plan.action.ts";
 import { useAuthStore } from "@/stores/auth.ts";
-import {filterOption, formatBlockName} from "@/utils/common.helper.ts";
+import { filterOption, formatBlockName } from "@/utils/common.helper.ts";
 import { getBlockOptions } from "@/services/api/common.api.ts";
-import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
-import {toast} from "vue3-toastify";
+import { ERROR_MESSAGE } from "@/constants/message.constant.ts";
+import { toast } from "vue3-toastify";
+import dayjs from "dayjs";
 
 const auth = useAuthStore();
 const userInfo = computed(() => auth.user);
@@ -56,7 +57,7 @@ const props = defineProps({
   isLoadingDetail: Boolean,
   semesterOptions: Array as () => any,
   semesterId: String,
-  blockId: String
+  blockId: String,
 });
 
 const emit = defineEmits(["handleClose"]);
@@ -68,6 +69,7 @@ interface PlanForm {
   blockId: string | null,
   description: string | null,
   semesterId: string | null,
+  timeAdditionSubject: [dayjs.Dayjs, dayjs.Dayjs] | null,
   departmentCode: string | null,
   facilityCode: string | null,
   userCode: string | null,
@@ -78,6 +80,7 @@ const modelRef = reactive<PlanForm>({
   blockId: "",
   description: "",
   semesterId: "",
+  timeAdditionSubject: [dayjs(), dayjs()],
   departmentCode: userInfo.value?.departmentCode || "",
   facilityCode: userInfo.value?.facilityCode || "",
   userCode: userInfo.value?.userCode || "",
@@ -87,7 +90,7 @@ const modelRef = reactive<PlanForm>({
 const rulesRef = reactive({
   semesterId: [{ required: true, message: "Vui lòng chọn học kỳ", trigger: "blur" }],
   blockId: [{ required: true, message: "Vui lòng chọn block", trigger: "blur" }],
-  description: [{ required: false, trigger: "blur" }],
+  timeAdditionSubject: [{ required: true, message: "Vui lòng chọn thời gian thêm môn", trigger: "blur" }],
 });
 
 const { resetFields, validate, validateInfos } = Form.useForm(modelRef, rulesRef);
@@ -107,8 +110,8 @@ watch(
           blockId: newVal.blockId,
           description: newVal.description,
           semesterId: newVal.semesterId,
+          timeAdditionSubject: [dayjs(newVal.startTime), dayjs(newVal.endTime)],
         });
-        // Call API to fetch block options if semesterId is available
         if (newVal.semesterId) {
           fetchBlockOptions(newVal.semesterId);
         }
@@ -157,6 +160,7 @@ watch(
       }
     }
 );
+
 // Form fields configuration
 const formFields = computed(() => [
   {
@@ -179,6 +183,15 @@ const formFields = computed(() => [
     options: blockOptions.value,
   },
   {
+    label: "Thời Gian Thêm Môn",
+    name: "timeAdditionSubject",
+    component: "a-range-picker",
+    props: {
+      class: "w-full",
+      format: "DD/MM/YYYY",
+    },
+  },
+  {
     label: "Mô tả",
     name: "description",
     component: "a-input",
@@ -191,8 +204,12 @@ const handleAddOrUpdate = async () => {
   try {
     await validate(); // Kiểm tra tính hợp lệ
 
+    const [startTime, endTime] = modelRef.timeAdditionSubject;
+
     const payload = {
       ...modelRef,
+      startTime: startTime ? startTime.valueOf() : null, // Chuyển đổi sang long
+      endTime: endTime ? endTime.valueOf() : null, // Chuyển đổi sang long
     };
 
     // Tạo biến để giữ thông tin về hành động (cập nhật hay tạo mới)
@@ -212,7 +229,7 @@ const handleAddOrUpdate = async () => {
         toast.success(message); // Hiển thị thông báo thành công
         handleClose(); // Đóng modal
       },
-      onError: (error) => {
+      onError: (error: any) => {
         toast.error(
             error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
         );
@@ -223,11 +240,9 @@ const handleAddOrUpdate = async () => {
   }
 };
 
-
 // Handle modal close
 const handleClose = () => {
   emit("handleClose");
   resetFields(); // Reset fields only after the modal is closed
 };
-
 </script>

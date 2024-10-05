@@ -16,6 +16,13 @@
         :pagination="false"
         v-bind="$attrs"
     >
+      <template #headerCell="{ column }">
+        <span>
+          <slot :name="`header-${column.key}`" :column="column">
+            {{ column.title }}
+          </slot>
+        </span>
+      </template>
       <template #bodyCell="{ text, record, column }">
         <slot name="bodyCell" :column="column" :record="record">
           {{ text }}

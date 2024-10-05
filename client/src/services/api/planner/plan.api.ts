@@ -14,6 +14,14 @@ export interface ParamsGetTutorClass extends PaginationParams {
   planId?: string | null;
 }
 
+export type TutorClassResponse = ResponseList & {
+  subjectCode: string;
+  subjectId: string;
+  status: number;
+  subjectName: string;
+  numberClasses: number;
+};
+
 export type PlanResponse = ResponseList & {
   planName: string;
   blockName: string;
@@ -22,6 +30,8 @@ export type PlanResponse = ResponseList & {
   planType: string;
   numberSubjects: number;
   status: string;
+  endTime: number;
+  startTime: number;
 };
 
 export const getPlans = async (params: Ref<ParamsGetPlans>) => {
@@ -50,7 +60,7 @@ export const getSemesterInfo = async (params: ParamsGetPlans) => {
     method: "GET",
     params: params,
   })) as AxiosResponse<
-      DefaultResponse<DefaultResponse<SemesterInfoResponse>>
+      DefaultResponse<SemesterInfoResponse>
   >;
 
   return res.data;
@@ -62,6 +72,14 @@ export type PlanInfoResponse = {
   facilityName: string;
   numberSubjects: number;
   numberClasses: number;
+  blockName: string;
+  startTime: number;
+  endTime: number;
+  numberStudents: number;
+  numberTeachers: number;
+  addedSubjects: string;
+  notAddedSubjects: string;
+  rating: number;
 };
 
 export const getPlanInfo = async (params: ParamsGetPlans) => {
@@ -70,7 +88,7 @@ export const getPlanInfo = async (params: ParamsGetPlans) => {
     method: "GET",
     params: params,
   })) as AxiosResponse<
-      DefaultResponse<DefaultResponse<PlanInfoResponse>>
+      DefaultResponse<Array<PlanInfoResponse>>
   >;
 
   return res.data;
@@ -83,6 +101,8 @@ export type PlanInfoDetailResponse = {
   facilityName: string;
   numberSubjects: number;
   numberClasses: number;
+  startTime: number;
+  endTime: number;
 };
 
 export const getPlanInfoById = async (planId: string | null) => {
@@ -90,7 +110,7 @@ export const getPlanInfoById = async (planId: string | null) => {
     url: `${PREFIX_API_PLANNER_PLAN}/info/${planId}`,
     method: "GET",
   })) as AxiosResponse<
-      DefaultResponse<DefaultResponse<PlanInfoDetailResponse>>
+      DefaultResponse<PlanInfoDetailResponse>
   >;
 
   return res.data;
@@ -150,6 +170,17 @@ export const approvePlan = async (planId: string) => {
     method: "PUT",
   })) as AxiosResponse<
       DefaultResponse<DefaultResponse<null>>
+  >;
+
+  return res.data;
+};
+
+export const checkApprovePlan = async (planId: string) => {
+  const res = (await request({
+    url: `${PREFIX_API_PLANNER_PLAN}/check/${planId}`,
+    method: "GET",
+  })) as AxiosResponse<
+      DefaultResponse<boolean>
   >;
 
   return res.data;

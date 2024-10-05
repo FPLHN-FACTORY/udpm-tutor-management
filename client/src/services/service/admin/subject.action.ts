@@ -37,7 +37,7 @@ export const useCreateSubject = () => {
         queryKey: [queryKey.admin.subject.subjectList],
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.log("🚀 ~ useCreateSubject ~ error:", error);
     },
   });
@@ -59,7 +59,7 @@ export const useUpdateSubject = () => {
         queryKey: [queryKey.admin.subject.subjectList],
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.log("🚀 ~ useUpdateSubject ~ error:", error);
     },
   });

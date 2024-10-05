@@ -35,7 +35,7 @@ export function useFacilitySynchronize() {
                 queryKey: [queryKey.admin.facility.facilitySynchronize],
             });
         },
-        onError: (error) => {
+        onError: (error: any) => {
             // Handle error
             console.error('Error during synchronization:', error);
         }

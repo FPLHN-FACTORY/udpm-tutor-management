@@ -11,5 +11,7 @@ import udpm.hn.server.core.common.base.PageableRequest;
 public class PLPLSubjectListRequest extends PageableRequest {
 
     private String planId;
+    private String facilityId;
+    private String semesterId;
 
 }

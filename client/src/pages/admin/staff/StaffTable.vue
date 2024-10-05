@@ -88,7 +88,7 @@ const handleSync = async () => {
       onSuccess: () => {
         toast.success("Đồng bộ nhân viên thành công");
       },
-      onError: (error) => {
+      onError: (error: any) => {
         toast.error(
             error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
         )

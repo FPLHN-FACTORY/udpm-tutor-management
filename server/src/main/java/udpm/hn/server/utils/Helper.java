@@ -163,5 +163,13 @@ public class Helper {
         return withoutAccentString.replaceAll("\\s+", "_") + "_" + randomNumber;
     }
 
+    public static boolean checkEmail(String email) {
+        if (email == null || email.isEmpty()) {
+            return false; // Trả về false nếu email null hoặc rỗng
+        }
+        String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
+        return EMAIL_PATTERN.matcher(email).matches();
+    }
 
 }

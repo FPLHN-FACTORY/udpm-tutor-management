@@ -76,7 +76,7 @@ const handleSync = async () => {
         onSuccess: () => {
           resolve(); // Nếu thành công, gọi resolve
         },
-        onError: (error) => {
+        onError: (error: any) => {
           toast.error(
               error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
           );
@@ -92,7 +92,7 @@ const handleSync = async () => {
           toast.success("Đồng bộ chuyên ngành theo cơ sở thành công!");
           resolve(); // Nếu thành công, gọi resolve
         },
-        onError: (error) => {
+        onError: (error: any) => {
           toast.error(
               error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
           );
@@ -107,7 +107,6 @@ const handleSync = async () => {
     console.log("Có lỗi xảy ra trong quá trình đồng bộ: " + error.message);
   }
 };
-
 
 const columnsDepartmentFacility: ColumnType[] = [
   {

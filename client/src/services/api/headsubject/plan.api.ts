@@ -16,6 +16,8 @@ export type PlanResponse = ResponseList & {
   facilityName: string;
   planType: string;
   numberSubjects: number;
+  endTime: number;
+  startTime: number;
   status: string;
 };
 

@@ -11,9 +11,22 @@
           @update:pagination-params="$emit('update:paginationParams', $event)"
       >
         <template #bodyCell="{ column, record }">
+          <div v-if="column.key === 'action'" class="space-x-2 flex items-center justify-center">
+            <a-tooltip title="Nhập số lượng lớp tutor" color="#FFC26E">
+              <a-button
+                  class="flex items-center justify-center"
+                  type="primary"
+                  size="large"
+                  @click="$emit('handleOpenModalAddNumberTutorClass', record)"
+                  :icon="h(EditOutlined)"
+                  :disabled="canUpdate"
+              />
+            </a-tooltip>
+          </div>
           <div v-if="column.key === 'format'" class="text-center">
             <a-tag v-if="record.format === 0" color="success">ONLINE</a-tag>
             <a-tag v-else-if="record.format === 1" color="warning">OFFLINE</a-tag>
+            <a-tag v-else color="error">CHƯA PHÂN LỚP</a-tag>
           </div>
         </template>
       </tutor-table>
@@ -23,10 +36,11 @@
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
-import { ColumnType } from "ant-design-vue/es/table";
-import { TutorClassResponse } from "@/services/api/headdepartment/plan.api.ts";
+import { EditOutlined } from "@ant-design/icons-vue";
+import {computed, h} from "vue";
+import { TutorClassResponse } from "@/services/api/headsubject/plan.api.ts";
 
-defineProps({
+const props = defineProps({
   dataSource: Array<TutorClassResponse>,
   loading: Boolean,
   paginationParams: Object,
@@ -37,9 +51,10 @@ defineProps({
 
 defineEmits([
   "update:paginationParams",
+  "handleOpenModalAddNumberTutorClass"
 ]);
 
-const columnsSubject: ColumnType[] = [
+const columnsSubject = computed(() => [
   {
     title: "STT",
     dataIndex: "orderNumber",
@@ -80,5 +95,13 @@ const columnsSubject: ColumnType[] = [
     width: "200px",
     align: "center",
   },
-];
+  ...(props.canUpdate ? [] : [
+    {
+      title: "Hành động",
+      key: "action",
+      align: "center",
+      width: "100px",
+    },
+  ]),
+]);
 </script>

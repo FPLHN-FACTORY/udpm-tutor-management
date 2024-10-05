@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import udpm.hn.server.core.headsubject.plan.model.request.HSPLTutorClassDetailRequest;
+import udpm.hn.server.core.headsubject.plan.model.response.HSPLTutorClassDetailResponse;
 import udpm.hn.server.core.planner.plan.model.response.PLPLTutorClassDetailResponse;
 import udpm.hn.server.entity.TutorClass;
 import udpm.hn.server.entity.TutorClassDetail;
@@ -18,11 +19,13 @@ public interface HSPLTutorClassDetailRepository extends TutorClassDetailReposito
                 ROW_NUMBER() OVER(ORDER BY tcd.code) AS orderNumber,
                 tcd.id,
                 tcd.code AS tutorClassCode,
+                tcd.room AS room,
                 tcd.student_conduct_id AS studentTutor,
                 tcd.teacher_conduct_id AS teacherTutor,
                 tcd.number_of_lectures AS numberOfLectures,
                 tcd.start_date AS startTime,
                 tcd.end_date AS endTime,
+                sj.id AS subjectId,
                 CONCAT(st.staff_Code, ' - ', st.name) AS teacher,
                 CONCAT(sd.student_code, ' - ', sd.student_name) AS student
             FROM
@@ -47,11 +50,13 @@ public interface HSPLTutorClassDetailRepository extends TutorClassDetailReposito
                 ROW_NUMBER() OVER(ORDER BY tcd.id DESC) AS orderNumber,
                  tcd.id,
                 tcd.code AS tutorClassCode,
+                tcd.room AS room,
                 tcd.student_conduct_id AS studentTutor,
                 tcd.teacher_conduct_id AS teacherTutor,
                 tcd.number_of_lectures AS numberOfLectures,
                 tcd.start_date AS startTime,
                 tcd.end_date AS endTime,
+                sj.id AS subjectId,
                 CONCAT(st.staff_Code, ' - ', st.name) AS teacher,
                 CONCAT(sd.student_code, ' - ', sd.student_name) AS student
             FROM
@@ -71,7 +76,7 @@ public interface HSPLTutorClassDetailRepository extends TutorClassDetailReposito
                 AND (:#{#request.facilityId} IS NULL OR hsbs.id_facility LIKE :#{#request.facilityId})
             """,
             nativeQuery = true)
-    Page<PLPLTutorClassDetailResponse> getTutorClassDetailByTutorClassId(Pageable pageable, HSPLTutorClassDetailRequest request);
+    Page<HSPLTutorClassDetailResponse> getTutorClassDetailByTutorClassId(Pageable pageable, HSPLTutorClassDetailRequest request);
 
     List<TutorClassDetail> findByTutorClass(TutorClass tutorClass);
 

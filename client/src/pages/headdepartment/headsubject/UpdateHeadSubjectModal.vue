@@ -72,14 +72,6 @@ const emit = defineEmits(["handleClose", "update:paginationParams"]);
 const auth = useAuthStore();
 const userInfo = computed(() => auth.user);
 
-// Params dùng cho việc assign/unassign môn học
-const params = ref({
-  currentFacilityId: userInfo.value?.facilityId,
-  currentDepartmentCode: userInfo.value?.departmentCode,
-  currentUserId: userInfo.value?.userId,
-  currentSemesterId: props.semesterId,
-});
-
 // State loading cho việc assign/unassign
 const isAssigning = ref(false);
 
@@ -103,19 +95,19 @@ const handleAssignSubject = async (subjectId: string, isChecked: boolean) => {
 
   try {
     if (isChecked) {
-      await assignSubjectForHeadSubject({
+      assignSubjectForHeadSubject({
         params: payload,
         headSubjectId: props.headSubjectId,
       });
       toast.success("Gán môn học cho trưởng môn thành công");
     } else {
-      await unAssignSubjectForHeadSubject({
+      unAssignSubjectForHeadSubject({
         params: payload,
         headSubjectId: props.headSubjectId,
       });
       toast.success("Bỏ gán môn học cho trưởng môn thành công");
     }
-  } catch (error) {
+  } catch (error: any) {
     toast.error(error?.response?.data?.message || "Có lỗi xảy ra trong quá trình gán môn học");
   } finally {
     // Tắt trạng thái loading sau khi hoàn tất

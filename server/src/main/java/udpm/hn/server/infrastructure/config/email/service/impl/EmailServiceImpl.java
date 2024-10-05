@@ -28,7 +28,7 @@ public class EmailServiceImpl implements EmailService {
     @Async
     public void sendEmailToHeadSubjectAboutPlan(String content, List<String> recipientEmails) {
         String header = MailConstant.HEADER
-                .replace("${title}", "Thông báo trương môn kế hoạch tutor.");
+                .replace("${title}", "Thông báo kế hoạch tutor.");
 
         StringBuilder emailContent = new StringBuilder();
         emailContent.append("<p>").append(content).append("</p>");

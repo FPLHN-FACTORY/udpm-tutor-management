@@ -17,5 +17,6 @@ public interface PLPLPlansService {
     ResponseObject<?> getPlansInfo(PLPLPlanInfoRequest request);
     ResponseObject<?> getPlansInfoById(String id);
     ResponseObject<?> approvePlan(String planId);
+    ResponseObject<?> checkApprovePlan(String planId);
 
 }

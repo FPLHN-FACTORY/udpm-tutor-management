@@ -1,5 +1,5 @@
 import {
-  approvePlan,
+  approvePlan, checkApprovePlan,
   createPlan,
   CreateUpdatePlanParams,
   getDetailPlan, getPlanInfo, getPlanInfoById,
@@ -64,7 +64,7 @@ export const useCreatePlan = () => {
         queryKey: [queryKey.planner.plan.planList],
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.log("🚀 ~ useCreatePlan ~ error:", error);
     },
   });
@@ -85,7 +85,7 @@ export const useUpdatePlan = () => {
         queryKey: [queryKey.planner.plan.planList],
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.log("🚀 ~ useUpdatePlan ~ error:", error);
     },
   });
@@ -112,8 +112,18 @@ export const useApprovePlan = () => {
         queryKey: [queryKey.planner.plan.planList],
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.log("🚀 ~ useApprovePlan ~ error:", error);
     },
   });
+};
+
+export const useCheckApprovePlan = (
+    planId: string,
+    options?: any
+): UseQueryReturnType<Awaited<ReturnType<typeof checkApprovePlan>>, Error> => {
+  return {
+    queryFn: () => checkApprovePlan(planId),
+    ...options,
+  };
 };

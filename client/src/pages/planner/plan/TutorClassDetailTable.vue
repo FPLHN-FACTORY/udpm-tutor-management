@@ -1,112 +1,195 @@
 <template>
-  <div class="mt-10 rounded-md flex h-full flex-col">
-    <h2 class="text-center text-xl font-semibold mb-7">Danh sách lớp tutor của môn học
-      <span class="text-xl font-semibold text-green-600">({{ tutorClassDetailData.subjectName }})</span>
-    </h2>
-    <div class="flex h-0 flex-1 flex-col">
-      <tutor-table
-          wrapperClassName="min-h-[410px]"
-          :columns="columnsTutorClassDetail"
-          :data-source="dataSource"
-          :loading="loading"
-          :pagination-params="paginationParams || {}"
-          :total-pages="totalPages || 0"
-          @update:pagination-params="$emit('update:paginationParams', $event)"
-      >
-        <template #bodyCell="{ column, record }">
-          <div v-if="column.key === 'action'" class="space-x-2 flex items-center justify-center">
-          </div>
-          <div v-if="column.key === 'status'" class="text-center">
-            <a-tag v-if="record.status === 0" color="success">Đã duyệt</a-tag>
-            <a-tag v-else-if="record.status === 1" color="error">Chưa duyệt</a-tag>
-          </div>
-          <div v-else-if="column.key === 'startTime'" >
-            {{ record.startTime? getDateFormat(record.startTime, false) : '' }}
-          </div>
-          <div v-else-if="column.key === 'endTime'" >
-            {{ record.endTime? getDateFormat(record.endTime, false) : '' }}
-          </div>
-          <div v-else-if="column.key === 'studentTutor'" >
-            {{ record.studentTutor || 'Chưa phân công' }}
-          </div>
-          <div v-else-if="column.key === 'teacherTutor'" >
-            {{ record.teacherTutor || 'Chưa phân công' }}
+  <div>
+    <div class="flex justify-end mb-5" v-if="!canUpdate">
+      <a-button @click="handleUpdateStudentPlan" type="primary">Lưu Tất Cả</a-button>
+    </div>
+    <a-table
+        :columns="columns"
+        :data-source="tempDataSource"
+        :row-selection="rowSelection"
+        :loading="loading"
+        :pagination-params="paginationParams || {}"
+        :total-pages="totalPages || 0"
+        :scroll="{ x: 'max-content' }"
+        @update:pagination-params="$emit('update:paginationParams', $event)"
+    >
+      <template #headerCell="{ column }">
+        <template v-if="column.key === 'studentTutor'">
+          <div class="flex items-center justify-between">
+            <span>
+              Sinh viên tutor
+            </span>
+            <a-button
+                class="flex items-center justify-center border-none bg-transparent text-current"
+                @click="$emit('handleOpenModalAdd')"
+                :icon="h(PlusCircleOutlined)"
+                :disabled="canUpdate"
+            />
           </div>
         </template>
-      </tutor-table>
-    </div>
+      </template>
+      <template #bodyCell="{ column, record }">
+        <div v-if="column.key === 'studentTutor'">
+          <a-select
+              v-model:value="record.studentTutor"
+              show-search
+              placeholder="Chọn sinh viên"
+              style="width: 100%"
+              :options="studentOption"
+              :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
+              :disabled="canUpdate"
+          >
+          </a-select>
+        </div>
+        <div v-else-if="column.key === 'teacherTutor'">
+          <a-select
+              v-model:value="record.teacherTutor"
+              show-search
+              placeholder="Chọn giảng viên"
+              :options="teacherOption"
+              :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
+              style="width: 100%"
+              disabled
+          />
+        </div>
+        <div v-else-if="column.key === 'shift'">
+          <a-select
+              v-model:value="record.shift"
+              show-search
+              placeholder="Chọn ca"
+              :options="shiftOptions"
+              :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
+              style="width: 100%"
+              disabled
+          />
+        </div>
+        <div v-else-if="column.key === 'room'">
+          <a-input
+              v-model:value="record.room"
+              placeholder="Nhập phòng"
+              :disabled="canUpdate"
+          />
+        </div>
+        <div v-else-if="column.key === 'time'">
+          <a-range-picker
+              :value="[record.startTime ? getDateFormat(record.startTime, false) : null,
+              record.endTime ? getDateFormat(record.endTime, false) : null]"
+              :placeholder="['Ngày bắt đầu', 'Ngày kết thúc']"
+              disabled
+          />
+        </div>
+      </template>
+    </a-table>
   </div>
 </template>
 
-<script setup lang="ts">
-import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
+<script lang="ts" setup>
+import {ref, defineProps, watch, h, defineEmits} from 'vue';
 import { ColumnType } from "ant-design-vue/es/table";
-import { TutorClassDetailResponse } from "@/services/api/headsubject/tutor-class.api.ts";
-import {getDateFormat} from "@/utils/common.helper.ts";
+import { TutorClassDetailResponse, UpdateTutorClassDetailParams } from "@/services/api/planner/tutor-class.api.ts";
+import { useUpdateStudentPlan } from "@/services/service/planner/tutor-class.action.ts";
+import { toast } from "vue3-toastify";
+import { ERROR_MESSAGE } from "@/constants/message.constant.ts";
+import { FormatCommonOptionsResponse } from "@/services/api/common.api.ts";
+import {confirmModal, getDateFormat} from "@/utils/common.helper.ts";
+import {PlusCircleOutlined} from "@ant-design/icons-vue";
 
-defineProps({
-  dataSource: Array<TutorClassDetailResponse>,
+const props = defineProps({
+  dataSource: {
+    type: Array as () => TutorClassDetailResponse[],
+    default: () => []
+  },
   loading: Boolean,
   paginationParams: Object,
   totalPages: Number,
-  tutorClassDetailData: Object as () => any | null,
+  teacherOption: Array as () => FormatCommonOptionsResponse[],
+  studentOption: Array as () => FormatCommonOptionsResponse[],
+  canUpdate: Boolean
 });
 
-const columnsTutorClassDetail: ColumnType[] = [
-  {
-    title: "STT",
-    dataIndex: "orderNumber",
-    key: "index",
-    ellipsis: true,
-    width: "50px",
-  },
-  {
-    title: "Mã lớp",
-    dataIndex: "tutorClassCode",
-    key: "tutorClassCode",
-    ellipsis: true,
-    width: "100px",
-  },
-  {
-    title: "Sinh viên tutor",
-    dataIndex: "studentTutor",
-    key: "studentTutor",
-    ellipsis: true,
-    width: "150px",
-  },
-  {
-    title: "Giảng viên tutor",
-    dataIndex: "teacherTutor",
-    key: "teacherTutor",
-    ellipsis: true,
-    width: "150px",
-  },
-  {
-    title: "Ca học",
-    dataIndex: "shift",
-    key: "shift",
-    ellipsis: true,
-    width: "100px",
-  },
-  {
-    title: "Ngày bắt đầu",
-    dataIndex: "startTime",
-    key: "startTime",
-    ellipsis: true,
-    width: "120px",
-  },
-  {
-    title: "Ngày kết thúc",
-    dataIndex: "endTime",
-    key: "endTime",
-    ellipsis: true,
-    width: "120px",
-  },
-  {
-    title: "Hành động",
-    key: "action",
-    align: "center",
-    width: "150px",
-  },
+const emit = defineEmits(["handleOpenModalAdd"]);
+
+const shiftOptions = Array.from({ length: 6 }, (_, index) => ({
+  value: `Ca ${index + 1}`,
+  label: `Ca ${index + 1}`,
+}));
+
+// Tạo biến tạm để lưu trữ dữ liệu thay đổi
+const tempDataSource = ref([...props?.dataSource?.map((record, index) => ({
+  ...record,
+  key: index.toString()
+}))]);
+
+watch(() => props.dataSource, (newData) => {
+  tempDataSource.value = newData.map((record, index) => ({
+    ...record,
+    key: index.toString()
+  }));
+});
+
+const columns: ColumnType[] = [
+  { title: "Mã lớp", dataIndex: "tutorClassCode", key: "tutorClassCode", ellipsis: true, width: "100px" },
+  { title: "Sinh viên tutor", dataIndex: "studentTutor", key: "studentTutor", ellipsis: true, width: "100px" },
+  { title: "Giảng viên tutor", dataIndex: "teacherTutor", key: "teacherTutor", ellipsis: true, width: "100px" },
+  { title: "Ca học", dataIndex: "shift", key: "shift", ellipsis: true, width: "70px" },
+  { title: "Phòng", dataIndex: "room", key: "room", ellipsis: true, width: "100px" },
+  { title: "Thời gian", dataIndex: "time", key: "time", ellipsis: true, width: "250px" }
 ];
+
+interface DataItem {
+  key: string;
+  id: string;
+  tutorClassCode: number;
+  studentTutor: string;
+  teacherTutor: string;
+  shift: string;
+  room: string;
+  startTime: number;
+  endTime: number;
+}
+
+const selectedRecords = ref<UpdateTutorClassDetailParams[]>([]);
+const selectedIds = ref<string[]>([]);
+const { mutate: updateStudentPlan } = useUpdateStudentPlan();
+
+const rowSelection = ref({
+  onChange: (selectedRowKeys: (string | number)[], selectedRows: DataItem[]) => {
+    selectedIds.value = selectedRows.map(record => record.id);
+  },
+});
+
+// Hàm xử lý cập nhật
+const handleUpdateStudentPlan = async () => {
+  const message = 'Bạn chắc chắn muốn lưu các lớp tutor này chứ!'; // Thông điệp xác nhận
+
+  confirmModal(message, () => {
+    try {
+      selectedRecords.value = tempDataSource.value
+          .filter(record => selectedIds.value.includes(record.id))
+          .map(record => ({
+            id: record.id,
+            studentId: record.studentTutor,
+            room: record.room,
+          }));
+
+      if (selectedRecords.value.length === 0) {
+        toast.warning("Vui lòng chọn ít nhất một lớp tutor cần lưu");
+        return;
+      }
+
+      updateStudentPlan(selectedRecords.value, {
+        onSuccess: () => {
+          toast.success("Cập nhật lớp tutor thành công");
+        },
+        onError: (error: any) => {
+          toast.error(
+              error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+          );
+        },
+      });
+    } catch (error) {
+      console.error("Error in adding/updating plan:", error);
+    }
+  });
+};
 </script>

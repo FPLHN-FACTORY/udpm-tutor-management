@@ -5,10 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import udpm.hn.server.core.headdepartment.plan.model.request.HDPLPlanInfoRequest;
 import udpm.hn.server.core.headdepartment.plan.model.request.HDPLPlanListRequest;
+import udpm.hn.server.core.headdepartment.plan.model.request.HDPLRejectPlanRequest;
 import udpm.hn.server.core.headdepartment.plan.service.HDPLPlansService;
 import udpm.hn.server.infrastructure.constant.MappingConstants;
 import udpm.hn.server.utils.Helper;
@@ -48,6 +50,11 @@ public class HDPLPlansRestController {
     @PutMapping("/status/{id}")
     public ResponseEntity<?> approvePlan(@PathVariable String id) {
         return Helper.createResponseEntity(planService.approvePlan(id));
+    }
+
+    @PutMapping("/reject")
+    public ResponseEntity<?> rejectPlan(@RequestBody HDPLRejectPlanRequest request) {
+        return Helper.createResponseEntity(planService.rejectPlan(request));
     }
 
 }
