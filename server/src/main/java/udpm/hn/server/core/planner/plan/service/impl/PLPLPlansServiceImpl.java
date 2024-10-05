@@ -139,4 +139,28 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
                 .map(plan -> new ResponseObject<>(plan, HttpStatus.OK, "Lấy thông tin kế hoạch thành công"))
                 .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Kế hoạch không tồn tại"));
     }
+
+    @Override
+    public ResponseObject<?> approvePlan(String planId) {
+
+        Optional<Plan> planOptional = plplPlansRepository.findById(planId);
+
+        if (planOptional.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch không tồn tại");
+        }
+
+        Long canUpdate = plplPlansRepository.canUpdate(planId);
+        if(canUpdate == 0){
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch này chưa có môn tutor!");
+        }
+
+        planOptional.map(plan -> {
+            plan.setPlanStatus(PlanStatus.PLANNER_APPROVED);
+            return plplPlansRepository.save(plan);
+        });
+
+        return planOptional
+                .map(plan -> new ResponseObject<>(null, HttpStatus.OK, "Cập nhật thành công"))
+                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại"));
+    }
 }

@@ -7,8 +7,10 @@ import lombok.Setter;
 @Setter
 public class HSPLCreateTutorClassRequest {
 
-    private String planeId;
+    private String planId;
     private String subjectId;
     private Integer numberOfClasses;
+    private Integer numberOfLectures;
+    private String format;
 
 }

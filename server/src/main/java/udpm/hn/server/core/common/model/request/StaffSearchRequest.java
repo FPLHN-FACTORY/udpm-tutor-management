@@ -10,7 +10,6 @@ import lombok.ToString;
 public class StaffSearchRequest {
 
     private String q;
-
     private String currentDepartmentFacilityId;
 
 }

@@ -10,8 +10,8 @@
       centered
     >
       <div
-        v-if="props.isLoadingDetail"
-        class="flex justify-center items-center"
+          v-if="props.isLoadingDetail"
+          class="flex justify-center items-center"
       >
         <a-spin />
       </div>
@@ -19,19 +19,19 @@
         <a-form layout="vertical">
           <template v-for="field in formFields">
             <a-form-item
-              :label="field.label"
-              :name="field.name"
-              v-bind="validateInfos[field.name]"
+                :label="field.label"
+                :name="field.name"
+                v-bind="validateInfos[field.name]"
             >
               <component
-                :is="field.component"
-                v-bind="field.props"
-                v-model:value="modelRef[field.name]"
+                  :is="field.component"
+                  v-bind="field.props"
+                  v-model:value="modelRef[field.name]"
               >
                 <template
-                  v-if="field.options"
-                  v-for="option in field.options"
-                  :key="option.value"
+                    v-if="field.options"
+                    v-for="option in field.options"
+                    :key="option.value"
                 >
                   <a-select-option :value="option.value">
                     {{ option.label }}
@@ -218,7 +218,7 @@ const handleAddOrUpdate = () => {
         const action = props.subjectDetail ? updateSubject : createSubject;
         const message = props.subjectDetail ? "Cập nhật môn học thành công!" : "Tạo môn học thành công!";
 
-        await action(actionParams, {
+        action(actionParams, {
           onSuccess: () => {
             toast.success(message);
             handleClose();
@@ -228,17 +228,20 @@ const handleAddOrUpdate = () => {
                 error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
             )
           },
-        }); // Ch
+        })
       } catch (error: any) {
         console.error("🚀 ~ handleAddOrUpdate ~ error:", error);
+        toast.error(
+          error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+        );
       }
     },
     cancelText: 'Huỷ',
     onCancel() {
       Modal.destroyAll();
     },
-  })
-};
+  });
+}
 
 const handleClose = () => {
   emit("handleClose");

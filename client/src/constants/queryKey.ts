@@ -4,6 +4,7 @@ export const queryKey = {
     facilityOptions: "facilityOptionsKey",
     semesterOptions: "semesterOptionsKey",
     blockOptions: "blockOptionsKey",
+    staffOptions: "staffOptionsKey",
   },
   admin: {
     subject: {
@@ -66,11 +67,14 @@ export const queryKey = {
       staffByHeadOfSubject: " staffByHeadOfSubjectKey",
       headOfSubjectDetail: "headOfSubjectDetailKey",
     },
-    headOfPlan: {
-      headOfPlanList: "headOfPlanListKey",
-      planByHeadOfPlan: " planByHeadOfPlanKey",
-      staffByHeadOfPlan: " staffByHeadOfPlanKey",
-      headOfPlanDetail: "headOfPlanDetailKey",
+    plan: {
+      planList: "hDPlPlanListKey",
+      semesterInfo: "hDPlSemesterInfo",
+      planInfo: "hDPlPlanInfo",
+      planDetail: "hDPlPlanDetailKey",
+      tutorClassList: "hDPlTutorClassListKey",
+      tutorDetail: "hDPlTutorDetailKey",
+      tutorList: "hDPlTutorListKey"
     },
   },
   planner: {
@@ -91,9 +95,8 @@ export const queryKey = {
       planInfo: "hSPlPlanInfo",
       planDetail: "hSPlPlanDetailKey",
       tutorClassList: "hSPlTutorClassListKey",
-      tutorDetailList: "hSPlTutorDetailListKey",
+      tutorClassDetailList: "hSPlTutorClassDetailListKey",
       tutorDetail: "hSPlTutorDetailKey",
-      tutorList: "hSPlTutorListKey"
     },
   }
 };

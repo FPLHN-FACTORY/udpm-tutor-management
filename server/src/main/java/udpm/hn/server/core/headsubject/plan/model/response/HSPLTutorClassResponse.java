@@ -3,26 +3,14 @@ package udpm.hn.server.core.headsubject.plan.model.response;
 import udpm.hn.server.core.common.base.HasOrderNumber;
 import udpm.hn.server.core.common.base.IsIdentify;
 
-public interface HSPLTutorClassResponse {
+public interface HSPLTutorClassResponse extends IsIdentify, HasOrderNumber {
 
-     String getId();
-     String getSubjectName();
-     Long getNumberOfClasses();
+    String getSubjectId();
+    String getSubjectCode();
+    String getSubjectName();
+    Integer getNumberClasses();
+    String getHeadSubject();
+    Integer getNumberLectures();
+    Integer getFormat();
 
-     interface PLPLPlanDetailResponse extends IsIdentify, HasOrderNumber {
-
-         String getPlanName();
-         String getBlockName();
-         String getBlockId();
-         String getSemesterName();
-         String getSemesterId();
-         String getDescription();
-         String getDepartmentName();
-         String getFacilityName();
-         Long getNumberSubjects();
-         String getStatus();
-         Long getStartTime();
-         Long getEndTime();
-
-     }
 }

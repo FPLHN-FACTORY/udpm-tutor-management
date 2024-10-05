@@ -13,6 +13,6 @@ public class HSPLSubjectListRequest extends PageableRequest {
     private String planId;
     private String facilityId;
     private String semesterId;
-    private String staffId;
+    private String userId;
 
 }

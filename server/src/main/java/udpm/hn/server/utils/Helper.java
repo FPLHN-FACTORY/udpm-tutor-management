@@ -12,6 +12,7 @@ import udpm.hn.server.infrastructure.constant.PaginationConstant;
 import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -134,5 +135,33 @@ public class Helper {
 
         return withoutAccentString.replaceAll("\\s+", "_");
     }
+
+    public static String generateTutorClassCodeFromName(String name) {
+        // Chuyển đổi tên thành chữ hoa
+        String upperCaseString = name.toUpperCase();
+
+        // Tạo mã từ ký tự đặc biệt
+        StringBuilder stringBuilder = new StringBuilder();
+        for (char c : upperCaseString.toCharArray()) {
+            if (SPECIAL_CHAR_MAP.containsKey(c)) {
+                stringBuilder.append(SPECIAL_CHAR_MAP.get(c));
+            } else {
+                stringBuilder.append(c);
+            }
+        }
+        String replacedString = stringBuilder.toString();
+
+        // Chuẩn hóa và loại bỏ dấu
+        String normalizedString = Normalizer.normalize(replacedString, Normalizer.Form.NFD);
+        String withoutAccentString = normalizedString.replaceAll("\\p{M}", "");
+
+        // Tạo dãy số ngẫu nhiên
+        Random random = new Random();
+        int randomNumber = 100 + random.nextInt(900); // Tạo số ngẫu nhiên từ 100 đến 999
+
+        // Kết hợp mã với dãy số ngẫu nhiên
+        return withoutAccentString.replaceAll("\\s+", "_") + "_" + randomNumber;
+    }
+
 
 }

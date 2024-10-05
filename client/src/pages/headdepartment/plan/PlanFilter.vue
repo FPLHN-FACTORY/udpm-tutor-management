@@ -34,10 +34,11 @@ const props = defineProps({
 });
 
 const PlanStatusOptions = [
-    { label: "Chờ phê duyệt", value: "PLANNER_APPROVED" },
-    { label: "Đã phê duyệt", value: "HEAD_DEPARTMENT_APPROVED" },
-    { label: "Đang hoạt động", value: "IN_PROGRESS" },
-    { label: "Đã hoàn thành", value: "DONE" },
+  { label: "Đang lên kế hoạch", value: "PLANNING" },
+  { label: "Người lập kế hoạch thông qua", value: "PLANNER_APPROVED" },
+  { label: "Chủ nhiệm thông qua", value: "HEAD_DEPARTMENT_APPROVED" },
+  { label: "Đang thực hiện", value: "IN_PROGRESS" },
+  { label: "Đã xong", value: "DONE" },
 ];
 
 type ParamsFilterSubjects = {

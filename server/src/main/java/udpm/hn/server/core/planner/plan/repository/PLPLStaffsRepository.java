@@ -27,17 +27,15 @@ public interface PLPLStaffsRepository extends StaffRepository {
                     LEFT JOIN department_facility df ON mf.id_department_facility = df.id
                     LEFT JOIN facility f ON f.id = df.id_facility
                     LEFT JOIN department d ON d.id = df.id_department
-                    LEFT JOIN head_subject_by_semester hsbs ON hsbs.id_staff = s.id AND hsbs.id_semester = :semesterId
-                    LEFT JOIN semester se ON se.id = hsbs.id_semester
                     LEFT JOIN staff_role sr ON sr.id_staff = s.id
                     LEFT JOIN role r ON r.id = sr.id_role
                     WHERE
-                        r.code = 'TRUONG_MON'
+                        r.code = :roleCode
                         AND d.code = :departmentCode
                         AND f.code = :facilityCode
                     """,
             nativeQuery = true
     )
-    List<String> getAllHeadSubjectsByDepartment(String departmentCode, String facilityCode, String semesterId);
+    List<String> getAllStaffByRoleDepartmentFacility(String departmentCode, String facilityCode, String roleCode);
 
 }

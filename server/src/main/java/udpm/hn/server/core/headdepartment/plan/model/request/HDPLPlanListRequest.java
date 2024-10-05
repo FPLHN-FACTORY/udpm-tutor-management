@@ -8,7 +8,7 @@ import udpm.hn.server.core.common.base.PageableRequest;
 @Getter
 @Setter
 @ToString
-public class HeadPlanRequest extends PageableRequest {
+public class HDPLPlanListRequest extends PageableRequest {
 
     private String semesterId;
     private String planStatus;

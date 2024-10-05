@@ -20,24 +20,35 @@ public interface HSPLTutorClassRepository extends TutorClassRepository {
     Optional<TutorClass> findByPlanAndSubject(Plan plan, Subject subject);
 
     @Query(value = """
-            SELECT tc.id AS id, tc.number_of_classes AS numberOfClasses,CONCAT(sj.subject_code,  ' - ', sj.name) AS subjectName
+            SELECT tc.id AS id,
+            CONCAT(sj.subject_code,  ' - ', sj.name) AS subjectName,
+            COALESCE(tcd.numberClasses, 0) AS numberClasses,
+            COALESCE(tc.number_of_lectures, 0) AS numberLectures,
+            tc.format AS format
             FROM tutor_class tc
             LEFT JOIN subject sj ON
                 sj.id = tc.subject_id
+            LEFT JOIN (
+                SELECT tcd.tutor_class_id, COUNT(*) AS numberClasses
+                FROM tutor_class_detail tcd
+                GROUP BY tcd.tutor_class_id
+            ) tcd ON tcd.tutor_class_id = tc.id    
             WHERE tc.id = :id
         """, nativeQuery = true)
     HSPLTutorClassResponse getDetailTutorClass(String id);
 
     @Query(value = """
             SELECT
-                 ROW_NUMBER() OVER(ORDER BY hsbs.created_date DESC) AS orderNumber,
+                 ROW_NUMBER() OVER(ORDER BY hsbs.id DESC) AS orderNumber,
                  tc.id,
                  sj.id AS subjectId,
                  sj.code AS subjectCode,
                  sj.name AS subjectName,
                  CONCAT(st.staff_code, ' - ', st.name) AS headSubject,
                  COALESCE(tc.tutor_class_status, 0) AS status,
-                 COALESCE(tc.number_of_classes, 0) AS numberClasses
+                 COALESCE(tcd.numberClasses, 0) AS numberClasses,
+                 COALESCE(tc.number_of_lectures, 0) AS numberLectures,
+                 tc.format AS format
             FROM
                 head_subject_by_semester hsbs
             LEFT JOIN staff st ON
@@ -46,10 +57,15 @@ public interface HSPLTutorClassRepository extends TutorClassRepository {
                 sj.id = hsbs.id_subject
             LEFT JOIN tutor_class tc ON
                 tc.subject_id = hsbs.id_subject AND tc.plan_id = :#{#request.planId}
+            LEFT JOIN (
+                SELECT tcd.tutor_class_id, COUNT(*) AS numberClasses
+                FROM tutor_class_detail tcd
+                GROUP BY tcd.tutor_class_id
+            ) tcd ON tcd.tutor_class_id = tc.id
             WHERE
-                hsbs.id_facility LIKE CONCAT('%', :#{#request.facilityId}, '%')
-                AND hsbs.id_semester = :#{#request.semesterId}
-                AND hsbs.id_staff = :#{#request.staffId}
+                (:#{#request.userId} IS NULL OR hsbs.id_staff LIKE :#{#request.userId})
+                AND (:#{#request.semesterId} IS NULL OR hsbs.id_semester LIKE :#{#request.semesterId})
+                AND (:#{#request.facilityId} IS NULL OR hsbs.id_facility LIKE :#{#request.facilityId})
         """, countQuery = """
             SELECT
                  ROW_NUMBER() OVER(ORDER BY hsbs.created_date DESC) AS orderNumber,
@@ -58,7 +74,9 @@ public interface HSPLTutorClassRepository extends TutorClassRepository {
                  sj.name AS subjectName,
                  CONCAT(st.staff_code, ' - ', st.name) AS headSubject,
                  COALESCE(tc.tutor_class_status, 0) AS status,
-                 COALESCE(tc.number_of_classes, 0) AS numberClasses
+                 COALESCE(tcd.numberClasses, 0) AS numberClasses,
+                 COALESCE(tc.number_of_lectures, 0) AS numberLectures,
+                 tc.format AS format
             FROM
                 head_subject_by_semester hsbs
             LEFT JOIN staff st ON
@@ -67,10 +85,15 @@ public interface HSPLTutorClassRepository extends TutorClassRepository {
                 sj.id = hsbs.id_subject
             LEFT JOIN tutor_class tc ON
                 tc.subject_id = hsbs.id_subject AND tc.plan_id = :#{#request.planId}
+            LEFT JOIN (
+                SELECT tcd.tutor_class_id, COUNT(*) AS numberClasses
+                FROM tutor_class_detail tcd
+                GROUP BY tcd.tutor_class_id
+            ) tcd ON tcd.tutor_class_id = tc.id
             WHERE
-                hsbs.id_facility LIKE CONCAT('%', :#{#request.facilityId}, '%')
-                AND hsbs.id_semester = :#{#request.semesterId}
-                AND hsbs.id_staff = :#{#request.staffId}
+                (:#{#request.userId} IS NULL OR hsbs.id_staff LIKE :#{#request.userId})
+                AND (:#{#request.semesterId} IS NULL OR hsbs.id_semester LIKE :#{#request.semesterId})
+                AND (:#{#request.facilityId} IS NULL OR hsbs.id_facility LIKE :#{#request.facilityId})
         """, nativeQuery = true)
     Page<HSTutorClassResponse> getTutorClasses(Pageable pageable, HSPLSubjectListRequest request);
 

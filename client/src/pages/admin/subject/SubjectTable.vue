@@ -31,7 +31,7 @@
                  class="flex items-center justify-center"
                 type="primary"
                 size="large"
-                @click="$emit('handleOpenModalUpdate', record)"
+                 @click="$emit('handleOpenModalUpdate', record)"
                 :icon="h(EditOutlined)"
               />
             </a-tooltip>

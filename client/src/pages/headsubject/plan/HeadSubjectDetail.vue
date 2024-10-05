@@ -13,7 +13,7 @@
           <a-descriptions-item label="Tên kế hoạch">{{ plan.planName }}</a-descriptions-item>
           <a-descriptions-item label="Block">{{ formatBlockName(plan.blockName) }}</a-descriptions-item>
           <a-descriptions-item label="Trạng thái"><a-tag :color="getTagColor(plan.status)">{{ getTagStatus(plan.status)
-              }}</a-tag></a-descriptions-item>
+            }}</a-tag></a-descriptions-item>
           <a-descriptions-item label="Số môn tutor">{{ plan.numberSubjects }}</a-descriptions-item>
           <a-descriptions-item label="Số lớp tutor">{{ plan.numberClasses }}</a-descriptions-item>
           <a-descriptions-item label="Số sinh viên tham gia">0</a-descriptions-item>
@@ -28,22 +28,51 @@
     </div>
     <div class="shadow-md p-3 rounded-md mx-3 mt-10">
       <div class="p-5">
-        <head-subject-detail-table
-            :data-source="planData"
-            :loading="isLoading || isFetching"
-            :pagination-params="params"
-            :total-pages="totalPages"
-            @update:pagination-params="handlePaginationChange"
-            @handleOpenModalAddNumberTutorClass="handleOpenModalAdd"
-            @handleApproveTutorClass="handleApproveTutorClass"/>
+        <div class="flex justify-end items-center gap-2">
+          <p>Chế độ xem</p>
+          <a-switch
+              v-model:checked="canUpdate"
+              :checked-children="'All'"
+              :un-checked-children="'Only Me'"
+          />
+        </div>
+        <a-tabs v-model:activeKey="activeKey">
+          <a-tab-pane key="1" tab="Danh sách môn tutor">
+            <head-subject-detail-table
+                :data-source="tutorClass"
+                :loading="isLoadingTutorClassData"
+                :pagination-params="paramsTutorClass"
+                :total-pages="totalPagesTutorClass"
+                :plan="plan"
+                :canUpdate="canPerformUpdate"
+                @update:pagination-params="handlePaginationTutorClassChange"
+                @handleOpenModalAddNumberTutorClass="handleOpenModalAdd"
+            />
+          </a-tab-pane>
+          <a-tab-pane key="2" tab="Danh sách lớp tutor">
+            <head-subject-detail-filter
+               @filter="handleFilter"
+              :teacherOption="teacherOption"
+            />
+            <tutor-class-detail-table
+                :data-source="tutorClassDetail"
+                :loading="isLoadingTutorClassDetailData"
+                :pagination-params="paramsTutorClassDetail"
+                :total-pages="totalPagesTutorClassDetail"
+                :teacherOption="teacherOption"
+                :canUpdate="canPerformUpdate"
+                @update:pagination-params="handlePaginationTutorClassDetailChange"
+            />
+          </a-tab-pane>
+        </a-tabs>
         <add-number-tutor-class
             :open="open"
-            @resetTable="resetTable"
             @handleClose="handleClose"
             @cancel="open = false"
-            :planId="planId || null"
+            :tutorClass="detailTutorClass"
+            :planId="planId"
             :subjectId="subjectId"
-            :numberClasses="numberClasses"
+            :isLoading="isLoadingDetailTutorClass"
         />
       </div>
     </div>
@@ -53,20 +82,19 @@
 <script lang="ts" setup>
 import HeadSubjectDetailTable from "@/pages/headsubject/plan/HeadSubjectDetailTable.vue";
 import AddNumberTutorClass from "@/pages/headsubject/plan/AddNumberTutorClass.vue";
+import TutorClassDetailTable from "@/pages/headsubject/plan/TutorClassDetalTable.vue";
+import HeadSubjectDetailFilter from "@/pages/headsubject/plan/HeadSubjectDetailFilter.vue";
+import { ParamsGetPlans, TutorClassResponse } from "@/services/api/headsubject/plan.api.ts";
+import { ParamsGetTutorClass, ParamsGetTutorClassDetail } from "@/services/api/headsubject/tutor-class.api.ts";
+import { ParamsStaffSearchByRole } from "@/services/api/common.api.ts";
 import { useRoute } from "vue-router";
 import { computed, ref, watch } from "vue";
-import { useDetailPlan, useGetPlanInfoById } from "@/services/service/headsubject/plan.action.ts";
+import { useGetPlanInfoById } from "@/services/service/headsubject/plan.action.ts";
 import { formatBlockName, getDateFormat, getTagColor, getTagStatus } from "@/utils/common.helper.ts";
-import {ParamsGetPlans, TutorClassResponse} from "@/services/api/headsubject/plan.api.ts";
 import { keepPreviousData } from "@tanstack/vue-query";
 import { useAuthStore } from "@/stores/auth.ts";
-import { ParamsGetTutorClass } from "@/services/api/headsubject/tutor-class.api.ts";
-import {
-  useGetTutorClass,
-  useUpdateStatusApproveTutorClassHeadSubject
-} from "@/services/service/headsubject/tutor-class.action.ts";
-import {toast} from "vue3-toastify";
-import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
+import { useGetDetailTutorClass, useGetTutorClass, useListTutorClassDetail } from "@/services/service/headsubject/tutor-class.action.ts";
+import { useGetStaffByRoleOptions } from "@/services/service/common.action.ts";
 
 const route = useRoute();
 let planId = computed(() => {
@@ -77,34 +105,66 @@ let planId = computed(() => {
 const auth = useAuthStore();
 const userInfo = computed(() => auth.user);
 const open = ref(false);
+const activeKey = ref('1');
+const canUpdate = ref(false);
+const subjectId = ref<string | null>(null);
+const tutorClassId = ref<string | null>(null);
 
-const params = ref<ParamsGetTutorClass>({
+const paramsTutorClass = ref<ParamsGetTutorClass>({
   page: 1,
   size: 10,
   planId: planId.value,
-  facilityId: userInfo?.facilityId,
-  staffId: userInfo?.userId,
-  semesterId: userInfo?.semesterId,
+  facilityId: userInfo.value?.facilityId,
+  userId: userInfo.value?.userId,
+  semesterId: userInfo.value?.semesterId,
 });
 
-const subjectId = ref<string | null>(null);
-const tutorClassId = ref<string | null>(null);
-const numberClasses = ref<number | null>(null);
+const paramsTutorClassDetail = ref<ParamsGetTutorClassDetail>({
+  page: 1,
+  size: 10,
+  planId: planId.value,
+  facilityId: userInfo.value?.facilityId,
+  userId: userInfo.value?.userId,
+  semesterId: userInfo.value?.semesterId,
+  teacherId: null,
+  query: null,
+});
 
-watch(userInfo, (newValue) => {
-  params.value.facilityId = newValue.facilityId;
-  params.value.semesterId = newValue.semesterId;
-  params.value.staffId = newValue.userId;
-}, { immediate: true });
+const paramsGetStaffOption = ref<ParamsStaffSearchByRole>({
+  departmentCode: userInfo.value?.departmentCode,
+  facilityCode: userInfo.value?.facilityCode,
+});
 
-const { data, isLoading, isFetching } = useGetTutorClass(params, {
+const { data: tutorClassData, isLoading: isLoadingTutorClassData } = useGetTutorClass(paramsTutorClass, {
   refetchOnWindowFocus: false,
   placeholderData: keepPreviousData,
   enabled: () => !!planId.value,
 });
 
-const handlePaginationChange = (newParams: ParamsGetPlans) => {
-  params.value = { ...params.value, ...newParams };
+const { data: detailTutorClassData, isLoading: isLoadingDetailTutorClass } = useGetDetailTutorClass(tutorClassId, {
+  refetchOnWindowFocus: false,
+  enabled: () => !!tutorClassId.value,
+});
+
+const { data: teacherOptionData } = useGetStaffByRoleOptions(paramsGetStaffOption, {
+  refetchOnWindowFocus: false,
+});
+
+const { data: tutorClassDetailData, isLoading: isLoadingTutorClassDetailData } = useListTutorClassDetail(paramsTutorClassDetail, {
+  refetchOnWindowFocus: false,
+  placeholderData: keepPreviousData,
+});
+
+const handlePaginationTutorClassChange = (newParams: ParamsGetPlans) => {
+  paramsTutorClass.value = { ...paramsTutorClass.value, ...newParams };
+};
+
+const handlePaginationTutorClassDetailChange = (newParams: ParamsGetPlans) => {
+  paramsTutorClassDetail.value = { ...paramsTutorClassDetail.value, ...newParams };
+};
+
+const handleFilter = (newParams: ParamsGetPlans) => {
+  paramsTutorClassDetail.value = { ...paramsTutorClassDetail.value, ...newParams };
 };
 
 const { data: planInfo } = useGetPlanInfoById(planId.value, {
@@ -113,9 +173,8 @@ const { data: planInfo } = useGetPlanInfoById(planId.value, {
 });
 
 const handleOpenModalAdd = async (record: TutorClassResponse) => {
-  subjectId.value = record.subjectId;
-  numberClasses.value = record.numberClasses || null;
   tutorClassId.value = record.id;
+  subjectId.value = record.subjectId;
   open.value = true;
 };
 
@@ -123,30 +182,29 @@ const handleClose = () => {
   open.value = false;
   tutorClassId.value = null;
   subjectId.value = null;
-  numberClasses.value = null;
 };
 
-const { mutate: updateStatus } = useUpdateStatusApproveTutorClassHeadSubject();
-
-const handleApproveTutorClass = async (id: string) => {
-  try {
-    updateStatus(id, {
-      onSuccess: () => {
-        toast.success("Xắc nhận phê duyệt lớp môn thành công");
-        handleClose();
-      },
-      onError: (error) => {
-        toast.error(
-            error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-        )
-      },
-    });
-  } catch (error) {
-    console.error(error);
+watch(canUpdate, (newValue) => {
+  if (newValue) {
+    paramsTutorClass.value.userId = null; // Set userId to null
+    paramsTutorClassDetail.value.userId = null; // Set userId to null
+  } else {
+    paramsTutorClass.value.userId = userInfo.value?.userId; // Reset to original userId
+    paramsTutorClassDetail.value.userId = userInfo.value?.userId; // Reset to original userId
   }
-};
+});
 
 const plan = computed(() => planInfo.value?.data || null);
-const planData = computed(() => data?.value?.data?.data || []);
-const totalPages = computed(() => data?.value?.data?.totalPages || 0);
+const tutorClass = computed(() => tutorClassData?.value?.data?.data || []);
+const tutorClassDetail = computed(() => tutorClassDetailData?.value?.data?.data || []);
+const detailTutorClass = computed(() => detailTutorClassData?.value?.data || null);
+const teacherOption = computed(() => teacherOptionData?.value?.data.map(teacher => ({
+  value: teacher.id,
+  label: teacher.name
+})) || []);
+const totalPagesTutorClass = computed(() => tutorClassData?.value?.data?.totalPages || 0);
+const totalPagesTutorClassDetail = computed(() => tutorClassDetailData?.value?.data?.totalPages || 0);
+const canPerformUpdate = computed(() => {
+  return (plan.value?.status != 'PLANNING') || (plan.value?.status === 'PLANNING' && canUpdate.value);
+});
 </script>

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import udpm.hn.server.core.planner.plan.model.request.PLPLCreatePlanRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLPlanInfoRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLPlanListRequest;
-import udpm.hn.server.core.planner.plan.model.request.PLPLTutorListRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLUpdatePlanRequest;
 import udpm.hn.server.core.planner.plan.service.PLPLPlansService;
 import udpm.hn.server.infrastructure.constant.MappingConstants;
@@ -23,40 +22,45 @@ import udpm.hn.server.utils.Helper;
 @RequiredArgsConstructor
 public class PlansRestController {
 
-    private final PLPLPlansService headSubjectsService;
+    private final PLPLPlansService planService;
 
     @GetMapping
     public ResponseEntity<?> getPlans(PLPLPlanListRequest request) {
-        return Helper.createResponseEntity(headSubjectsService.getAllPlans(request));
+        return Helper.createResponseEntity(planService.getAllPlans(request));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getPlanDetail(@PathVariable String id) {
-        return Helper.createResponseEntity(headSubjectsService.getPlansDetail(id));
+        return Helper.createResponseEntity(planService.getPlansDetail(id));
     }
 
     @GetMapping("/semester")
     public ResponseEntity<?> getPlanBySemester(PLPLPlanInfoRequest request) {
-        return Helper.createResponseEntity(headSubjectsService.getPlansBySemester(request));
+        return Helper.createResponseEntity(planService.getPlansBySemester(request));
     }
 
     @GetMapping("/info")
     public ResponseEntity<?> getPlanInfo(PLPLPlanInfoRequest request) {
-        return Helper.createResponseEntity(headSubjectsService.getPlansInfo(request));
+        return Helper.createResponseEntity(planService.getPlansInfo(request));
     }
 
     @GetMapping("/info/{id}")
     public ResponseEntity<?> getPlanInfo(@PathVariable String id) {
-        return Helper.createResponseEntity(headSubjectsService.getPlansInfoById(id));
+        return Helper.createResponseEntity(planService.getPlansInfoById(id));
     }
 
     @PostMapping
     public ResponseEntity<?> createPlan(@RequestBody PLPLCreatePlanRequest request) {
-        return Helper.createResponseEntity(headSubjectsService.createPlan(request));
+        return Helper.createResponseEntity(planService.createPlan(request));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> getPlanDetail(@RequestBody PLPLUpdatePlanRequest request, @PathVariable String id) {
-        return Helper.createResponseEntity(headSubjectsService.updatePlan(id, request));
+        return Helper.createResponseEntity(planService.updatePlan(id, request));
+    }
+
+    @PutMapping("/status/{id}")
+    public ResponseEntity<?> approvePlan(@PathVariable String id) {
+        return Helper.createResponseEntity(planService.approvePlan(id));
     }
 }

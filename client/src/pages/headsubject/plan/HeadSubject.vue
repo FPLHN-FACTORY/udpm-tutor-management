@@ -17,15 +17,13 @@
             <a-descriptions-item label="Học kỳ">{{ semesterData?.planName }}</a-descriptions-item>
             <a-descriptions-item label="Bộ môn">{{ semesterData?.departmentName }}</a-descriptions-item>
             <a-descriptions-item label="Cơ sở">{{ semesterData?.facilityName }}</a-descriptions-item>
-            <a-descriptions-item label="Ngày bắt đầu">{{ getDateFormat(semesterData?.startTime, false)
-              }}</a-descriptions-item>
-            <a-descriptions-item label="Ngày kết thúc">{{ getDateFormat(semesterData?.endTime, false)
-              }}</a-descriptions-item>
+            <a-descriptions-item label="Ngày bắt đầu">{{ semesterData? getDateFormat(semesterData?.startTime, false) : "" }}</a-descriptions-item>
+            <a-descriptions-item label="Ngày kết thúc">{{ semesterData? getDateFormat(semesterData?.endTime, false) : "" }}</a-descriptions-item>
           </a-descriptions>
           <div class="mt-4">
             <template v-if="planInfoData && planInfoData.length > 0">
               <a-tabs v-model:activeKey="activeKey">
-                <template v-for="(plan) in planInfoData" :key="plan.id">
+                <template v-for="(plan, index) in planInfoData" :key="index">
                   <a-tab-pane :tab="`Kế hoạch block ${formatBlockName(plan.blockName)}`" force-render>
                     <plan-form :plan="plan" />
                   </a-tab-pane>
@@ -77,7 +75,7 @@ const auth = useAuthStore();
 const userInfo = computed(() => auth.user);
 const open = ref(false);
 const planId = ref<string | null>(null);
-const activeKey = ref('1'); 
+const activeKey = ref('0');
 
 const params = ref<ParamsGetPlans>({
   page: 1,
