@@ -25,6 +25,7 @@ public interface HSPLTutorClassDetailRepository extends TutorClassDetailReposito
                 tcd.number_of_lectures AS numberOfLectures,
                 tcd.start_date AS startTime,
                 tcd.end_date AS endTime,
+                tcd.default_shift AS shift,
                 sj.id AS subjectId,
                 CONCAT(st.staff_Code, ' - ', st.name) AS teacher,
                 CONCAT(sd.student_code, ' - ', sd.student_name) AS student
@@ -57,6 +58,7 @@ public interface HSPLTutorClassDetailRepository extends TutorClassDetailReposito
                 tcd.start_date AS startTime,
                 tcd.end_date AS endTime,
                 sj.id AS subjectId,
+                tcd.default_shift AS shift,
                 CONCAT(st.staff_Code, ' - ', st.name) AS teacher,
                 CONCAT(sd.student_code, ' - ', sd.student_name) AS student
             FROM

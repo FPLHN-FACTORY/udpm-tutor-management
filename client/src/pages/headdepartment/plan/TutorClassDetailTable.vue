@@ -16,17 +16,11 @@
                 v-model:value="record.studentTutor"
                 placeholder="Chọn sinh viên"
                 style="width: 100%"
+                :options="studentOption"
                 show-search
                 :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
                 disabled
             >
-              <a-select-option
-                  v-for="student in studentOption"
-                  :key="student.value"
-                  :value="student.value"
-              >
-                {{ student.label }}
-              </a-select-option>
             </a-select>
           </div>
           <div v-else-if="column.key === 'teacherTutor'">
@@ -60,9 +54,9 @@
           </div>
           <div v-else-if="column.key === 'time'">
             <a-range-picker
-                :value="[record.startTime ? getDateFormat(record.startTime, false) : null,
-              record.endTime ? getDateFormat(record.endTime, false) : null]"
+                :value="[record.startTime ? dayjs(record.startTime) : null, record.endTime ? dayjs(record.endTime) : null]"
                 :placeholder="['Ngày bắt đầu', 'Ngày kết thúc']"
+                :format="'DD/MM/YYYY'"
                 disabled
             />
           </div>
@@ -76,9 +70,9 @@
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { TutorClassDetailResponse } from "@/services/api/headdepartment/tutor-class.api.ts";
-import { getDateFormat } from "@/utils/common.helper.ts";
 import {defineProps} from "vue";
 import {FormatCommonOptionsResponse} from "@/services/api/common.api.ts";
+import dayjs from "dayjs";
 
 defineProps({
   dataSource: Array as () => TutorClassDetailResponse[],

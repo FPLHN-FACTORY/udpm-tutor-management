@@ -9,6 +9,7 @@ public interface HDPLTutorClassDetailResponse extends IsIdentify, HasOrderNumber
     String getTeacherTutor();
     String getStudentTutor();
     String getRoom();
+    String getShift();
     Long getStartTime();
     Long getEndTime();
 

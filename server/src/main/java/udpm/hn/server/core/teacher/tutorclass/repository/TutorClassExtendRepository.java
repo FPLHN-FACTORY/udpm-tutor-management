@@ -18,6 +18,9 @@ public interface TutorClassExtendRepository extends TutorClassRepository {
                     ROW_NUMBER() OVER(ORDER BY tcd.created_date DESC ) AS orderNumber,
                     tcd.id AS id,
                     tcd.code AS classCode,
+                    tcd.start_date AS startTime,
+                    tcd.end_date AS endTime,
+                    tcd.default_shift AS shift,
                     st.student_name AS studentName,
                     s.name AS subjectName,
                     COUNT(*) AS totalStudent
@@ -26,7 +29,7 @@ public interface TutorClassExtendRepository extends TutorClassRepository {
                                             LEFT JOIN subject s on s.id = tc.subject_id
                                             LEFT JOIN class_student_joined csj on tc.id = csj.tutor_class_id
                 WHERE (:#{#request.classCode} IS NULL OR tcd.code LIKE CONCAT('%',:#{#request.classCode},'%'))
-                    AND (:#{#request.subjectId} IS NULL OR s.id = :#{#request.subjectId})
+                    AND (:#{#request.subjectId} IS NULL OR s.id LIKE CONCAT('%',:#{#request.subjectId},'%'))
                     AND (tcd.teacher_conduct_id = :teacherId)
                 GROUP BY tcd.id, tcd.code, st.student_name, s.name, tcd.created_date
                 """,

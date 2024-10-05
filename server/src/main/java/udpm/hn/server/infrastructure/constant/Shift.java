@@ -36,4 +36,14 @@ public enum Shift {
         return null;
     }
 
+    public static Shift fromString(String shiftStr) {
+        // Chuyển đổi chuỗi thành định dạng "CA1"
+        String formattedShift = shiftStr.trim().toUpperCase().replace(" ", "");
+        try {
+            return Shift.valueOf(formattedShift);
+        } catch (IllegalArgumentException e) {
+            return null; // Hoặc có thể ném ngoại lệ nếu không tìm thấy shift
+        }
+    }
+
 }

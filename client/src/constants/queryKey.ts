@@ -103,7 +103,7 @@ export const queryKey = {
   },
   teacher: {
     tutorClass: {
-      tutorClassList: 'tutorClassListKey'
+      tutorClassDetailList: 'tutorClassDetailListKey'
     }
   }
 };

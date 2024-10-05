@@ -6,11 +6,11 @@ import udpm.hn.server.core.common.base.IsIdentify;
 public interface TutorClassResponse extends IsIdentify, HasOrderNumber {
 
     String getClassCode();
-
     String getSubjectName();
-
     String getTotalStudent();
-
     String getStudentName();
+    Long getStartTime();
+    Long getEndTime();
+    String getShift();
 
 }

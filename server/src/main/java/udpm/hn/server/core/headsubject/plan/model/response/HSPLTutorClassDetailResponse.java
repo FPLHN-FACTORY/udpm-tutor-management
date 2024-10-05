@@ -12,5 +12,6 @@ public interface HSPLTutorClassDetailResponse extends IsIdentify, HasOrderNumber
     String getSubjectId();
     Long getStartTime();
     Long getEndTime();
+    String getShift();
 
 }

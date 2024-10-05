@@ -31,7 +31,7 @@ const { user } = useAuthStore();
 const params = ref<ParamsGetTutorClass>({
     page: 1,
     size: 5,
-    subjectId: '59ffbd66-d1de-468e-b720-81c0c50b489d'
+    subjectId: ""
 })
 
 const handleChangePagination = (newParams: ParamsGetTutorClass) => {
@@ -52,8 +52,4 @@ const { data, isLoading, isFetching } = useGetTutorClassByTeacher(user?.userId |
 
 const tutorClassData = computed(() => data.value?.data.data || []);
 const totalPages = computed(() => data.value?.data.totalPages || 1);
-
-
-
-
 </script>
