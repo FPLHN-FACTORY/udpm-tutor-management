@@ -6,7 +6,7 @@ import {
   getSemesterOptions,
   getStaffByRole,
   ParamsStaffSearchByRole,
-  getSubjectOptions
+  getSubjectOptions, getStudentTutor
 } from "@/services/api/common.api";
 import { UseQueryReturnType, useQuery } from "@tanstack/vue-query";
 import {Ref} from "vue";
@@ -82,15 +82,28 @@ export const useGetStaffByRoleOptions = (
 };
 
 export const useGetSubjectOptions = (
-  query?: string,
-  options?: any
+    query?: string,
+    options?: any
 ): UseQueryReturnType<
-  Awaited<ReturnType<typeof getSubjectOptions>>,
-  Error
+    Awaited<ReturnType<typeof getSubjectOptions>>,
+    Error
+> => {
+    return useQuery({
+        queryKey: [queryKey.common.subjectOptions],
+        queryFn: () => getSubjectOptions(query),
+        ...options,
+    });
+};
+
+export const useGetStudentTutorOptions = (
+    options?: any
+): UseQueryReturnType<
+    Awaited<ReturnType<typeof getStudentTutor>>,
+    Error
 > => {
   return useQuery({
-    queryKey: [queryKey.common.subjectOptions],
-    queryFn: () => getSubjectOptions(query),
+    queryKey: [queryKey.common.studentOptions],
+    queryFn: () => getStudentTutor(),
     ...options,
   });
 };

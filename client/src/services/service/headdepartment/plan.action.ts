@@ -6,7 +6,7 @@ import {
   getPlanInfo,
   getPlanInfoById,
   getSemesterInfo,
-  approvePlan, getPlans, ParamsGetPlans
+  approvePlan, getPlans, ParamsGetPlans, rejectPlan, ParamsRejectPlan
 } from "@/services/api/headdepartment/plan.api.ts";
 
 export const useGetPlans = (
@@ -30,7 +30,23 @@ export const useApprovePlan = () => {
         queryKey: [queryKey.headOfDepartment.plan.planList],
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.log("🚀 ~ useApprovePlan ~ error:", error);
+    },
+  });
+};
+
+export const useRejectPlan = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (params: ParamsRejectPlan) => rejectPlan(params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKey.headOfDepartment.plan.planList],
+      });
+    },
+    onError: (error: any) => {
       console.log("🚀 ~ useApprovePlan ~ error:", error);
     },
   });

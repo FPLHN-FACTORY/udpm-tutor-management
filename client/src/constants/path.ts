@@ -57,10 +57,6 @@ export const ROUTES_CONSTANTS = {
         path: "plan/:planId",
         name: "hDPlDetailPlan",
       },
-      TUTOR_CLASS_DETAIL: {
-        path: "plan/tutor-class-detail/:tutorClassId",
-        name: "hDPlDetailTutorClassDetail",
-      },
     },
   },
   PLANNER: {
@@ -69,15 +65,11 @@ export const ROUTES_CONSTANTS = {
     children: {
       PLAN: {
         path: "plan",
-        name: "plan",
+        name: "hSPlan",
       },
       PLAN_DETAIL: {
         path: "plan/:planId",
-        name: "detailPlan",
-      },
-      TUTOR_CLASS_DETAIL: {
-        path: "plan/tutor-class-detail/:tutorClassId",
-        name: "detailTutorClassDetail",
+        name: "pLPlDetailPlan",
       },
     },
   },
@@ -99,14 +91,10 @@ export const ROUTES_CONSTANTS = {
         path: "subject-plan",
         name: "subject-plan",
       },
-      HEAD_SUBJECT_DETAIL: {
-        path: "subject-plan/:planId",
-        name: "detailSubjectPlan",
-      },
-      HEAD_TUTOR_CLASS_DETAIL: {
-        path: "subject-tutor-detail/:tutorClassId",
-        name: "detailTutorClassDetail",
-      },
+      PLAN_DETAIL: {
+        path: "plan/:planId",
+        name: "hSPlDetailPlan",
+      }
     },
   },
   NOT_FOUND: {

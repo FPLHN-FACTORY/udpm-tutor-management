@@ -37,6 +37,9 @@
           <div v-else-if="column.key === 'blockName'" >
             <p>{{ formatBlockName(record.blockName) }}</p>
           </div>
+          <div v-else-if="column.key === 'timeAdditionSubject'">
+            <p>{{ getDateFormat(record.startTime, false) + ' - ' + getDateFormat(record.endTime, false) }}</p>
+          </div>
         </template>
       </tutor-table>
     </div>
@@ -47,17 +50,17 @@
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { PlanResponse } from "@/services/api/headsubject/plan.api.ts";
-import { formatBlockName, getTagColor, getTagStatus } from "@/utils/common.helper.ts";
+import {formatBlockName, getDateFormat, getTagColor, getTagStatus} from "@/utils/common.helper.ts";
 import { h } from "vue";
 import { EyeOutlined } from "@ant-design/icons-vue";
 import { router } from "@/routes/router.ts";
 
 const goToDetail = (planId: string) => {
-  router.push({ name: 'detailSubjectPlan', params: { planId } });
+  router.push({ name: 'hSPlDetailPlan', params: { planId } });
 }
 
 defineProps({
-  dataSource: Array<PlanResponse>,
+  dataSource: Array as () => PlanResponse[],
   loading: Boolean,
   paginationParams: Object,
   totalPages: Number,
@@ -74,18 +77,22 @@ const columnsSubject: ColumnType[] = [
     dataIndex: "orderNumber",
     key: "index",
     ellipsis: true,
+    width: "80px",
+    align: "center",
   },
   {
     title: "Tên kế hoạch",
     dataIndex: "planName",
     key: "planName",
     ellipsis: true,
+    width: "120px",
   },
   {
     title: "Block",
     dataIndex: "blockName",
     key: "blockName",
     ellipsis: true,
+    width: "80px",
   },
   {
     title: "Bộ môn",
@@ -99,6 +106,14 @@ const columnsSubject: ColumnType[] = [
     dataIndex: "numberSubjects",
     key: "numberSubjects",
     ellipsis: true,
+    width: "100px",
+    align: "center",
+  },
+  {
+    title: "Thời gian thêm môn",
+    dataIndex: "timeAdditionSubject",
+    key: "timeAdditionSubject",
+    ellipsis: true,
     width: "200px",
     align: "center",
   },
@@ -107,7 +122,7 @@ const columnsSubject: ColumnType[] = [
     dataIndex: "status",
     key: "status",
     ellipsis: true,
-    width: "200px",
+    width: "150px",
     align: "center",
   },
   {

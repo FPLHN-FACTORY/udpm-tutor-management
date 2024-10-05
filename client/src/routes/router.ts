@@ -129,15 +129,6 @@ export const routes: RouteRecordRaw[] = [
           requiresAuth: true,
         },
       },
-      {
-        path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.TUTOR_CLASS_DETAIL.path,
-        name: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.TUTOR_CLASS_DETAIL.name,
-        component: () => import("@/pages/headdepartment/plan/TutorClassDetail.vue"),
-        meta: {
-          requiresRole: ROLES.HEAD_DEPARTMENT,
-          requiresAuth: true,
-        },
-      },
     ],
   },
   {
@@ -148,16 +139,16 @@ export const routes: RouteRecordRaw[] = [
       {
         path: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLAN.path,
         name: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLAN.name,
-        component: () => import("@/pages/headsubject/plan/HeadSubject.vue"),
+        component: () => import("@/pages/headsubject/plan/Plan.vue"),
         meta: {
           requiresRole: ROLES.HEAD_SUBJECT,
           requiresAuth: true,
         },
       },
       {
-        path: ROUTES_CONSTANTS.HEAD_SUBJECT.children.HEAD_SUBJECT_DETAIL.path,
-        name: ROUTES_CONSTANTS.HEAD_SUBJECT.children.HEAD_SUBJECT_DETAIL.name,
-        component: () => import("@/pages/headsubject/plan/HeadSubjectDetail.vue"),
+        path: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLAN_DETAIL.path,
+        name: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLAN_DETAIL.name,
+        component: () => import("@/pages/headsubject/plan/PlanDetail.vue"),
         meta: {
           requiresRole: ROLES.HEAD_SUBJECT,
           requiresAuth: true,
@@ -187,16 +178,7 @@ export const routes: RouteRecordRaw[] = [
           requiresRole: ROLES.PLANER,
           requiresAuth: true,
         },
-      },
-      {
-        path: ROUTES_CONSTANTS.PLANNER.children.TUTOR_CLASS_DETAIL.path,
-        name: ROUTES_CONSTANTS.PLANNER.children.TUTOR_CLASS_DETAIL.name,
-        component: () => import("@/pages/planner/plan/TutorClassDetail.vue"),
-        meta: {
-          requiresRole: ROLES.PLANER,
-          requiresAuth: true,
-        },
-      },
+      }
     ],
   },
   {

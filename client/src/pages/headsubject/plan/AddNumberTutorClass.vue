@@ -186,12 +186,12 @@ const handleAddOrUpdate = () => {
         const action = props.tutorClass ? updateTutorClass : createTutorClass;
         const message = props.tutorClass ? "Cập nhật môn học thành công!" : "Tạo môn học thành công!";
 
-        await action(actionParams, {
+        action(actionParams, {
           onSuccess: () => {
             toast.success(message);
             handleClose();
           },
-          onError: (error) => {
+          onError: (error: any) => {
             toast.error(
                 error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
             )

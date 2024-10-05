@@ -20,12 +20,18 @@ import udpm.hn.server.core.planner.plan.repository.PLPLStaffsRepository;
 import udpm.hn.server.core.planner.plan.repository.PLPLTutorClassRepository;
 import udpm.hn.server.core.planner.plan.service.PLPLPlansService;
 import udpm.hn.server.entity.Block;
+import udpm.hn.server.entity.Department;
 import udpm.hn.server.entity.DepartmentFacility;
+import udpm.hn.server.entity.Facility;
 import udpm.hn.server.entity.Plan;
+import udpm.hn.server.entity.Semester;
 import udpm.hn.server.entity.Staff;
+import udpm.hn.server.infrastructure.config.email.service.EmailService;
 import udpm.hn.server.infrastructure.constant.PlanStatus;
 import udpm.hn.server.utils.Helper;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -38,7 +44,7 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
     private final PLPLStaffsRepository plplStaffsRepository;
     private final PLPLDepartmentFacilitysRepository plplDepartmentFacilitysRepository;
     private final PLPLBlocksRepository blocksRepository;
-//    private final EmailService emailService;
+    private final EmailService emailService;
     private final PLPLTutorClassRepository plplTutorClassRepository;
 
     @Override
@@ -74,12 +80,9 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
         plan.setBlock(blockOptional.get());
         plan.setDescription(request.getDescription());
         plan.setPlanner(staffOptional.get());
+        plan.setStartDate(request.getStartTime());
+        plan.setEndDate(request.getEndTime());
         plplPlansRepository.save(plan);
-
-//        Department department = departmentFacilityOptional.get().getDepartment();
-//        Facility facility = departmentFacilityOptional.get().getFacility();
-//        List<String> list = plplStaffsRepository.getAllHeadSubjectsByDepartment(department.getCode(), facility.getCode(),request.getSemesterId());
-//        emailService.sendEmailToHeadSubjectAboutPlan("Kế hoạch học kì xxx block xxx đã được tạo. Trưởng môn hãy kiểm tra và xếp môn tutor cho học kỳ xxx block xxx",list);
 
         return new ResponseObject<>(null, HttpStatus.CREATED, "Tạo kế hoạch thành công");
     }
@@ -105,6 +108,8 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
         plan.setPlanStatus(PlanStatus.PLANNING);
         plan.setBlock(blockOptional.get());
         plan.setDescription(request.getDescription());
+        plan.setStartDate(request.getStartTime());
+        plan.setEndDate(request.getEndTime());
         plplPlansRepository.save(plan);
 
         return new ResponseObject<>(null, HttpStatus.CREATED, "Sửa kế hoạch thành công");
@@ -159,8 +164,41 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
             return plplPlansRepository.save(plan);
         });
 
+        Department department = planOptional.get().getDepartmentFacility().getDepartment();
+        Facility facility = planOptional.get().getDepartmentFacility().getFacility();
+        Block block = planOptional.get().getBlock();
+        Semester semester = block.getSemester();
+        List<String> list = plplStaffsRepository.getStaffsByRole(Arrays.asList("CHU_NHIEM_BO_MON","TRUONG_MON"), department.getCode(), facility.getCode());
+        String blockName = block.getName().equals("BLOCK_1") ? "Block 1" : "Block 2";
+        String message = "Kế hoạch học kì " + semester.getSemesterName() + " " + semester.getYear() + " " + blockName + " đã được người lập kế hoạch phê duyệt. Chủ nhiệm bộ môn/Trưởng môn vui lòng hãy kiểm tra và theo dõi kế hoạch tutor .";
+        emailService.sendEmailToHeadSubjectAboutPlan(message,list);
+
         return planOptional
                 .map(plan -> new ResponseObject<>(null, HttpStatus.OK, "Cập nhật thành công"))
                 .orElseGet(() -> new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại"));
+    }
+
+    @Override
+    public ResponseObject<?> checkApprovePlan(String planId) {
+
+        Plan planOptional = plplPlansRepository.findById(planId).orElse(null);
+
+        if (planOptional == null) {
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch không tồn tại");
+        }
+
+        Long currentDateMillis = System.currentTimeMillis();
+        if(planOptional.getStartDate() > currentDateMillis || planOptional.getEndDate() < currentDateMillis){
+            return new ResponseObject<>(
+                    false,
+                    HttpStatus.OK,
+                    "Lấy danh sách kế hoach thành công!"
+            );
+        }
+        return new ResponseObject<>(
+                true,
+                HttpStatus.OK,
+                "Lấy danh sách kế hoach thành công!"
+        );
     }
 }

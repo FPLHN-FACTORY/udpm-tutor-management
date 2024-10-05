@@ -11,5 +11,7 @@ public interface HDPLPlanListResponse extends IsIdentify, HasOrderNumber {
     String getFacilityName();
     Long getNumberSubjects();
     String getStatus();
+    Long getStartTime();
+    Long getEndTime();
 
 }

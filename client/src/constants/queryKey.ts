@@ -6,6 +6,7 @@ export const queryKey = {
     blockOptions: "blockOptionsKey",
     subjectOptions: "subjectOptionsKey",
     staffOptions: "staffOptionsKey",
+    studentOptions: "studentOptionsKey",
   },
   admin: {
     subject: {
@@ -82,11 +83,11 @@ export const queryKey = {
     plan: {
       planList: "pLPlPlanListKey",
       semesterInfo: "pLPlSemesterInfo",
-      planInfo: "pLPlPlanInfo",
-      planDetail: "pLPlPlanDetailKey",
-      tutorClassList: "pLPlTutorClassListKey",
-      tutorDetail: "pLPlTutorDetailKey",
-      tutorList: "pLPlTutorListKey"
+      planInfo: "hSPlPlanInfo",
+      planDetail: "hSPlPlanDetailKey",
+      tutorClassList: "hSPlTutorClassListKey",
+      tutorClassDetailList: "hSPlTutorClassDetailListKey",
+      tutorDetail: "hSPlTutorDetailKey",
     },
   },
   headSubject: {

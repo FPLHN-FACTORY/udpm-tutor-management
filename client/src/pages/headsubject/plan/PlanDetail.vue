@@ -51,8 +51,8 @@
           </a-tab-pane>
           <a-tab-pane key="2" tab="Danh sách lớp tutor">
             <head-subject-detail-filter
-               @filter="handleFilter"
-              :teacherOption="teacherOption"
+                @filter="handleFilter"
+                :teacherOption="teacherOption"
             />
             <tutor-class-detail-table
                 :data-source="tutorClassDetail"
@@ -80,10 +80,10 @@
 </template>
 
 <script lang="ts" setup>
-import HeadSubjectDetailTable from "@/pages/headsubject/plan/HeadSubjectDetailTable.vue";
+import HeadSubjectDetailTable from "@/pages/headsubject/plan/TutorClassTable.vue";
 import AddNumberTutorClass from "@/pages/headsubject/plan/AddNumberTutorClass.vue";
-import TutorClassDetailTable from "@/pages/headsubject/plan/TutorClassDetalTable.vue";
-import HeadSubjectDetailFilter from "@/pages/headsubject/plan/HeadSubjectDetailFilter.vue";
+import TutorClassDetailTable from "@/pages/headsubject/plan/TutorClassDetailTable.vue";
+
 import { ParamsGetPlans, TutorClassResponse } from "@/services/api/headsubject/plan.api.ts";
 import { ParamsGetTutorClass, ParamsGetTutorClassDetail } from "@/services/api/headsubject/tutor-class.api.ts";
 import { ParamsStaffSearchByRole } from "@/services/api/common.api.ts";

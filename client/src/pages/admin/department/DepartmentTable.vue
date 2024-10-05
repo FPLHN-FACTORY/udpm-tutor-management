@@ -100,7 +100,7 @@ const handleSync = async () => {
       onSyncDepartment(undefined, {
         onSuccess: () => {
         },
-        onError: (error) => {
+        onError: (error: any) => {
           toast.error(
               error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
           )
@@ -112,7 +112,7 @@ const handleSync = async () => {
         onSuccess: () => {
           toast.success("Đồng bộ bộ môn, chuyên ngành  thành công");
         },
-        onError: (error) => {
+        onError: (error: any) => {
           toast.error(
               error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
           )
@@ -121,7 +121,7 @@ const handleSync = async () => {
 
     emit("syncSuccess")
 
-  } catch (error) {
+  } catch (error: any) {
     console.log("Có lỗi xảy ra trong quá trình đồng bộ: " + error.message);
   }
 };

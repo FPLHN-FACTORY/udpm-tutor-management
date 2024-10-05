@@ -60,7 +60,7 @@ export const useCreateDepartment = () => {
         queryKey: [queryKey.admin.department.departmentList],
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.log("🚀 ~ useCreateDepartment ~ error:", error);
     },
   });
@@ -82,7 +82,7 @@ export const useUpdateDepartment = () => {
         queryKey: [queryKey.admin.department.departmentList],
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.log("🚀 ~ useUpdateDepartment ~ error:", error);
     },
   });
@@ -112,7 +112,7 @@ export function useDepartmentSynchronize() {
         queryKey: [queryKey.admin.department.departmentSynchronize],
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       // Handle error
       console.error("Error during synchronization:", error);
     },
@@ -131,7 +131,7 @@ export function useDepartmentCampusSynchronize() {
       });
       return data;
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Error during synchronization:", error);
     },
   });

@@ -78,7 +78,7 @@ export const getStaffDepartmentMajor = async (id: string | null) => {
     return res.data;
 };
 
-export const getStaffSynchronize = async (campusCode: string) => {
+export const getStaffSynchronize = async (campusCode: string | null) => {
     const res: AxiosResponse<DefaultResponse<string>> = await request({
         url: `${PREFIX_API_STAFF_ADMIN}/synchronize`,
         method: 'GET',

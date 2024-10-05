@@ -31,6 +31,9 @@ public class TutorClassDetail extends PrimaryEntity implements Serializable {
     @Column(name = "code")
     private String code;
 
+    @Column(name = "room")
+    private String room;
+
     @ManyToOne
     @JoinColumn(name = "teacher_conduct_id")
     private Staff teacherConduct;

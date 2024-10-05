@@ -39,7 +39,7 @@ export function useSemesterSynchronize() {
         queryKey: [queryKey.admin.semester.semesterList],
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       // Handle error
       console.error('Error during synchronization:', error);
     }

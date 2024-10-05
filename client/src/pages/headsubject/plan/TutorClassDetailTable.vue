@@ -12,7 +12,7 @@
           @update:pagination-params="$emit('update:paginationParams', $event)"
       >
         <template #bodyCell="{ column, record }">
-          <div v-if="column.key === 'action'" class="space-x-2 flex items-center justify-center">
+          <div v-if="column.key === 'action'" class="space-x-2 flex items-center ">
             <a-tooltip title="Xóa lớp tutor" color="#FFC26E">
               <a-button
                   class="flex items-center justify-center"
@@ -20,24 +20,42 @@
                   size="large"
                   @click="handleDeleteTutorClassDetail(record.id)"
                   :icon="h(MinusCircleOutlined)"
-                  :disabled="canUpdate"
               />
             </a-tooltip>
             <a-tooltip title="Thêm lớp tutor" color="#FFC26E">
               <a-button
+                  v-if="isFirstClassOfSubject(record)"
                   class="flex items-center justify-center"
                   type="primary"
                   size="large"
                   @click="handleAddTutorClassDetail(record.id)"
                   :icon="h(PlusCircleOutlined)"
-                  :disabled="canUpdate"
               />
             </a-tooltip>
           </div>
+          <div v-else-if="column.key === 'shift'">
+            <a-select
+                v-model:value="record.shift"
+                show-search
+                placeholder="Chọn ca"
+                :options="shiftOptions"
+                :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
+                style="width: 100%"
+                disabled
+            />
+          </div>
+          <div v-else-if="column.key === 'room'">
+            <a-input
+                v-model:value="record.room"
+                placeholder="Nhập phòng"
+                disabled
+            />
+          </div>
           <div v-else-if="column.key === 'time'">
             <a-range-picker
-                :value="[record.startTime ? getDateFormat(record.startTime, false) : '',
-                 record.endTime ? getDateFormat(record.endTime, false) : '']"
+                :value="[record.startTime ? getDateFormat(record.startTime, false) : null,
+              record.endTime ? getDateFormat(record.endTime, false) : null]"
+                :placeholder="['Ngày bắt đầu', 'Ngày kết thúc']"
                 disabled
             />
           </div>
@@ -73,10 +91,9 @@
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
-import { ColumnType } from "ant-design-vue/es/table";
 import { TutorClassDetailResponse } from "@/services/api/headsubject/tutor-class.api.ts";
 import { getDateFormat } from "@/utils/common.helper.ts";
-import { createVNode, h } from "vue";
+import {computed, createVNode, defineProps, h} from "vue";
 import {
   ExclamationCircleOutlined,
   MinusCircleOutlined,
@@ -90,18 +107,25 @@ import {
 import { Modal } from "ant-design-vue";
 import { toast } from "vue3-toastify";
 import { ERROR_MESSAGE } from "@/constants/message.constant.ts";
+import {FormatCommonOptionsResponse} from "@/services/api/common.api.ts";
 
-defineProps({
-  dataSource: Array<TutorClassDetailResponse>,
+const props = defineProps({
+  dataSource: Array as () => TutorClassDetailResponse[],
   loading: Boolean,
   paginationParams: Object,
   totalPages: Number,
-  students: Array,
-  teacherOption: Array,
+  students: Array as () => FormatCommonOptionsResponse[],
+  teacherOption: Array as () => FormatCommonOptionsResponse[],
   canUpdate: Boolean
 });
 
-const columnsTutorClassDetail: ColumnType[] = [
+const shiftOptions = Array.from({ length: 6 }, (_, index) => ({
+  value: `Ca ${index + 1}`,
+  label: `Ca ${index + 1}`,
+}));
+
+
+const columnsTutorClassDetail = computed(() => [
   {
     title: "STT",
     dataIndex: "orderNumber",
@@ -121,7 +145,7 @@ const columnsTutorClassDetail: ColumnType[] = [
     dataIndex: "studentTutor",
     key: "studentTutor",
     ellipsis: true,
-    width: "150px",
+    width: "100px",
   },
   {
     title: "Giảng viên tutor",
@@ -138,23 +162,42 @@ const columnsTutorClassDetail: ColumnType[] = [
     width: "80px",
   },
   {
+    title: "Phòng",
+    dataIndex: "room",
+    key: "room",
+    ellipsis: true,
+    width: "80px",
+  },
+  {
     title: "Thời gian",
     dataIndex: "time",
     key: "time",
     ellipsis: true,
-    width: "250px",
+    width: "200px",
   },
-  {
-    title: "Hành động",
-    key: "action",
-    align: "center",
-    width: "150px",
-  },
-];
+  ...(props.canUpdate ? [] : [
+    {
+      title: "Hành động",
+      key: "action",
+      align: "center",
+      width: "100px",
+    },
+  ]),
+]);
 
 const { mutate: updateTutorClassDetail } = useUpdateTutorClassDetail();
 const { mutate: deleteTutorClassDetail } = useDeleteTutorClassDetail();
 const { mutate: addTutorClassDetail } = useAddTutorClassDetail();
+
+const isFirstClassOfSubject = (record) => {
+  // Giả sử mỗi record có thuộc tính subjectId
+  const subjectId = record.subjectId; // Thay đổi theo thuộc tính thực tế của bạn
+
+  // Tìm lớp đầu tiên theo subjectId
+  const firstClassIndex = props?.dataSource?.findIndex(item => item.subjectId === subjectId);
+
+  return firstClassIndex === props?.dataSource?.indexOf(record);
+};
 
 const handleUpdateTeacher = (tutorClassDetailId: string, staffId: string) => {
   try {
@@ -166,7 +209,9 @@ const handleUpdateTeacher = (tutorClassDetailId: string, staffId: string) => {
       params: params,
     }, {
       onSuccess: () => {
-        toast.success("Cập nhật giảng viên tutor thành công!");
+        toast.success("Cập nhật giảng viên tutor thành công!",{
+          autoClose: 1000, // Hiển thị trong 2 giây
+        });
       },
       onError: (error: any) => {
         toast.error(

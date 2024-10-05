@@ -26,15 +26,17 @@ export type DetailSubjectTutorResponse = {
   subjectName: string;
 };
 
-export type TutorClassDetailResponse = {
-  nameTutorClass: number;
-  headSubject: string;
-  numberOfLectures:  number;
+export type TutorClassDetailResponse = ResponseList & {
+  tutorClassCode: number;
+  studentTutor: string;
+  teacherTutor: string;
+  shift: string;
+  room: string;
   startTime: number;
   endTime: number;
-  teacherTutor: string,
-  studentTutor: string
+  subjectId: string;
 };
+
 
 export const createTutorClass = async (
   params: createTutorClassParams
@@ -97,7 +99,6 @@ export const getTutorClass = async (params: Ref<ParamsGetTutorClass>) => {
 };
 
 export interface ParamsGetTutorClassDetail extends PaginationParams {
-  tutorClassId?: string | null;
   planId?: string | null;
   facilityId?: string | null;
   userId?: string | null;

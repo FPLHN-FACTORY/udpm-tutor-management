@@ -25,50 +25,114 @@
         </a-descriptions>
       </div>
     </div>
-    <div class="shadow-md p-3 rounded-md mx-3 mt-10">
+    <div class="shadow-md p-3 rounded-md mx-3">
       <div class="p-5">
-        <tutor-class-table
-            :data-source="planData"
-            :loading="isLoading || isFetching"
-            :pagination-params="params"
-            :total-pages="totalPages"
-            @update:pagination-params="handlePaginationChange"
-        />
+        <a-tabs v-model:activeKey="activeKey">
+          <a-tab-pane key="1" tab="Danh sách môn tutor">
+            <tutor-class-table
+                :data-source="tutorClass"
+                :loading="isLoadingTutorClassData"
+                :pagination-params="paramsTutorClass"
+                :total-pages="totalPagesTutorClass"
+                @update:pagination-params="handlePaginationTutorClassChange"
+            />
+          </a-tab-pane>
+          <a-tab-pane key="2" tab="Danh sách lớp tutor">
+            <tutor-class-detail-filter
+                @filter="handleFilter"
+                :teacherOption="teacherOption"
+            />
+            <tutor-class-detail-table
+                :data-source="tutorClassDetail"
+                :loading="isLoadingTutorClassDetailData"
+                :pagination-params="paramsTutorClassDetail"
+                :total-pages="totalPagesTutorClassDetail"
+                :teacherOption="teacherOption"
+                :canUpdate="canPerformUpdate"
+                @update:pagination-params="handlePaginationTutorClassDetailChange"
+            />
+          </a-tab-pane>
+        </a-tabs>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import TutorClassDetailTable from "@/pages/headdepartment/plan/TutorClassDetailTable.vue";
 import TutorClassTable from "@/pages/headdepartment/plan/TutorClassTable.vue";
-import { useRoute } from "vue-router";
-import { computed, ref } from "vue";
-import { useGetPlanInfoById } from "@/services/service/headdepartment/plan.action.ts";
-import { formatBlockName, getDateFormat, getTagColor, getTagStatus} from "@/utils/common.helper.ts";
+import TutorClassDetailFilter from "@/pages/headdepartment/plan/TutorClassDetailFilter.vue";
 import { ParamsGetPlans } from "@/services/api/headdepartment/plan.api.ts";
+import { ParamsGetTutorClass, ParamsGetTutorClassDetail } from "@/services/api/headdepartment/tutor-class.api.ts";
+import { ParamsStaffSearchByRole } from "@/services/api/common.api.ts";
+import { useRoute } from "vue-router";
+import { useGetPlanInfoById } from "@/services/service/headdepartment/plan.action.ts";
+import { formatBlockName, getDateFormat, getTagColor, getTagStatus } from "@/utils/common.helper.ts";
 import { keepPreviousData } from "@tanstack/vue-query";
-import { useGetTutorClass } from "@/services/service/headdepartment/tutor-class.action.ts";
+import { useAuthStore } from "@/stores/auth.ts";
+import { useGetTutorClass, useListTutorClassDetail } from "@/services/service/headdepartment/tutor-class.action.ts";
+import { useGetStaffByRoleOptions } from "@/services/service/common.action.ts";
+import {computed, ref} from "vue";
 
 const route = useRoute();
-const planId = computed(() => {
+let planId = computed(() => {
   const id = route.params.planId;
   return Array.isArray(id) ? id[0] : id || null;
 });
 
-const params = ref<ParamsGetTutorClass>({
+const auth = useAuthStore();
+const userInfo = computed(() => auth.user);
+const activeKey = ref('1');
+const canUpdate = ref(false);
+
+const paramsTutorClass = ref<ParamsGetTutorClass>({
   page: 1,
   size: 10,
   planId: planId.value,
+  facilityId: userInfo.value?.facilityId,
+  semesterId: userInfo.value?.semesterId,
 });
 
-const { data, isLoading, isFetching } = useGetTutorClass(params, {
+const paramsTutorClassDetail = ref<ParamsGetTutorClassDetail>({
+  page: 1,
+  size: 10,
+  planId: planId.value,
+  facilityId: userInfo.value?.facilityId,
+  semesterId: userInfo.value?.semesterId,
+  teacherId: null,
+  query: null,
+});
+
+const paramsGetStaffOption = ref<ParamsStaffSearchByRole>({
+  departmentCode: userInfo.value?.departmentCode,
+  facilityCode: userInfo.value?.facilityCode,
+});
+
+const { data: tutorClassData, isLoading: isLoadingTutorClassData } = useGetTutorClass(paramsTutorClass, {
   refetchOnWindowFocus: false,
   placeholderData: keepPreviousData,
   enabled: () => !!planId.value,
 });
 
-const handlePaginationChange = (newParams: ParamsGetPlans) => {
-  params.value = { ...params.value, ...newParams };
+const { data: teacherOptionData } = useGetStaffByRoleOptions(paramsGetStaffOption, {
+  refetchOnWindowFocus: false,
+});
+
+const { data: tutorClassDetailData, isLoading: isLoadingTutorClassDetailData } = useListTutorClassDetail(paramsTutorClassDetail, {
+  refetchOnWindowFocus: false,
+  placeholderData: keepPreviousData,
+});
+
+const handlePaginationTutorClassChange = (newParams: ParamsGetPlans) => {
+  paramsTutorClass.value = { ...paramsTutorClass.value, ...newParams };
+};
+
+const handlePaginationTutorClassDetailChange = (newParams: ParamsGetPlans) => {
+  paramsTutorClassDetail.value = { ...paramsTutorClassDetail.value, ...newParams };
+};
+
+const handleFilter = (newParams: ParamsGetPlans) => {
+  paramsTutorClassDetail.value = { ...paramsTutorClassDetail.value, ...newParams };
 };
 
 const { data: planInfo } = useGetPlanInfoById(planId.value, {
@@ -77,6 +141,15 @@ const { data: planInfo } = useGetPlanInfoById(planId.value, {
 });
 
 const plan = computed(() => planInfo.value?.data || null);
-const planData = computed(() => data?.value?.data?.data || []);
-const totalPages = computed(() => data?.value?.data?.totalPages || 0);
+const tutorClass = computed(() => tutorClassData?.value?.data?.data || []);
+const tutorClassDetail = computed(() => tutorClassDetailData?.value?.data?.data || []);
+const teacherOption = computed(() => teacherOptionData?.value?.data.map(teacher => ({
+  value: teacher.id,
+  label: teacher.name
+})) || []);
+const totalPagesTutorClass = computed(() => tutorClassData?.value?.data?.totalPages || 0);
+const totalPagesTutorClassDetail = computed(() => tutorClassDetailData?.value?.data?.totalPages || 0);
+const canPerformUpdate = computed(() => {
+  return (plan.value?.status != 'PLANNING') || (plan.value?.status === 'PLANNING' && canUpdate.value);
+});
 </script>

@@ -5,8 +5,12 @@ import udpm.hn.server.core.common.base.IsIdentify;
 
 public interface PLPLTutorClassResponse extends IsIdentify, HasOrderNumber {
 
+    String getSubjectId();
+    String getSubjectCode();
     String getSubjectName();
-    String getNumberClasses();
+    Integer getNumberClasses();
     String getHeadSubject();
+    Integer getNumberLectures();
+    Integer getFormat();
 
 }

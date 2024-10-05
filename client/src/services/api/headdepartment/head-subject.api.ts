@@ -1,4 +1,4 @@
-import {PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT} from "@/constants/url.ts";
+import { PREFIX_API_HEAD_DEPARTMENT_HEAD_SUBJECT } from "@/constants/url.ts";
 import request from "@/services/request.ts";
 import {
     DefaultResponse,
@@ -82,7 +82,7 @@ export type StaffSubjectResponse = {
 
 export const getHeadOfSubjects = async (params: Ref<ParamsGetHeadOfSubjects>) => {
     const res = (await request({
-        url: `${PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT}`,
+        url: `${PREFIX_API_HEAD_DEPARTMENT_HEAD_SUBJECT}`,
         method: "GET",
         params: params.value,
     })) as AxiosResponse<
@@ -96,7 +96,7 @@ export const getSubjectsByHeadSubject = async (
     params: Ref<ParamsGetSubjectsByHeadSubject>,
     headSubjectId: string | null) => {
     const res = (await request({
-        url: `${PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT}/${headSubjectId}/subjects`,
+        url: `${PREFIX_API_HEAD_DEPARTMENT_HEAD_SUBJECT}/${headSubjectId}/subjects`,
         method: "GET",
         params: params.value,
     })) as AxiosResponse<
@@ -110,7 +110,7 @@ export const getSubjectsWithAssign = async (
     params: Ref<ParamsGetSubjectsWithAssign>,
     headSubjectId: string | null) => {
     const res = (await request({
-        url: `${PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT}/${headSubjectId}/subjects/assign`,
+        url: `${PREFIX_API_HEAD_DEPARTMENT_HEAD_SUBJECT}/${headSubjectId}/subjects/assign`,
         method: "GET",
         params: params.value,
     })) as AxiosResponse<
@@ -123,7 +123,7 @@ export const getSubjectsWithAssign = async (
 export const getStaffByHeadSubject = async (
     params: Ref<ParamsGetStaffSubject>) => {
     const res = (await request({
-        url: `${PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT}/staff/search`,
+        url: `${PREFIX_API_HEAD_DEPARTMENT_HEAD_SUBJECT}/staff/search`,
         method: "GET",
         params: params.value,
     })) as AxiosResponse<
@@ -136,7 +136,7 @@ export const reassignSubjectForAnotherHeadSubject = async (
     params: ParamsReassignSubjectForAnotherHeadSubject
 ) => {
      const res = await request({
-        url: `${PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT}/subjects/reassign`,
+        url: `${PREFIX_API_HEAD_DEPARTMENT_HEAD_SUBJECT}/subjects/reassign`,
         method: "PUT",
         data: params,
      }) as AxiosResponse<{ status: string; data: string; message: string; timestamp: string; success: boolean }>;
@@ -149,7 +149,7 @@ export const assignSubjectForHeadSubject = async (
     headSubjectId: string | null
 ) => {
     const res = await request({
-        url: `${PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT}/${headSubjectId}/subjects/assign`,
+        url: `${PREFIX_API_HEAD_DEPARTMENT_HEAD_SUBJECT}/${headSubjectId}/subjects/assign`,
         method: "PUT",
         data: params,
     }) as AxiosResponse<{ status: string; data: string; message: string; timestamp: string; success: boolean }>;
@@ -162,7 +162,7 @@ export const unAssignSubjectForHeadSubject = async (
     headSubjectId: string | null
 ) => {
    const res = await request({
-        url: `${PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT}/${headSubjectId}/subjects/assign`,
+        url: `${PREFIX_API_HEAD_DEPARTMENT_HEAD_SUBJECT}/${headSubjectId}/subjects/assign`,
         method: "DELETE",
         data: params,
    }) as AxiosResponse<{ status: string; data: string; message: string; timestamp: string; success: boolean }>;
@@ -175,7 +175,7 @@ export const checkCurrentSemesterHasHeadSubject = async (
 ) => {
     try {
         const res = await request({
-            url: `${PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT}/subjects/can-sync`,
+            url: `${PREFIX_API_HEAD_DEPARTMENT_HEAD_SUBJECT}/subjects/can-sync`,
             method: "GET",
             params: { semesterId },
         }) as AxiosResponse< DefaultResponse<Object>>;
@@ -191,7 +191,7 @@ export const syncHeadSubjectAttachWithSubjectFromPreviousSemesterToCurrentSemest
     semesterId: string
 ) => {
     const res = await request({
-        url: `${PREFIX_API_HEAD_OF_SUBJECT_HEAD_DEPARTMENT}/subjects/sync`,
+        url: `${PREFIX_API_HEAD_DEPARTMENT_HEAD_SUBJECT}/subjects/sync`,
         method: "GET",
         params: { semesterId },
     }) as AxiosResponse<DefaultResponse<Object>>;

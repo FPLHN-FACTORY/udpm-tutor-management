@@ -63,4 +63,9 @@ public class PlansRestController {
     public ResponseEntity<?> approvePlan(@PathVariable String id) {
         return Helper.createResponseEntity(planService.approvePlan(id));
     }
+
+    @GetMapping("/check/{id}")
+    public ResponseEntity<?> checkApprovePlan(@PathVariable String id) {
+        return Helper.createResponseEntity(planService.checkApprovePlan(id));
+    }
 }

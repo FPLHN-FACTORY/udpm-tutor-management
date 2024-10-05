@@ -8,6 +8,11 @@ export type CommonOptionsResponse = {
   name: string;
 };
 
+export type FormatCommonOptionsResponse = {
+  label: string;
+  value: string;
+};
+
 export const getDepartmentOptions = async (query?: string) => {
   const res = (await request({
     url: `${PREFIX_API_COMMON}/department`,
@@ -83,6 +88,21 @@ export const getStaffByRole = async (
       departmentCode: params.departmentCode, // Đúng tên trường
       facilityCode: params.facilityCode, // Đúng tên trường
     },
+    method: 'GET',
+  })) as AxiosResponse<DefaultResponse<Array<CommonOptionsResponse>>>;
+
+  return res.data;
+};
+
+export type ParamsStudentTutorSearch = {
+  departmentCode?: string;
+  facilityCode?: string;
+};
+
+export const getStudentTutor = async (
+) => {
+  const res = (await request({
+    url: `${PREFIX_API_COMMON}/student/tutor`,  // Thay đổi URL nếu cần
     method: 'GET',
   })) as AxiosResponse<DefaultResponse<Array<CommonOptionsResponse>>>;
 

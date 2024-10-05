@@ -9,6 +9,7 @@ import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.core.headdepartment.plan.model.request.HDPLPlanInfoRequest;
 import udpm.hn.server.core.headdepartment.plan.model.request.HDPLPlanListRequest;
+import udpm.hn.server.core.headdepartment.plan.model.request.HDPLRejectPlanRequest;
 import udpm.hn.server.core.headdepartment.plan.repository.HDPLPlanExtendRepository;
 import udpm.hn.server.core.headdepartment.plan.service.HDPLPlansService;
 import udpm.hn.server.entity.Plan;
@@ -54,6 +55,24 @@ public class HDPLPlansServiceImpl implements HDPLPlansService {
             return planRepository.save(plan);
         });
 
+        return planOptional
+                .map(plan -> new ResponseObject<>(null, HttpStatus.OK, "Cập nhật thành công"))
+                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại"));
+    }
+
+    public ResponseObject<?> rejectPlan(HDPLRejectPlanRequest request) {
+        Optional<Plan> planOptional = planRepository.findById(request.getPlanId());
+        if (planOptional.isEmpty()) {
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch không tồn tại");
+        }
+        if (!planOptional.get().getPlanStatus().equals(PlanStatus.PLANNER_APPROVED)) {
+            return new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại");
+        }
+        planOptional.map(plan -> {
+            plan.setPlanStatus(PlanStatus.PLANNING);
+            plan.setReason(request.getReason());
+            return planRepository.save(plan);
+        });
         return planOptional
                 .map(plan -> new ResponseObject<>(null, HttpStatus.OK, "Cập nhật thành công"))
                 .orElseGet(() -> new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại"));

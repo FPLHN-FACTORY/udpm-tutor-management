@@ -83,12 +83,12 @@ const emit = defineEmits(["update:paginationParams", "handleOpenModalDetail"]);
 const { mutate: onSync } = useSemesterSynchronize();
 
 // Handle button click
-const handleSync = async () => {
-    await onSync(undefined, {
+const handleSync = () => {
+    onSync(undefined, {
       onSuccess: () => {
         toast.success("Đồng bộ học kỳ thành công");
       },
-      onError: (error) => {
+      onError: (error: any) => {
         toast.error(
             error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
         )

@@ -44,7 +44,7 @@ public class HDPLTutorClassServiceImpl implements HDPLTutorClassService {
     public ResponseObject<?> getTutorClasses(HDPLSubjectListRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
         return new ResponseObject<>(
-                PageableObject.of(tutorClassRepository.getTutorClasses(pageable, request.getPlanId())
+                PageableObject.of(tutorClassRepository.getTutorClasses(pageable, request)
                 ), HttpStatus.OK, "Lấy danh sách lớp môn thành công!");
     }
 
@@ -52,7 +52,7 @@ public class HDPLTutorClassServiceImpl implements HDPLTutorClassService {
     public ResponseObject<?> getTutorClassDetailByTutorClassId(HDPLTutorClassDetailRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
         return new ResponseObject<>(
-                PageableObject.of(tutorClassDetailRepository.getTutorClassDetailByTutorClassId(pageable, request.getTutorClassId())),
+                PageableObject.of(tutorClassDetailRepository.getTutorClassDetailByTutorClassId(pageable, request)),
                 HttpStatus.OK,
                 "Lấy danh sách lớp môn thành công!"
         );

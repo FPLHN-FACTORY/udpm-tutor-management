@@ -12,12 +12,16 @@ export type DetailSubjectTutorResponse = {
   subjectName: string;
 };
 
-export type TutorClassDetailResponse = {
-  nameTutorClass: number;
-  headSubject: string;
-  numberOfLectures:  number;
+export type TutorClassDetailResponse = ResponseList & {
+  id: string;
+  tutorClassCode: number;
+  studentTutor: string;
+  teacherTutor: string;
+  shift: string;
+  room: string;
   startTime: number;
   endTime: number;
+  selected: boolean;
 };
 
 export const getDetailTutorClass = async (planId: string | null) => {
@@ -33,7 +37,6 @@ export interface ParamsGetTutorClass extends PaginationParams {
   planId?: string | null;
   facilityId?: string | null;
   semesterId?: string | null;
-  staffId?: string | null;
 }
 
 export type TutorClassResponse = ResponseList & {
@@ -56,7 +59,11 @@ export const getTutorClass = async (params: Ref<ParamsGetTutorClass>) => {
 };
 
 export interface ParamsGetTutorClassDetail extends PaginationParams {
-  tutorClassId?: string | null;
+  planId?: string | null;
+  facilityId?: string | null;
+  semesterId?: string | null;
+  teacherId?: string | null;
+  query?: string | null;
 }
 
 export const getListTutorClassDetail = async (params: Ref<ParamsGetTutorClassDetail>) => {
@@ -70,4 +77,41 @@ export const getListTutorClassDetail = async (params: Ref<ParamsGetTutorClassDet
 
   return res.data;
 };
+
+export interface UpdateTutorClassDetailParams {
+  id: string;
+  studentId: string;
+  room: string;
+}
+
+export const updateStudentPlan = async (params: Array<UpdateTutorClassDetailParams>) => {
+  const res = (await request({
+    url: `${PREFIX_API_PLANNER_PLAN}/tutor-detail`,
+    method: "PUT",
+    data: params,
+  })) as AxiosResponse<
+      DefaultResponse<DefaultResponse<null>>
+  >;
+
+  return res.data;
+};
+
+export interface CreateStudentTutorParams {
+  code: string;
+  name: string;
+  email: string;
+}
+
+export const createStudentTutor = async (params: CreateStudentTutorParams) => {
+  const res = (await request({
+    url: `${PREFIX_API_PLANNER_PLAN}/student`,
+    method: "POST",
+    data: params,
+  })) as AxiosResponse<
+      DefaultResponse<DefaultResponse<null>>
+  >;
+
+  return res.data;
+};
+
 

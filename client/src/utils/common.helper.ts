@@ -1,4 +1,7 @@
 import dayjs from "dayjs";
+import {Modal} from "ant-design-vue";
+import {ExclamationCircleOutlined} from "@ant-design/icons-vue";
+import {createVNode} from "vue";
 
 export function sortObjectKeys(obj: Record<string, any>) {
   if (!obj) return obj;
@@ -57,12 +60,25 @@ export const getTagStatus = (status: string): string => {
   }
 };
 
-
 export const formatBlockName = (blockName: string): string => {
   return blockName.replace(/^BLOCK_/, 'Block ');
 };
 
-
 export const filterOption = (input: string, option: any) => {
   return option.value.toLowerCase().includes(input.toLowerCase());
+};
+
+export const confirmModal = (message, onConfirm) => {
+  Modal.confirm({
+    content: message,
+    icon: createVNode(ExclamationCircleOutlined),
+    centered: true,
+    onOk() {
+      onConfirm();
+    },
+    cancelText: 'Huỷ',
+    onCancel() {
+      Modal.destroyAll();
+    },
+  });
 };

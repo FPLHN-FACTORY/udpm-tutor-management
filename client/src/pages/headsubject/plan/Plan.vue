@@ -44,18 +44,18 @@
         </template>
       </div>
     </div>
-    <head-subject-filter 
-      @filter="handleFilter"  
-      :semesterOptions="semesterOptions"
-      :currentSemester="userInfo?.semesterId"
-      />
-      <head-subject-table 
+    <head-subject-filter
+        @filter="handleFilter"
+        :semesterOptions="semesterOptions"
+        :currentSemester="userInfo?.semesterId"
+    />
+    <head-subject-table
         :data-source="planData"
         :loading="isLoading || isFetching"
         :pagination-params="params"
         :total-pages="totalPages"
         @handleOpenModalAdd="handleOpenModalAdd"
-      />
+    />
   </div>
 </template>
 
@@ -63,8 +63,8 @@
 import { ParamsGetPlans, PlanResponse } from '@/services/api/headsubject/plan.api.ts';
 import { useAuthStore } from '@/stores/auth.ts';
 import { computed, ref, watch } from 'vue';
-import HeadSubjectFilter from '@/pages/headsubject/plan/HeadSubjectFilter.vue';
-import HeadSubjectTable from '@/pages/headsubject/plan/HeadSubjectTable.vue';
+import HeadSubjectFilter from '@/pages/headsubject/plan/PlanFilter.vue';
+import HeadSubjectTable from '@/pages/headsubject/plan/PlanTable.vue';
 import PlanForm from '@/pages/headsubject/plan/PlanForm.vue';
 import { useGetSemesterOptions } from '@/services/service/common.action.ts';
 import { useGetPlanInfo, useGetPlans, useGetSemesterInfo } from '@/services/service/headsubject/plan.action.ts';

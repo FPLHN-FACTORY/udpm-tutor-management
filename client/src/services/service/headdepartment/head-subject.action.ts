@@ -77,7 +77,7 @@ export const useReassignSubjectForAnotherHeadSubject = () => {
                 });
             }
         },
-        onError: (error) => {
+        onError: (error: any) => {
             console.error("🚀 ~ useReassignSubjectForAnotherHeadSubject ~ error:", error);
             // Không hiển thị toast.error ở đây
         },
@@ -102,7 +102,7 @@ export const useAssignSubjectForHeadSubject = () => {
                 });
             }
         },
-        onError: (error) => {
+        onError: (error: any) => {
             console.error("🚀 ~ useReassignSubjectForAnotherHeadSubject ~ error:", error);
             // Không hiển thị toast.error ở đây
         },
@@ -127,7 +127,7 @@ export const useUnAssignSubjectForHeadSubject = () => {
                 });
             }
         },
-        onError: (error) => {
+        onError: (error: any) => {
             console.error("🚀 ~ useReassignSubjectForAnotherHeadSubject ~ error:", error);
             // Không hiển thị toast.error ở đây
         },
@@ -155,7 +155,7 @@ export function useSyncHeadSubjectAttach() {
                 queryKey: [queryKey.headOfDepartment.headOfSubject.headOfSubjectList],
             });
         },
-        onError: (error) => {
+        onError: (error: any) => {
             // Handle error
             console.error('Error during synchronization:', error);
         }
