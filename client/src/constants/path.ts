@@ -81,6 +81,16 @@ export const ROUTES_CONSTANTS = {
       },
     },
   },
+  TEACHER: {
+    path: "/teacher",
+    name: "teacher",
+    children: {
+      TUTOR_CLASS: {
+        path: "tutor-class",
+        name: "tutorClass",
+      },
+    },
+  },
   HEAD_SUBJECT: {
     path: "/head-subject",
     name: "head-subject",
