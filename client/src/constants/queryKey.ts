@@ -4,6 +4,7 @@ export const queryKey = {
     facilityOptions: "facilityOptionsKey",
     semesterOptions: "semesterOptionsKey",
     blockOptions: "blockOptionsKey",
+    subjectOptions: "subjectOptionsKey",
     staffOptions: "staffOptionsKey",
   },
   admin: {
@@ -98,5 +99,10 @@ export const queryKey = {
       tutorClassDetailList: "hSPlTutorClassDetailListKey",
       tutorDetail: "hSPlTutorDetailKey",
     },
+  },
+  teacher: {
+    tutorClass: {
+      tutorClassList: 'tutorClassListKey'
+    }
   }
 };

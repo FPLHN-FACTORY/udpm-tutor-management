@@ -99,7 +99,7 @@ export const routes: RouteRecordRaw[] = [
   },
   {
     path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.path,
-    redirect: `${ROUTES_CONSTANTS.HEAD_DEPARTMENT.path}/${ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLAN.path}`,
+    redirect: `${ROUTES_CONSTANTS.HEAD_DEPARTMENT.path}/${ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_SUBJECT.path}`,
     component: () => import("@/layout/HeadDepartment.vue"),
     children: [
       {
@@ -199,6 +199,23 @@ export const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  {
+    path: ROUTES_CONSTANTS.TEACHER.path,
+    redirect: `${ROUTES_CONSTANTS.TEACHER.path}/${ROUTES_CONSTANTS.TEACHER.children.TUTOR_CLASS.path}`,
+    component: () => import("@/layout/Teacher.vue"),
+    children: [
+      {
+        path: ROUTES_CONSTANTS.TEACHER.children.TUTOR_CLASS.path,
+        name: ROUTES_CONSTANTS.TEACHER.children.TUTOR_CLASS.name,
+        component: () =>
+            import(
+                "@/pages/teacher/tutor-class/TutorClass.vue"
+                ),
+      },
+    ],
+  },
+
+ 
 ];
 
 export const router = createRouter({

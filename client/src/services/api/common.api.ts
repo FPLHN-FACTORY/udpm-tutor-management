@@ -56,6 +56,18 @@ export const getBlockOptions = async (semesterId?: string) => {
   return res.data;
 };
 
+export const getSubjectOptions = async (query?: string) => {
+  const res = (await request({
+    url: `${PREFIX_API_COMMON}/subject`,
+    params: {
+      query,
+    },
+    method: "GET",
+  })) as AxiosResponse<DefaultResponse<Array<CommonOptionsResponse>>>;
+
+  return res.data;
+};
+
 export type ParamsStaffSearchByRole = {
   role?: string[];
   departmentCode?: string;

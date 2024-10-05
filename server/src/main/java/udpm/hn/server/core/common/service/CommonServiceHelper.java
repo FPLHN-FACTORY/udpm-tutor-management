@@ -12,6 +12,8 @@ import udpm.hn.server.core.common.repository.CMDepartmentExtendRepository;
 import udpm.hn.server.core.common.repository.CMFacilityExtendRepository;
 import udpm.hn.server.core.common.repository.CMSemesterExtendRepository;
 import udpm.hn.server.core.common.repository.CMStaffExtendRepository;
+import udpm.hn.server.core.common.repository.CMSubjectExtendResponse;
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +29,8 @@ public class CommonServiceHelper {
     private final CMDepartmentExtendRepository cmDepartmentExtendRepository;
 
     private final CMFacilityExtendRepository facilityExtendRepository;
+
+    private final CMSubjectExtendResponse subjectExtendResponse;
 
     public ResponseObject<?> getSemesterInfo(String semesterId) {
 
@@ -71,6 +75,14 @@ public class CommonServiceHelper {
                 cMStaffExtendRepository.getStaffsByRole(request),
                 HttpStatus.OK,
                 "Lấy thông tin nhân viên thành công"
+        );
+    }
+
+    public ResponseObject<?> getSubject() {
+        return new ResponseObject<>(
+                subjectExtendResponse.getSubjectOptions(),
+                HttpStatus.OK,
+                "Lấy thông tin môn học thành công"
         );
     }
 
