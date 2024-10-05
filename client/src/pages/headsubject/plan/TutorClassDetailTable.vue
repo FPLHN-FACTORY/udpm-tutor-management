@@ -53,9 +53,9 @@
           </div>
           <div v-else-if="column.key === 'time'">
             <a-range-picker
-                :value="[record.startTime ? getDateFormat(record.startTime, false) : null,
-              record.endTime ? getDateFormat(record.endTime, false) : null]"
+                :value="[record.startTime ? dayjs(record.startTime) : null, record.endTime ? dayjs(record.endTime) : null]"
                 :placeholder="['Ngày bắt đầu', 'Ngày kết thúc']"
+                :format="'DD/MM/YYYY'"
                 disabled
             />
           </div>
@@ -65,6 +65,7 @@
                 placeholder="Chọn sinh viên"
                 style="width: 100%"
                 show-search
+                :options="studentOption"
                 :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
                 disabled
             >
@@ -92,7 +93,6 @@
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
 import { TutorClassDetailResponse } from "@/services/api/headsubject/tutor-class.api.ts";
-import { getDateFormat } from "@/utils/common.helper.ts";
 import {computed, createVNode, defineProps, h} from "vue";
 import {
   ExclamationCircleOutlined,
@@ -108,13 +108,14 @@ import { Modal } from "ant-design-vue";
 import { toast } from "vue3-toastify";
 import { ERROR_MESSAGE } from "@/constants/message.constant.ts";
 import {FormatCommonOptionsResponse} from "@/services/api/common.api.ts";
+import dayjs from "dayjs";
 
 const props = defineProps({
   dataSource: Array as () => TutorClassDetailResponse[],
   loading: Boolean,
   paginationParams: Object,
   totalPages: Number,
-  students: Array as () => FormatCommonOptionsResponse[],
+  studentOption: Array as () => FormatCommonOptionsResponse[],
   teacherOption: Array as () => FormatCommonOptionsResponse[],
   canUpdate: Boolean
 });

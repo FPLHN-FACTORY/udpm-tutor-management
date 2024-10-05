@@ -73,7 +73,7 @@ public class CommonServiceHelper {
     }
 
     public ResponseObject<?> getStaffSearchByRole(StaffSearchByRoleRequest request) {
-        request.setRole(Arrays.asList("GIAO_VIEN"));
+        request.setRole(Arrays.asList("GIANG_VIEN"));
         return new ResponseObject<>(
                 cMStaffExtendRepository.getStaffsByRole(request),
                 HttpStatus.OK,

@@ -14,7 +14,10 @@ export type TutorClassResponse = ResponseList & {
     totalStudent: number,
     studentName: string,
     classCode: string,
-    subjectName: string
+    subjectName: string,
+    shift: string,
+    startTime: number,
+    endTime: number,
 }
 
 export const getTutorClasses = async (
@@ -27,6 +30,25 @@ export const getTutorClasses = async (
         params: params.value,
     })) as AxiosResponse<
         DefaultResponse<PaginationResponse<Array<TutorClassResponse>>>
+    >;
+
+    return res.data;
+};
+
+export interface UpdateTutorClassDetailParams {
+    id: string;
+    shift: string;
+    startTime: number;
+    endTime: number;
+}
+
+export const updateTutorClassDetail = async (params: Array<UpdateTutorClassDetailParams>) => {
+    const res = (await request({
+        url: `${PREFIX_API_TEACHER_TUTOR_CLASS}`,
+        method: "PUT",
+        data: params,
+    })) as AxiosResponse<
+        DefaultResponse<DefaultResponse<null>>
     >;
 
     return res.data;

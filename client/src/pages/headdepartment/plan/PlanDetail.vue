@@ -48,6 +48,7 @@
                 :pagination-params="paramsTutorClassDetail"
                 :total-pages="totalPagesTutorClassDetail"
                 :teacherOption="teacherOption"
+                :studentOption="studentOption"
                 :canUpdate="canPerformUpdate"
                 @update:pagination-params="handlePaginationTutorClassDetailChange"
             />
@@ -71,7 +72,7 @@ import { formatBlockName, getDateFormat, getTagColor, getTagStatus } from "@/uti
 import { keepPreviousData } from "@tanstack/vue-query";
 import { useAuthStore } from "@/stores/auth.ts";
 import { useGetTutorClass, useListTutorClassDetail } from "@/services/service/headdepartment/tutor-class.action.ts";
-import { useGetStaffByRoleOptions } from "@/services/service/common.action.ts";
+import {useGetStaffByRoleOptions, useGetStudentTutorOptions} from "@/services/service/common.action.ts";
 import {computed, ref} from "vue";
 
 const route = useRoute();
@@ -118,6 +119,10 @@ const { data: teacherOptionData } = useGetStaffByRoleOptions(paramsGetStaffOptio
   refetchOnWindowFocus: false,
 });
 
+const { data: studentOptionData } = useGetStudentTutorOptions( {
+  refetchOnWindowFocus: false,
+});
+
 const { data: tutorClassDetailData, isLoading: isLoadingTutorClassDetailData } = useListTutorClassDetail(paramsTutorClassDetail, {
   refetchOnWindowFocus: false,
   placeholderData: keepPreviousData,
@@ -152,4 +157,8 @@ const totalPagesTutorClassDetail = computed(() => tutorClassDetailData?.value?.d
 const canPerformUpdate = computed(() => {
   return (plan.value?.status != 'PLANNING') || (plan.value?.status === 'PLANNING' && canUpdate.value);
 });
+const studentOption = computed(() => studentOptionData?.value?.data.map(teacher => ({
+  value: teacher.id,
+  label: teacher.name
+})) || []);
 </script>
