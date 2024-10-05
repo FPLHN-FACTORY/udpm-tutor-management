@@ -12,8 +12,12 @@ import udpm.hn.server.core.headdepartment.plan.model.request.HDPLPlanListRequest
 import udpm.hn.server.core.headdepartment.plan.model.request.HDPLRejectPlanRequest;
 import udpm.hn.server.core.headdepartment.plan.repository.HDPLPlanExtendRepository;
 import udpm.hn.server.core.headdepartment.plan.service.HDPLPlansService;
+import udpm.hn.server.core.planloghistory.model.request.PlanLogHistoryRequest;
+import udpm.hn.server.core.planloghistory.service.PlanLogHistoryService;
 import udpm.hn.server.entity.Plan;
+import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.infrastructure.constant.PlanStatus;
+import udpm.hn.server.infrastructure.constant.Role;
 import udpm.hn.server.utils.Helper;
 
 import java.util.Optional;
@@ -24,6 +28,8 @@ import java.util.Optional;
 public class HDPLPlansServiceImpl implements HDPLPlansService {
 
     private final HDPLPlanExtendRepository planRepository;
+
+    private final PlanLogHistoryService planLogHistoryService;
 
     @Override
     public ResponseObject<?> getPlans(HDPLPlanListRequest request) {
@@ -39,43 +45,101 @@ public class HDPLPlansServiceImpl implements HDPLPlansService {
     @Override
     public ResponseObject<?> approvePlan(String planId) {
 
-        Optional<Plan> planOptional = planRepository.findById(planId);
+        PlanLogHistoryRequest planLogHistory = new PlanLogHistoryRequest();
+        planLogHistory.setTypeFunction(FunctionLogType.APPROVE_PLAN);
+        planLogHistory.setAction("Phê duyệt kế hoạch");
+        planLogHistory.setRoleStaff(Role.CHU_NHIEM_BO_MON.name());
 
-        if (planOptional.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch không tồn tại");
+        try {
+            Optional<Plan> planOptional = planRepository.findById(planId);
+
+            if (planOptional.isEmpty()) {
+                planLogHistory.setStatus(false);
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch không tồn tại");
+            }
+
+            //Chỉ phê duyệt những kế hoạch do planner đã phê duyệt
+            if (!planOptional.get().getPlanStatus().equals(PlanStatus.PLANNER_APPROVED)) {
+                planLogHistory.setStatus(false);
+                return new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại");
+            }
+
+            planOptional.map(plan -> {
+                plan.setPlanStatus(PlanStatus.HEAD_DEPARTMENT_APPROVED);
+                Plan planResult = planRepository.save(plan);
+                if (planResult == null) {
+                    planLogHistory.setStatus(false);
+                    return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi duyệt kế hoạch");
+                }
+                planLogHistory.setPlanId(planResult.getId());
+                planLogHistory.setStatus(true);
+                return planResult;
+            });
+
+            return planOptional
+                    .map(plan -> new ResponseObject<>(null, HttpStatus.OK, "Cập nhật thành công"))
+                    .orElseGet(() -> new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại"));
+        }catch (Exception e) {
+            planLogHistory.setStatus(false);
+            e.printStackTrace();
+        } finally {
+            try {
+                Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);
+                if (!resultLog) {
+                    System.err.println("Có lỗi xảy ra khi lưu log");
+                }
+            } catch (Exception e) {
+                System.err.println("Lỗi khi ghi log: " + e.getMessage());
+            }
         }
-
-        //Chỉ phê duyệt những kế hoạch do planner đã phê duyệt
-        if (!planOptional.get().getPlanStatus().equals(PlanStatus.PLANNER_APPROVED)) {
-            return new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại");
-        }
-
-        planOptional.map(plan -> {
-            plan.setPlanStatus(PlanStatus.HEAD_DEPARTMENT_APPROVED);
-            return planRepository.save(plan);
-        });
-
-        return planOptional
-                .map(plan -> new ResponseObject<>(null, HttpStatus.OK, "Cập nhật thành công"))
-                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại"));
+        return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi duyệt kế hoạch");
     }
 
     public ResponseObject<?> rejectPlan(HDPLRejectPlanRequest request) {
-        Optional<Plan> planOptional = planRepository.findById(request.getPlanId());
-        if (planOptional.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch không tồn tại");
+        PlanLogHistoryRequest planLogHistory = new PlanLogHistoryRequest();
+        planLogHistory.setTypeFunction(FunctionLogType.REJECT_PLAN);
+        planLogHistory.setAction("Từ chối kế hoạch");
+        planLogHistory.setRoleStaff(Role.CHU_NHIEM_BO_MON.name());
+        try {
+            Optional<Plan> planOptional = planRepository.findById(request.getPlanId());
+            if (planOptional.isEmpty()) {
+                planLogHistory.setStatus(false);
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch không tồn tại");
+            }
+            if (!planOptional.get().getPlanStatus().equals(PlanStatus.PLANNER_APPROVED)) {
+                planLogHistory.setStatus(false);
+                return new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại");
+            }
+            planOptional.map(plan -> {
+                plan.setPlanStatus(PlanStatus.PLANNING);
+                plan.setReason(request.getReason());
+                Plan planResult = planRepository.save(plan);
+                if (planResult == null) {
+                    planLogHistory.setStatus(false);
+                    return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi duyệt kế hoạch");
+                }
+                planLogHistory.setRejectNote(request.getReason());
+                planLogHistory.setPlanId(planResult.getId());
+                planLogHistory.setStatus(true);
+                return planResult;
+            });
+            return planOptional
+                    .map(plan -> new ResponseObject<>(null, HttpStatus.OK, "Cập nhật thành công"))
+                    .orElseGet(() -> new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại"));
+        }catch (Exception e) {
+            planLogHistory.setStatus(false);
+            e.printStackTrace();
+        } finally {
+            try {
+                Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);
+                if (!resultLog) {
+                    System.err.println("Có lỗi xảy ra khi lưu log");
+                }
+            } catch (Exception e) {
+                System.err.println("Lỗi khi ghi log: " + e.getMessage());
+            }
         }
-        if (!planOptional.get().getPlanStatus().equals(PlanStatus.PLANNER_APPROVED)) {
-            return new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại");
-        }
-        planOptional.map(plan -> {
-            plan.setPlanStatus(PlanStatus.PLANNING);
-            plan.setReason(request.getReason());
-            return planRepository.save(plan);
-        });
-        return planOptional
-                .map(plan -> new ResponseObject<>(null, HttpStatus.OK, "Cập nhật thành công"))
-                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại"));
+        return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi từ chối kế hoạch");
     }
 
     @Override

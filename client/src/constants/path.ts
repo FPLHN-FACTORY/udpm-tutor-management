@@ -57,6 +57,10 @@ export const ROUTES_CONSTANTS = {
         path: "plan/:planId",
         name: "hDPlDetailPlan",
       },
+      PLAN_LOG_HISTORY: {
+        path: "plan-log",
+        name: "hDPplanLogHistory",
+      }
     },
   },
   PLANNER: {
@@ -66,6 +70,10 @@ export const ROUTES_CONSTANTS = {
       PLAN: {
         path: "plan",
         name: "hSPlan",
+      },
+      PLAN_LOG_HISTORY: {
+        path: "plan-log",
+        name: "pLPlanLogHistory",
       },
       PLAN_DETAIL: {
         path: "plan/:planId",
@@ -83,6 +91,20 @@ export const ROUTES_CONSTANTS = {
       },
     },
   },
+  SYSTEM_LOG: {
+    path: "/log-system",
+    name: "logSystem",
+    children: {
+      OPERATION_LOG: {
+        path: "operation-log",
+        name: "operationLog",
+      },
+      USER_ACTIVITY_LOG: {
+        path: "user-log",
+        name: "userActivityLog",
+      },
+    },
+  },
   HEAD_SUBJECT: {
     path: "/head-subject",
     name: "head-subject",
@@ -94,7 +116,11 @@ export const ROUTES_CONSTANTS = {
       PLAN_DETAIL: {
         path: "plan/:planId",
         name: "hSPlDetailPlan",
-      }
+      },
+      PLAN_LOG: {
+        path: "plan-log",
+        name: "subjectPlanLog",
+      },
     },
   },
   NOT_FOUND: {

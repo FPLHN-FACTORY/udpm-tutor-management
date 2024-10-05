@@ -60,6 +60,7 @@
                 :pagination-params="paramsTutorClassDetail"
                 :total-pages="totalPagesTutorClassDetail"
                 :teacherOption="teacherOption"
+                :studentOption="studentOption"
                 :canUpdate="canPerformUpdate"
                 @update:pagination-params="handlePaginationTutorClassDetailChange"
             />
@@ -83,7 +84,6 @@
 import HeadSubjectDetailTable from "@/pages/headsubject/plan/TutorClassTable.vue";
 import AddNumberTutorClass from "@/pages/headsubject/plan/AddNumberTutorClass.vue";
 import TutorClassDetailTable from "@/pages/headsubject/plan/TutorClassDetailTable.vue";
-
 import { ParamsGetPlans, TutorClassResponse } from "@/services/api/headsubject/plan.api.ts";
 import { ParamsGetTutorClass, ParamsGetTutorClassDetail } from "@/services/api/headsubject/tutor-class.api.ts";
 import { ParamsStaffSearchByRole } from "@/services/api/common.api.ts";
@@ -94,7 +94,7 @@ import { formatBlockName, getDateFormat, getTagColor, getTagStatus } from "@/uti
 import { keepPreviousData } from "@tanstack/vue-query";
 import { useAuthStore } from "@/stores/auth.ts";
 import { useGetDetailTutorClass, useGetTutorClass, useListTutorClassDetail } from "@/services/service/headsubject/tutor-class.action.ts";
-import { useGetStaffByRoleOptions } from "@/services/service/common.action.ts";
+import {useGetStaffByRoleOptions, useGetStudentTutorOptions} from "@/services/service/common.action.ts";
 
 const route = useRoute();
 let planId = computed(() => {
@@ -147,6 +147,10 @@ const { data: detailTutorClassData, isLoading: isLoadingDetailTutorClass } = use
 });
 
 const { data: teacherOptionData } = useGetStaffByRoleOptions(paramsGetStaffOption, {
+  refetchOnWindowFocus: false,
+});
+
+const { data: studentOptionData } = useGetStudentTutorOptions( {
   refetchOnWindowFocus: false,
 });
 
@@ -207,4 +211,8 @@ const totalPagesTutorClassDetail = computed(() => tutorClassDetailData?.value?.d
 const canPerformUpdate = computed(() => {
   return (plan.value?.status != 'PLANNING') || (plan.value?.status === 'PLANNING' && canUpdate.value);
 });
+const studentOption = computed(() => studentOptionData?.value?.data.map(teacher => ({
+  value: teacher.id,
+  label: teacher.name
+})) || []);
 </script>

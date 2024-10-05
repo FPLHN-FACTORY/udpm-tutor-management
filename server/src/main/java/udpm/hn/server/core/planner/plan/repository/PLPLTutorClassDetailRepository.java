@@ -22,6 +22,7 @@ public interface PLPLTutorClassDetailRepository extends TutorClassDetailReposito
                 tcd.number_of_lectures AS numberOfLectures,
                 tcd.start_date AS startTime,
                 tcd.end_date AS endTime,
+                tcd.default_shift AS shift,
                 CONCAT(st.staff_Code, ' - ', st.name) AS teacher,
                 CONCAT(sd.student_code, ' - ', sd.student_name) AS student
             FROM
@@ -51,6 +52,7 @@ public interface PLPLTutorClassDetailRepository extends TutorClassDetailReposito
                 tcd.number_of_lectures AS numberOfLectures,
                 tcd.start_date AS startTime,
                 tcd.end_date AS endTime,
+                tcd.default_shift AS shift,
                 CONCAT(st.staff_Code, ' - ', st.name) AS teacher,
                 CONCAT(sd.student_code, ' - ', sd.student_name) AS student
             FROM

@@ -29,6 +29,12 @@ export const PREFIX_API_FACILITY_CHILD_ADMIN =  `${API_URL}/admin/facility-child
 
 export const PREFIX_API_DEPARTMENT_ADMIN = `${API_URL}/admin/departments` as string;
 
+export const PREFIX_API_ADMIN_OPERATION_LOG = `${API_URL}/admin/operation-log` as string;
+
+export const PREFIX_API_ADMIN_PLAN_HISTORY_LOG = `${API_URL}/admin/plan-log-history` as string;
+
+export const PREFIX_API_ADMIN_USER_ACTIVITY = `${API_URL}/admin/user-log` as string;
+
 export const PREFIX_API_DEPARTMENT_FACILITY_ADMIN =
   `${API_URL}/admin/departments-facility` as string;
 

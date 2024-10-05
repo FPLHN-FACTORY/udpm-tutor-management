@@ -72,9 +72,9 @@
         </div>
         <div v-else-if="column.key === 'time'">
           <a-range-picker
-              :value="[record.startTime ? getDateFormat(record.startTime, false) : null,
-              record.endTime ? getDateFormat(record.endTime, false) : null]"
+              :value="[record.startTime ? dayjs(record.startTime) : null, record.endTime ? dayjs(record.endTime) : null]"
               :placeholder="['Ngày bắt đầu', 'Ngày kết thúc']"
+              :format="'DD/MM/YYYY'"
               disabled
           />
         </div>
@@ -91,8 +91,9 @@ import { useUpdateStudentPlan } from "@/services/service/planner/tutor-class.act
 import { toast } from "vue3-toastify";
 import { ERROR_MESSAGE } from "@/constants/message.constant.ts";
 import { FormatCommonOptionsResponse } from "@/services/api/common.api.ts";
-import {confirmModal, getDateFormat} from "@/utils/common.helper.ts";
+import { confirmModal } from "@/utils/common.helper.ts";
 import {PlusCircleOutlined} from "@ant-design/icons-vue";
+import dayjs from "dayjs";
 
 const props = defineProps({
   dataSource: {

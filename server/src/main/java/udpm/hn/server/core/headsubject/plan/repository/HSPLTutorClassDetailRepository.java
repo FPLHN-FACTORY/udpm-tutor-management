@@ -3,15 +3,16 @@ package udpm.hn.server.core.headsubject.plan.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 import udpm.hn.server.core.headsubject.plan.model.request.HSPLTutorClassDetailRequest;
 import udpm.hn.server.core.headsubject.plan.model.response.HSPLTutorClassDetailResponse;
-import udpm.hn.server.core.planner.plan.model.response.PLPLTutorClassDetailResponse;
 import udpm.hn.server.entity.TutorClass;
 import udpm.hn.server.entity.TutorClassDetail;
 import udpm.hn.server.repository.TutorClassDetailRepository;
 
 import java.util.List;
 
+@Repository
 public interface HSPLTutorClassDetailRepository extends TutorClassDetailRepository {
 
     @Query(value = """
@@ -25,6 +26,7 @@ public interface HSPLTutorClassDetailRepository extends TutorClassDetailReposito
                 tcd.number_of_lectures AS numberOfLectures,
                 tcd.start_date AS startTime,
                 tcd.end_date AS endTime,
+                tcd.default_shift AS shift,
                 sj.id AS subjectId,
                 CONCAT(st.staff_Code, ' - ', st.name) AS teacher,
                 CONCAT(sd.student_code, ' - ', sd.student_name) AS student
@@ -57,6 +59,7 @@ public interface HSPLTutorClassDetailRepository extends TutorClassDetailReposito
                 tcd.start_date AS startTime,
                 tcd.end_date AS endTime,
                 sj.id AS subjectId,
+                tcd.default_shift AS shift,
                 CONCAT(st.staff_Code, ' - ', st.name) AS teacher,
                 CONCAT(sd.student_code, ' - ', sd.student_name) AS student
             FROM

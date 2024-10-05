@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, UserSwitchOutlined} from "@ant-design/icons-vue";
+import {MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, HistoryOutlined, UserSwitchOutlined} from "@ant-design/icons-vue";
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import {useAuthStore} from "@/stores/auth.ts";
@@ -15,6 +15,12 @@ const itemsHeadDepartment = [
     icon: UserSwitchOutlined,
     text: "Quản lý kế hoạch",
     path: "/head-subject/subject-plan",
+  },
+  {
+    key: "2",
+    icon: HistoryOutlined,
+    text: "Quản lý lịch sử kế hoạch",
+    path: "/head-subject/plan-log",
   },
 ];
 

@@ -1,34 +1,34 @@
 package udpm.hn.server.core.admin.departments.department.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import udpm.hn.server.core.admin.departments.department.model.request.CreateUpdateDepartmentRequest;
 import udpm.hn.server.core.admin.departments.department.model.request.FindDepartmentsRequest;
+import udpm.hn.server.core.admin.departments.department.model.response.DDepartmentResponse;
 import udpm.hn.server.core.admin.departments.department.repository.DepartmentExtendRepository;
 import udpm.hn.server.core.admin.departments.department.service.DepartmentService;
+import udpm.hn.server.core.operationlogs.model.request.OperationLogsRequest;
+import udpm.hn.server.core.operationlogs.service.OperationLogsService;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.entity.Department;
+import udpm.hn.server.entity.OperationLog;
 import udpm.hn.server.infrastructure.connection.IdentityConnection;
 import udpm.hn.server.infrastructure.connection.response.DepartmentResponse;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
-import udpm.hn.server.repository.DepartmentFacilityRepository;
-import udpm.hn.server.repository.MajorFacilityRepository;
-import udpm.hn.server.repository.MajorRepository;
-import udpm.hn.server.repository.StaffRepository;
+import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.utils.Helper;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -40,11 +40,25 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     private final IdentityConnection identityConnection;
 
+    private final OperationLogsService operationLogsService;
+
     @Override
     public ResponseObject<?> getAllDepartment(FindDepartmentsRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
+        Page<DDepartmentResponse> departmentResponses = departmentExtendRepository.getAllDepartmentByFilter(pageable, request);
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest operationLogsRequest = new OperationLogsRequest();
+        operationLogsRequest.setHttpRequest(httpServletRequest);
+        operationLogsRequest.setRequest(request);
+        operationLogsRequest.setResponse(departmentResponses.getContent());
+        operationLogsRequest.setTypeFunction(FunctionLogType.SEARCH);
+        operationLogsRequest.setStatus(true);
+        OperationLog operationLog = operationLogsService.createOperationLog(operationLogsRequest);
+        if(operationLog==null){
+            return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Đã xảy ra lỗi khi lưu log");
+        }
         return new ResponseObject<>(
-                PageableObject.of(departmentExtendRepository.getAllDepartmentByFilter(pageable, request)),
+                PageableObject.of(departmentResponses),
                 HttpStatus.OK,
                 "Lấy thành công danh sách bộ môn"
         );
@@ -139,10 +153,13 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     @Transactional
     public ResponseObject<?> synchronize() {
+        OperationLogsRequest operationLogsRequest = new OperationLogsRequest();
         try {
+            HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            operationLogsRequest.setHttpRequest(httpServletRequest);
+            operationLogsRequest.setTypeFunction(FunctionLogType.SYNCHRONIZED);
             List<DepartmentResponse> departmentData = identityConnection.getDepartments();
             List<Department> departments = departmentExtendRepository.findAll();
-
             if (departments.isEmpty()) {
                 for (DepartmentResponse departmentResponse : departmentData) {
                     syncDepartment(null, departmentResponse);
@@ -154,16 +171,19 @@ public class DepartmentServiceImpl implements DepartmentService {
                     }
                 }
             }
-
-            System.out.println("Đồng bộ bộ môn thành công");
+            operationLogsRequest.setRequest(departments);
+            operationLogsRequest.setResponse(departmentData);
+            operationLogsRequest.setStatus(true);
             return ResponseObject.successForward(null, "Đồng bộ bộ môn thành công!");
-
         } catch (Exception e) {
+            operationLogsRequest.setStatus(false);
+            operationLogsRequest.setResponse("{\"status\": \"false\"}");
             e.printStackTrace();
             return ResponseObject.errorForward("Đồng bộ bộ môn không thành công! Đã xảy ra lỗi.", HttpStatus.INTERNAL_SERVER_ERROR);
+        } finally {
+            operationLogsService.createOperationLog(operationLogsRequest);
         }
     }
-
 
     private void syncDepartment(Department department, DepartmentResponse departmentResponse) {
         Department postDepartment;

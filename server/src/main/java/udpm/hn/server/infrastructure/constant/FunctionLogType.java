@@ -1,0 +1,23 @@
+package udpm.hn.server.infrastructure.constant;
+
+public enum FunctionLogType {
+    SEARCH,
+    CREATE,
+    DELETE,
+    UPDATE,
+    LOGIN,
+    LOGOUT,
+    SYNCHRONIZED,
+    APPROVE_PLAN,
+    REJECT_PLAN,
+    ADD_NUMBER_OF_CLASS,
+    CREATE_PLAN,
+    UPDATE_PLAN,
+    ADD_STAFF_OF_CLASS_TUTOR_DETAIL,
+    ADD_TUTOR_CLASS_DETAIL,
+    DELETE_TUTOR_CLASS_DETAIL,
+
+    ADD_STUDENT_AND_ROOM_TUTOR,
+
+    CREATE_STUDENT_TUTOR
+}

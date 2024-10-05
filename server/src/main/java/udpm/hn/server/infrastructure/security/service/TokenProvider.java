@@ -16,14 +16,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import udpm.hn.server.core.operationlogs.model.request.UserActivityLogRequest;
+import udpm.hn.server.core.operationlogs.service.UserActivityLogService;
 import udpm.hn.server.entity.DepartmentFacility;
 import udpm.hn.server.entity.Facility;
 import udpm.hn.server.entity.MajorFacility;
 import udpm.hn.server.entity.Semester;
 import udpm.hn.server.entity.Staff;
 import udpm.hn.server.entity.StaffMajorFacility;
+import udpm.hn.server.entity.UserActivityLog;
 import udpm.hn.server.infrastructure.connection.IdentityValidation;
+import udpm.hn.server.infrastructure.constant.EntityStatus;
 import udpm.hn.server.infrastructure.constant.Role;
+import udpm.hn.server.infrastructure.constant.StatusUserActivity;
 import udpm.hn.server.infrastructure.security.repository.SemesterAuthRepository;
 import udpm.hn.server.infrastructure.security.repository.StaffAuthRepository;
 import udpm.hn.server.infrastructure.security.repository.StaffMajorFacilityAuthRepository;
@@ -59,6 +64,9 @@ public class TokenProvider {
 
     private static final String ISSUER = "udpm.hn.tutor-api";
 
+    @Autowired
+    private UserActivityLogService userActivityLogService;
+
     @Setter(onMethod_ = @Autowired)
     private StaffAuthRepository staffRepository;
 
@@ -71,51 +79,127 @@ public class TokenProvider {
     @Setter(onMethod_ = @Autowired)
     private SemesterAuthRepository semesterAuthRepository;
 
+//    public String createToken(Authentication authentication) throws BadRequestException, JsonProcessingException {
+//        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+//        Staff user = getCurrentUserLogin(userPrincipal.getEmail());
+//
+//        if (user == null) throw new BadRequestException("User not found");
+//
+//        TokenSubjectResponse tokenSubjectResponse = getTokenSubjectResponse(user);
+//        String subject = new ObjectMapper().writeValueAsString(tokenSubjectResponse);
+//
+//        Optional<StaffMajorFacility> staffMajorFacility = staffMajorFacilityAuthRepository.findByStaffId(user.getId());
+//
+//        if (staffMajorFacility.isPresent()) {
+//            MajorFacility majorFacility = staffMajorFacility.get().getMajorFacility();
+//            Facility facility = majorFacility.getDepartmentFacility().getFacility();
+//            DepartmentFacility departmentFacility = majorFacility.getDepartmentFacility();
+//            tokenSubjectResponse.setFacilityCode(facility.getCode());
+//            tokenSubjectResponse.setDepartmentCode(departmentFacility.getDepartment().getCode());
+//            tokenSubjectResponse.setFacilityId(facility.getId());
+//            tokenSubjectResponse.setFacilityName(facility.getName());
+//            tokenSubjectResponse.setDepartmentName(departmentFacility.getDepartment().getName());
+//        } else {
+//            tokenSubjectResponse.setFacilityCode("");
+//            tokenSubjectResponse.setDepartmentCode("");
+//            tokenSubjectResponse.setFacilityId("");
+//            tokenSubjectResponse.setFacilityName("");
+//            tokenSubjectResponse.setDepartmentName("");
+//        }
+//
+//        Long now = System.currentTimeMillis();
+//        TokenSemesterResponse semester = semesterAuthRepository.findSemesterBy(now);
+//        if(semester != null){
+//            tokenSubjectResponse.setSemesterId(semester.getSemesterId());
+//            tokenSubjectResponse.setBlockId(semester.getBlockId());
+//        }
+//
+//        Map<String, Object> claims = getBodyClaims(tokenSubjectResponse);
+//
+//        return Jwts.builder()
+//                .setSubject(subject)
+//                .setClaims(claims)
+//                .setIssuedAt(new java.util.Date(System.currentTimeMillis()))
+//                .setExpiration(new java.util.Date(TOKEN_EXP))
+//                .setIssuer(ISSUER)
+//                .signWith(getSecretKey())
+//                .compact();
+//    }
+
+    // lưu log
     public String createToken(Authentication authentication) throws BadRequestException, JsonProcessingException {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         Staff user = getCurrentUserLogin(userPrincipal.getEmail());
 
-        if (user == null) throw new BadRequestException("User not found");
+        UserActivityLogRequest logRequest = new UserActivityLogRequest();
+        logRequest.setUser(user);
+        logRequest.setAuthentication(authentication);
+        logRequest.setStatusUserActivity(StatusUserActivity.LOGIN);
+        logRequest.setStatus(EntityStatus.ACTIVE);
 
-        TokenSubjectResponse tokenSubjectResponse = getTokenSubjectResponse(user);
-        String subject = new ObjectMapper().writeValueAsString(tokenSubjectResponse);
+        String token = null;
 
-        Optional<StaffMajorFacility> staffMajorFacility = staffMajorFacilityAuthRepository.findByStaffId(user.getId());
+        try {
+            if (user == null) {
+                logRequest.setStatus(EntityStatus.INACTIVE);
+                throw new BadRequestException("User not found");
+            }
 
-        if (staffMajorFacility.isPresent()) {
-            MajorFacility majorFacility = staffMajorFacility.get().getMajorFacility();
-            Facility facility = majorFacility.getDepartmentFacility().getFacility();
-            DepartmentFacility departmentFacility = majorFacility.getDepartmentFacility();
-            tokenSubjectResponse.setFacilityCode(facility.getCode());
-            tokenSubjectResponse.setDepartmentCode(departmentFacility.getDepartment().getCode());
-            tokenSubjectResponse.setFacilityId(facility.getId());
-            tokenSubjectResponse.setFacilityName(facility.getName());
-            tokenSubjectResponse.setDepartmentName(departmentFacility.getDepartment().getName());
-        } else {
-            tokenSubjectResponse.setFacilityCode("");
-            tokenSubjectResponse.setDepartmentCode("");
-            tokenSubjectResponse.setFacilityId("");
-            tokenSubjectResponse.setFacilityName("");
-            tokenSubjectResponse.setDepartmentName("");
+            TokenSubjectResponse tokenSubjectResponse = getTokenSubjectResponse(user);
+            String subject = new ObjectMapper().writeValueAsString(tokenSubjectResponse);
+
+            Optional<StaffMajorFacility> staffMajorFacility = staffMajorFacilityAuthRepository.findByStaffId(user.getId());
+
+            if (staffMajorFacility.isPresent()) {
+                MajorFacility majorFacility = staffMajorFacility.get().getMajorFacility();
+                Facility facility = majorFacility.getDepartmentFacility().getFacility();
+                DepartmentFacility departmentFacility = majorFacility.getDepartmentFacility();
+                tokenSubjectResponse.setFacilityCode(facility.getCode());
+                tokenSubjectResponse.setDepartmentCode(departmentFacility.getDepartment().getCode());
+                tokenSubjectResponse.setFacilityId(facility.getId());
+                tokenSubjectResponse.setFacilityName(facility.getName());
+                tokenSubjectResponse.setDepartmentName(departmentFacility.getDepartment().getName());
+            } else {
+                tokenSubjectResponse.setFacilityCode("");
+                tokenSubjectResponse.setDepartmentCode("");
+                tokenSubjectResponse.setFacilityId("");
+                tokenSubjectResponse.setFacilityName("");
+                tokenSubjectResponse.setDepartmentName("");
+            }
+
+            Long now = System.currentTimeMillis();
+            TokenSemesterResponse semester = semesterAuthRepository.findSemesterBy(now);
+            if (semester != null) {
+                tokenSubjectResponse.setSemesterId(semester.getSemesterId());
+                tokenSubjectResponse.setBlockId(semester.getBlockId());
+            }
+
+            Map<String, Object> claims = getBodyClaims(tokenSubjectResponse);
+
+            token = Jwts.builder()
+                    .setSubject(subject)
+                    .setClaims(claims)
+                    .setIssuedAt(new java.util.Date(System.currentTimeMillis()))
+                    .setExpiration(new java.util.Date(TOKEN_EXP))
+                    .setIssuer(ISSUER)
+                    .signWith(getSecretKey())
+                    .compact();
+
+        } catch (JsonProcessingException e) {
+            logRequest.setStatus(EntityStatus.INACTIVE);
+            throw new BadRequestException("Error processing token subject", e);
+        } catch (Exception e) {
+            logRequest.setStatus(EntityStatus.INACTIVE);
+            throw new BadRequestException("Error creating token", e);
+        } finally {
+            try {
+                userActivityLogService.createUserActivityLog(logRequest);
+            } catch (RuntimeException logException) {
+                throw new BadRequestException("Có lỗi sảy ra khi lưu log");
+            }
         }
 
-        Long now = System.currentTimeMillis();
-        TokenSemesterResponse semester = semesterAuthRepository.findSemesterBy(now);
-        if(semester != null){
-            tokenSubjectResponse.setSemesterId(semester.getSemesterId());
-            tokenSubjectResponse.setBlockId(semester.getBlockId());
-        }
-
-        Map<String, Object> claims = getBodyClaims(tokenSubjectResponse);
-
-        return Jwts.builder()
-                .setSubject(subject)
-                .setClaims(claims)
-                .setIssuedAt(new java.util.Date(System.currentTimeMillis()))
-                .setExpiration(new java.util.Date(TOKEN_EXP))
-                .setIssuer(ISSUER)
-                .signWith(getSecretKey())
-                .compact();
+        return token;
     }
 
     public String createToken(String userId) throws BadRequestException, JsonProcessingException {
