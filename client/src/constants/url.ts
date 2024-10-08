@@ -17,6 +17,9 @@ export const URL_FRONTEND = `${DOMAIN_FRONTEND}/redirect`;
 // COMMON API
 export const PREFIX_API_COMMON = `${API_URL}/common` as string;
 
+// NOTIFICATION API
+export const PREFIX_API_NOTIFICATION = `${API_URL}/notification` as string;
+
 // AUTH API
 export const PREFIX_API_AUTH = `${API_URL}/auth` as string;
 

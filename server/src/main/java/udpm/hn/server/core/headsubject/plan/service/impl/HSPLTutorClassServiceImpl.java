@@ -2,35 +2,22 @@ package udpm.hn.server.core.headsubject.plan.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
-import udpm.hn.server.core.headsubject.plan.model.request.HSPLCreateTutorClassRequest;
-import udpm.hn.server.core.headsubject.plan.model.request.HSPLSubjectListRequest;
-import udpm.hn.server.core.headsubject.plan.model.request.HSPLTutorClassDetailRequest;
-import udpm.hn.server.core.headsubject.plan.model.request.HSPLUpdateTutorClassDetailRequest;
-import udpm.hn.server.core.headsubject.plan.model.request.HSPLUpdateTutorClassRequest;
+import udpm.hn.server.core.headsubject.plan.model.request.*;
 import udpm.hn.server.core.headsubject.plan.model.response.HSPLTutorClassResponse;
-import udpm.hn.server.core.headsubject.plan.repository.HSPLPlansRepository;
-import udpm.hn.server.core.headsubject.plan.repository.HSPLStaffsRepository;
-import udpm.hn.server.core.headsubject.plan.repository.HSPLSubjectRepository;
-import udpm.hn.server.core.headsubject.plan.repository.HSPLTutorClassDetailRepository;
-import udpm.hn.server.core.headsubject.plan.repository.HSPLTutorClassRepository;
+import udpm.hn.server.core.headsubject.plan.repository.*;
 import udpm.hn.server.core.headsubject.plan.service.HSPLTutorClassService;
-import udpm.hn.server.entity.Plan;
-import udpm.hn.server.entity.Staff;
-import udpm.hn.server.entity.Subject;
-import udpm.hn.server.entity.TutorClass;
-import udpm.hn.server.entity.TutorClassDetail;
+import udpm.hn.server.entity.*;
 import udpm.hn.server.infrastructure.constant.Format;
-import udpm.hn.server.repository.StaffRepository;
-import udpm.hn.server.repository.TutorClassDetailRepository;
+import udpm.hn.server.infrastructure.constant.Role;
 import udpm.hn.server.utils.Helper;
 
-import org.springframework.data.domain.Pageable;
-
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -49,6 +36,8 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
 
     private final HSPLTutorClassDetailRepository tutorClassDetailRepository;
 
+    private final HSPLNotificationRepository notificationRepository;
+
     @Override
     public ResponseObject<?> createTutorClass(HSPLCreateTutorClassRequest request) {
         try {
@@ -61,6 +50,18 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
             tutorClass.setNumberOfLectures(request.getNumberOfLectures());
             tutorClass.setFormat(Format.fromString(request.getFormat()));
             TutorClass savedTutorClass = tutorClassRepository.save(tutorClass);
+
+            //Thêm 2 thông báo đến NGUOI_LAP_KE_HOACH và CHU_NHIEM_BO_MON
+            List<Notification> listNotificationSave = new ArrayList<>();
+            for (String role : List.of(Role.NGUOI_LAP_KE_HOACH.toString(), Role.CHU_NHIEM_BO_MON.toString())) {
+                Notification item = new Notification();
+                item.setPlan(plan);
+                item.setContent("Kế hoạch " + plan.getDescription() + " đã được trưởng môn thêm lớp tutor.");
+                item.setStaff(plan.getPlanner());
+                item.setSentTo(role);
+                listNotificationSave.add(item);
+            }
+            notificationRepository.saveAll(listNotificationSave);
 
             String code = subject.getCode();
             // Lưu tutor detail dựa vào số lương
@@ -147,6 +148,14 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
             }
             tutorClassDetail.setTeacherConduct(staff);
             tutorClassDetailRepository.save(tutorClassDetail);
+
+            //Thông báo đến GIANG_VIEN đc thêm vào
+            Notification item = new Notification();
+            item.setPlan(tutorClassDetail.getTutorClass().getPlan());
+            item.setContent("Bạn đã được trưởng môn thêm vào lớp tutor " + tutorClassDetail.getTutorClass().getSubject().getName() + " .");
+            item.setStaff(staff);
+            item.setSentTo(Role.GIANG_VIEN + ": " + staff.getId());
+            notificationRepository.save(item);
 
             return new ResponseObject<>(tutorClassDetail, HttpStatus.OK, "Cập nhật giáo viên lớp tutor thành công");
         } catch (Exception e) {
