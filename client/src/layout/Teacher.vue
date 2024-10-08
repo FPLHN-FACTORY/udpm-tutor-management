@@ -3,6 +3,7 @@ import { MenuFoldOutlined, MenuUnfoldOutlined, UserSwitchOutlined } from "@ant-d
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth.ts";
+import TutorNotification from "@/components/ui/TutorNotification/TutorNotification.vue";
 
 const auth = useAuthStore();
 const userInfo = computed(() => auth.user);
@@ -50,23 +51,26 @@ const selectedKeys = computed(() => {
                     <div class="cursor-pointer" @click="collapsed = !collapsed">
                         <component :is="collapsed ? MenuUnfoldOutlined : MenuFoldOutlined" class="text-xl" />
                     </div>
-                    <a-dropdown placement="bottomRight" arrow>
+                    <div class="flex gap-x-2 items-center">
+                        <a-dropdown placement="bottomRight" arrow>
                         <div class="flex items-center cursor-pointer">
                             <a-avatar v-if="userInfo?.pictureUrl" :src="userInfo?.pictureUrl" size="large">
-                                {{ userInfo?.fullName[0] }}
+                            {{ userInfo?.fullName[0] }}
                             </a-avatar>
                             <span class="ml-2 truncate">
-                                {{ userInfo?.fullName }}
+                            {{ userInfo?.fullName }}
                             </span>
                         </div>
                         <template #overlay>
                             <a-menu>
-                                <a-menu-item key="logout" @click="">
-                                    Đăng xuất
-                                </a-menu-item>
+                            <a-menu-item key="logout" @click="">
+                                Đăng xuất
+                            </a-menu-item>
                             </a-menu>
                         </template>
-                    </a-dropdown>
+                        </a-dropdown>
+                        <tutor-notification :keyWord="'GIANG_VIEN'" />
+                    </div>
                 </div>
             </a-layout-header>
             <a-layout-content class="mx-4">

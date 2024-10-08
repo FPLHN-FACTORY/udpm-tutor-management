@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import {MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, UserSwitchOutlined} from "@ant-design/icons-vue";
+import { MenuFoldOutlined, MenuUnfoldOutlined, UserSwitchOutlined } from "@ant-design/icons-vue";
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
-import {useAuthStore} from "@/stores/auth.ts";
+import { useAuthStore } from "@/stores/auth.ts";
+import TutorNotification from "@/components/ui/TutorNotification/TutorNotification.vue";
 
 const collapsed = ref<boolean>(false);
 const route = useRoute();
@@ -37,11 +38,7 @@ const selectedKeys = computed(() => {
     <a-layout-sider v-model:collapsed="collapsed" class="bg-white">
       <div class="logo">
         <a href="/" class="logo">
-          <img
-            src="/images/logo-udpm-dark.png"
-            alt="logo-udpm"
-            class="p-2 mt-3"
-          />
+          <img src="/images/logo-udpm-dark.png" alt="logo-udpm" class="p-2 mt-3" />
         </a>
       </div>
       <a-menu v-model:selectedKeys="selectedKeys" theme="light" mode="inline">
@@ -57,32 +54,28 @@ const selectedKeys = computed(() => {
       <a-layout-header class="bg-white pl-3 mt-1">
         <div class="user-info flex items-center justify-between">
           <div class="cursor-pointer" @click="collapsed = !collapsed">
-            <component
-                :is="collapsed ? MenuUnfoldOutlined : MenuFoldOutlined"
-                class="text-xl"
-            />
+            <component :is="collapsed ? MenuUnfoldOutlined : MenuFoldOutlined" class="text-xl" />
           </div>
-          <a-dropdown placement="bottomRight" arrow>
-            <div class="flex items-center cursor-pointer">
-              <a-avatar
-                  v-if="userInfo?.pictureUrl"
-                  :src="userInfo?.pictureUrl"
-                  size="large"
-              >
-                {{ userInfo?.fullName[0] }}
-              </a-avatar>
-              <span class="ml-2 truncate">
-                {{ userInfo?.fullName }}
-              </span>
-            </div>
-            <template #overlay>
-              <a-menu>
-                <a-menu-item key="logout" @click="handleLogout">
-                  Đăng xuất
-                </a-menu-item>
-              </a-menu>
-            </template>
-          </a-dropdown>
+          <div class="flex gap-x-2 items-center">
+            <a-dropdown placement="bottomRight" arrow>
+              <div class="flex items-center cursor-pointer">
+                <a-avatar v-if="userInfo?.pictureUrl" :src="userInfo?.pictureUrl" size="large">
+                  {{ userInfo?.fullName[0] }}
+                </a-avatar>
+                <span class="ml-2 truncate">
+                  {{ userInfo?.fullName }}
+                </span>
+              </div>
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item key="logout" @click="handleLogout">
+                    Đăng xuất
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+            <tutor-notification :keyWord="'CHU_NHIEM_BO_MON'" />
+          </div>
         </div>
       </a-layout-header>
       <a-layout-content class="mx-4">

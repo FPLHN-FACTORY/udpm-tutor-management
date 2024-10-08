@@ -15,6 +15,8 @@ public final class MappingConstants {
 
     public static final String API_COMMON = API_VERSION_PREFIX + "/common";
 
+    public static final String API_NOTIFICATION = API_VERSION_PREFIX + "/notification";
+
     public static final String API_HEAD_SUBJECT_PREFIX = API_VERSION_PREFIX + HEAD_SUBJECT;
     public static final String API_ADMIN_PREFIX = API_VERSION_PREFIX + ADMIN;
     public static final String API_HEAD_DEPARTMENT_PREFIX = API_VERSION_PREFIX + HEAD_DEPARTMENT;

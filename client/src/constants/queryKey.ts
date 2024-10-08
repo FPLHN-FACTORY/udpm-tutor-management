@@ -8,6 +8,10 @@ export const queryKey = {
     staffOptions: "staffOptionsKey",
     studentOptions: "studentOptionsKey",
   },
+  notification: {
+    notificationList: "notificationListKey",
+    notificationCount: "notificationCountKey",
+  },
   admin: {
     subject: {
       subjectList: "subjectListKey",
