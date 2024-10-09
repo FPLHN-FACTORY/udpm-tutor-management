@@ -35,6 +35,12 @@ public final class MappingConstants {
     public static final String API_ADMIN_ROLE = API_ADMIN_PREFIX + "/roles";
     public static final String API_ADMIN_FACILITY = API_ADMIN_PREFIX + "/facilities";
 
+    public static final String API_ADMIN_OPERATION_LOG = API_ADMIN_PREFIX + "/operation-log";
+
+    public static final String API_ADMIN_PLAN_LOG_HISTORY = API_ADMIN_PREFIX + "/plan-log-history";
+
+    public static final String API_ADMIN_USER_ACTIVITY = API_ADMIN_PREFIX + "/user-log";
+
     public static final String API_HEAD_DEPARTMENT_HEAD_SUBJECT = API_HEAD_DEPARTMENT_PREFIX + "/head-of-subjects";
     public static final String API_HEAD_DEPARTMENT_HEAD_PLAN = API_HEAD_DEPARTMENT_PREFIX + "/head-of-plans";
 

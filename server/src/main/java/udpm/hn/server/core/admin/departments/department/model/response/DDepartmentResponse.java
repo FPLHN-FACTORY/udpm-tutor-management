@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import udpm.hn.server.core.common.base.HasOrderNumber;
 import udpm.hn.server.core.common.base.IsIdentify;
 
-public interface DepartmentResponse extends IsIdentify, HasOrderNumber {
+public interface DDepartmentResponse extends IsIdentify, HasOrderNumber {
 
     @Value("#{target.departmentName}")
     String getDepartmentName();

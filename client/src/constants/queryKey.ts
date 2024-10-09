@@ -65,6 +65,17 @@ export const queryKey = {
       staffRole: "staffRole",
       staffDepartmentMajor: "staffDepartmentMajor",
     },
+    operationLogs: {
+      operationLogList: "operationLogListKey",
+      operationLogDetail: "operationLogDetailKey",
+    },
+    planLogHistory: {
+      planLogHistoryList: "planLogHistoryListKey",
+      planLogHistoryDetail: "planLogHistoryDetailKey",
+    },
+    userActivityLog: {
+      userActivityLogList: "userActivityLogListKey",
+    },
   },
   headOfDepartment: {
     headOfSubject: {

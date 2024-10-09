@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
+import udpm.hn.server.core.planloghistory.model.request.PlanLogHistoryRequest;
+import udpm.hn.server.core.planloghistory.service.PlanLogHistoryService;
 import udpm.hn.server.core.planner.plan.model.request.PLPLCreateStudentTutorRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLSubjectListRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLTutorClassDetailRequest;
@@ -22,7 +24,9 @@ import udpm.hn.server.entity.Plan;
 import udpm.hn.server.entity.StudentTutor;
 import udpm.hn.server.entity.TutorClassDetail;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
+import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.infrastructure.constant.PlanStatus;
+import udpm.hn.server.infrastructure.constant.Role;
 import udpm.hn.server.utils.Helper;
 
 import java.util.List;
@@ -40,6 +44,8 @@ public class PLPLTutorClassServiceImpl implements PLPLTutorClassService {
     private final PLPLTutorClassDetailRepository tutorClassDetailRepository;
 
     private final PLPLStudentTutorClassRepository studentTutorClassRepository;
+
+    private final PlanLogHistoryService planLogHistoryService;
 
     @Override
     public ResponseObject<?> getDetailTutorClass(String id) {
@@ -75,6 +81,7 @@ public class PLPLTutorClassServiceImpl implements PLPLTutorClassService {
 
     @Override
     public ResponseObject<?> updateTutorClassDetail(List<PLPLUpdateTutorClassDetailRequest> request) {
+
         try {
             // Lọc request chỉ lấy những cái có studentId hoặc room
             List<PLPLUpdateTutorClassDetailRequest> filteredRequest = request.stream()
@@ -89,10 +96,20 @@ public class PLPLTutorClassServiceImpl implements PLPLTutorClassService {
             filteredRequest.forEach(updateRequest -> {
                 TutorClassDetail tutorClassDetail = tutorClassDetailRepository.findById(updateRequest.getId()).orElse(null);
                 if (tutorClassDetail != null) {
+
+                    PlanLogHistoryRequest planLogHistory = new PlanLogHistoryRequest();
+                    planLogHistory.setTypeFunction(FunctionLogType.ADD_STUDENT_AND_ROOM_TUTOR);
+                    planLogHistory.setAction("Thêm sinh viên tutor và tên phòng");
+                    planLogHistory.setRoleStaff(Role.NGUOI_LAP_KE_HOACH.name());
+                    planLogHistory.setStatus(true);
+                    planLogHistory.setPlanId(tutorClassDetail.getTutorClass().getPlan().getId());
+                    planLogHistory.setCodeTutorClassDetail(tutorClassDetail.getCode());
+
                     // Cập nhật sinh viên nếu có
                     if (updateRequest.getStudentId() != null) {
                         StudentTutor studentTutor = studentTutorClassRepository.findById(updateRequest.getStudentId()).orElse(null);
                         if (studentTutor != null) {
+                            planLogHistory.setStudentTutor(studentTutor.getStudentCode()+"-"+studentTutor.getStudentName());
                             tutorClassDetail.setStudentConduct(studentTutor);
                         }
                     }
@@ -100,10 +117,22 @@ public class PLPLTutorClassServiceImpl implements PLPLTutorClassService {
                     // Cập nhật phòng nếu có
                     if (updateRequest.getRoom() != null) {
                         tutorClassDetail.setRoom(updateRequest.getRoom());
+                        planLogHistory.setRoomPlan(updateRequest.getRoom());
                     }
 
                     // Lưu lớp tutor
-                    tutorClassDetailRepository.save(tutorClassDetail);
+                    TutorClassDetail tutorClassDetailResult = tutorClassDetailRepository.save(tutorClassDetail);
+                    if(tutorClassDetailResult==null) {
+                        planLogHistory.setStatus(false);
+                    }
+                    try {
+                        Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);
+                        if (!resultLog) {
+                            System.err.println("Có lỗi xảy ra khi lưu log");
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Lỗi khi ghi log: " + e.getMessage());
+                    }
                 }
             });
 
@@ -117,29 +146,58 @@ public class PLPLTutorClassServiceImpl implements PLPLTutorClassService {
 
     @Override
     public ResponseObject<?> createStudentTutor(PLPLCreateStudentTutorRequest request) {
-        Optional<StudentTutor> studentTutorOptional = studentTutorClassRepository.findByStudentCode(request.getCode().trim());
-        if(studentTutorOptional.isPresent()){
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Mã sinh viên đã tồn tại!");
+        PlanLogHistoryRequest planLogHistory = new PlanLogHistoryRequest();
+        planLogHistory.setTypeFunction(FunctionLogType.CREATE_STUDENT_TUTOR);
+        planLogHistory.setAction("Tạo sinh viên tutor");
+        planLogHistory.setRoleStaff(Role.NGUOI_LAP_KE_HOACH.name());
+        planLogHistory.setStatus(true);
+        try {
+            Optional<StudentTutor> studentTutorOptional = studentTutorClassRepository.findByStudentCode(request.getCode().trim());
+
+            if (studentTutorOptional.isPresent()) {
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Mã sinh viên đã tồn tại!");
+            }
+
+            Optional<StudentTutor> studentTutorOptional1 = studentTutorClassRepository.findByStudentEmail(request.getEmail().trim());
+            if (studentTutorOptional1.isPresent()) {
+                planLogHistory.setStatus(false);
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Email đã tồn tại!");
+            }
+
+            if (!Helper.checkEmail(request.getEmail())) {
+                planLogHistory.setStatus(false);
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Email không đúng định dạng định dạng!");
+            }
+
+            StudentTutor studentTutor = new StudentTutor();
+            studentTutor.setStudentCode(request.getCode());
+            studentTutor.setStudentEmail(request.getEmail());
+            studentTutor.setStudentName(request.getName());
+            studentTutor.setStatus(EntityStatus.ACTIVE);
+            planLogHistory.setStudentTutor(request.getCode() + "-" + request.getName());
+            StudentTutor studentTutorResult = studentTutorClassRepository.save(studentTutor);
+            if (studentTutorResult == null) {
+                planLogHistory.setStatus(false);
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi cập nhật kế hoạch");
+            }
+            planLogHistory.setStatus(true);
+            studentTutorClassRepository.save(studentTutor);
+            return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm sinh viên thành công thành công");
+        } catch (Exception e) {
+            planLogHistory.setStatus(false);
+            e.printStackTrace();
+        } finally {
+            try {
+                Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);
+                if (!resultLog) {
+                    System.err.println("Có lỗi xảy ra khi lưu log");
+                }
+            } catch (Exception e) {
+                System.err.println("Lỗi khi ghi log: " + e.getMessage());
+            }
         }
+        return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi thêm sinh viên tutor");
 
-        Optional<StudentTutor> studentTutorOptional1 = studentTutorClassRepository.findByStudentEmail(request.getEmail().trim());
-        if(studentTutorOptional1.isPresent()){
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Email đã tồn tại!");
-        }
-
-        if(!Helper.checkEmail(request.getEmail())){
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Email không đúng định dạng định dạng!");
-        }
-
-        StudentTutor studentTutor = new StudentTutor();
-        studentTutor.setStudentCode(request.getCode());
-        studentTutor.setStudentEmail(request.getEmail());
-        studentTutor.setStudentName(request.getName());
-        studentTutor.setStatus(EntityStatus.ACTIVE);
-        studentTutorClassRepository.save(studentTutor);
-
-        studentTutorClassRepository.save(studentTutor);
-        return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm sinh viên thành công thành công");
     }
 
 }

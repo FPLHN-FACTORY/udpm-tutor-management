@@ -71,6 +71,12 @@ const roleMappings = computed(() => [
     image: "/images/GV.png",
     route: "/teacher",
   },
+  {
+    code: ROLES.SUPPORTER,
+    displayName: "Hỗ trợ",
+    image: "/images/GV.png",
+    route: "/log-system",
+  },
 ]);
 
 const authStore = useAuthStore();

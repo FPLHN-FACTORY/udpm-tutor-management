@@ -6,10 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import udpm.hn.server.core.admin.departments.department.model.request.FindDepartmentsRequest;
-import udpm.hn.server.core.admin.departments.department.model.response.DepartmentResponse;
+import udpm.hn.server.core.admin.departments.department.model.response.DDepartmentResponse;
 import udpm.hn.server.core.admin.departments.department.model.response.DetailDepartmentResponse;
 import udpm.hn.server.core.admin.departments.department.model.response.ListDepartmentResponse;
-import udpm.hn.server.entity.Department;
 import udpm.hn.server.repository.DepartmentRepository;
 
 import java.util.List;
@@ -38,7 +37,7 @@ public interface DepartmentExtendRepository extends DepartmentRepository {
                 (:#{#req.departmentName} IS NULL OR d.name LIKE %:#{#req.departmentName}%)
                 AND (:#{#req.departmentCode} IS NULL OR d.code LIKE %:#{#req.departmentCode}%)
             """, nativeQuery = true)
-    Page<DepartmentResponse> getAllDepartmentByFilter(Pageable pageable, @Param("req") FindDepartmentsRequest req);
+    Page<DDepartmentResponse> getAllDepartmentByFilter(Pageable pageable, @Param("req") FindDepartmentsRequest req);
 
     @Query(value = """
             SELECT

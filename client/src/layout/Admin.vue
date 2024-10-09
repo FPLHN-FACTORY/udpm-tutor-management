@@ -4,11 +4,13 @@ import {
   BookOutlined,
   BuildOutlined,
   CalendarOutlined,
+  AuditOutlined,
   HomeOutlined,
   IdcardOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserOutlined,
+  LoginOutlined
 } from "@ant-design/icons-vue";
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";

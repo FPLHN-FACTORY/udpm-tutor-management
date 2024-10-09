@@ -95,6 +95,32 @@ export const routes: RouteRecordRaw[] = [
           requiresAuth: true,
         },
       },
+
+    ],
+  },
+  {
+    path: ROUTES_CONSTANTS.SYSTEM_LOG.path,
+    redirect: `${ROUTES_CONSTANTS.SYSTEM_LOG.path}/${ROUTES_CONSTANTS.SYSTEM_LOG.children.OPERATION_LOG.path}`,
+    component: () => import("@/layout/LogSystemHistory.vue"),
+    children: [
+      {
+        path: ROUTES_CONSTANTS.SYSTEM_LOG.children.OPERATION_LOG.path,
+        name: ROUTES_CONSTANTS.SYSTEM_LOG.children.OPERATION_LOG.name,
+        component: () => import("@/pages/operationlogs/OperationLog.vue"),
+        meta: {
+          requiresRole: ROLES.ADMIN,
+          requiresAuth: true,
+        },
+      },
+      {
+        path: ROUTES_CONSTANTS.SYSTEM_LOG.children.USER_ACTIVITY_LOG.path,
+        name: ROUTES_CONSTANTS.SYSTEM_LOG.children.USER_ACTIVITY_LOG.name,
+        component: () => import("@/pages/operationlogs/UserActivityLog.vue"),
+        meta: {
+          requiresRole: ROLES.ADMIN,
+          requiresAuth: true,
+        },
+      },
     ],
   },
   {
@@ -129,6 +155,23 @@ export const routes: RouteRecordRaw[] = [
           requiresAuth: true,
         },
       },
+      {
+        path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLAN_LOG_HISTORY.path,
+        name: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLAN_LOG_HISTORY.name,
+        component: () => import("@/pages/headdepartment/planloghistory/HeadDepartmentPlanLogHistory.vue"),
+        meta: {
+          requiresRole: ROLES.HEAD_DEPARTMENT,
+          requiresAuth: true,
+        },
+      },
+    ],
+  },
+  {
+    path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.path,
+    redirect: `${ROUTES_CONSTANTS.HEAD_DEPARTMENT.path}/${ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_SUBJECT.path}`,
+    component: () => import("@/layout/HeadDepartment.vue"),
+    children: [
+     
     ],
   },
   {
@@ -154,6 +197,15 @@ export const routes: RouteRecordRaw[] = [
           requiresAuth: true,
         },
       },
+      {
+        path: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLAN_LOG.path,
+        name: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLAN_LOG.name,
+        component: () => import("@/pages/headsubject/planloghistory/HeadSubjectPlanLogHistory.vue"),
+        meta: {
+          requiresRole: ROLES.HEAD_SUBJECT,
+          requiresAuth: true,
+        },
+      },
     ],
   },
   {
@@ -174,6 +226,15 @@ export const routes: RouteRecordRaw[] = [
         path: ROUTES_CONSTANTS.PLANNER.children.PLAN_DETAIL.path,
         name: ROUTES_CONSTANTS.PLANNER.children.PLAN_DETAIL.name,
         component: () => import("@/pages/planner/plan/PlanDetail.vue"),
+        meta: {
+          requiresRole: ROLES.PLANER,
+          requiresAuth: true,
+        },
+      },
+      {
+        path: ROUTES_CONSTANTS.PLANNER.children.PLAN_LOG_HISTORY.path,
+        name: ROUTES_CONSTANTS.PLANNER.children.PLAN_LOG_HISTORY.name,
+        component: () => import("@/pages/planner/planloghistory/PlanLogHistory.vue"),
         meta: {
           requiresRole: ROLES.PLANER,
           requiresAuth: true,
