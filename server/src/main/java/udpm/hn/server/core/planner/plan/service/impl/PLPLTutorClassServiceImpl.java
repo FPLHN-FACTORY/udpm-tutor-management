@@ -99,9 +99,11 @@ public class PLPLTutorClassServiceImpl implements PLPLTutorClassService {
 
                     PlanLogHistoryRequest planLogHistory = new PlanLogHistoryRequest();
                     planLogHistory.setTypeFunction(FunctionLogType.ADD_STUDENT_AND_ROOM_TUTOR);
-                    planLogHistory.setAction("Cập nhật sinh viên tutor và tên phòng");
+                    planLogHistory.setAction("Thêm sinh viên tutor và tên phòng");
                     planLogHistory.setRoleStaff(Role.NGUOI_LAP_KE_HOACH.name());
                     planLogHistory.setStatus(true);
+                    planLogHistory.setPlanId(tutorClassDetail.getTutorClass().getPlan().getId());
+                    planLogHistory.setCodeTutorClassDetail(tutorClassDetail.getCode());
 
                     // Cập nhật sinh viên nếu có
                     if (updateRequest.getStudentId() != null) {

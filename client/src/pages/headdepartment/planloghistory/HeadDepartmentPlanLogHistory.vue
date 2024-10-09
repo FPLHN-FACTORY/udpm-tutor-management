@@ -46,7 +46,7 @@ const params = ref<ParamsGetPlanLog>({
   page: 1,
   size: 10,
   staffId: userInfo.value?.userId,
-  blockId: null,
+  blockId: userInfo.value?.blockId,
   planId: null,
   semesterId: userInfo.value?.semesterId,
   roleStaff: 'NGUOI_LAP_KE_HOACH,TRUONG_MON,CHU_NHIEM_BO_MON', 

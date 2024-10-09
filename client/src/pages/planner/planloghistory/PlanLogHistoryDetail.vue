@@ -34,7 +34,7 @@
                         <a-descriptions-item v-if="planLogDetail?.typeFunction === 9" :span="2" label="Số lớp">{{ planLogDetail?.numberOfClass}}</a-descriptions-item>
                         <a-descriptions-item v-if="planLogDetail?.typeFunction === 9" :span="2" label="Mô buổi">{{ planLogDetail?.numberOfLecture}}</a-descriptions-item>
                         
-                        <a-descriptions-item v-if="planLogDetail?.typeFunction === 12 || planLogDetail?.typeFunction === 13 || planLogDetail?.typeFunction === 14" :span="2" label="Mã lớp">{{ planLogDetail?.codeTutorClassDetail}}</a-descriptions-item>
+                        <a-descriptions-item v-if="planLogDetail?.typeFunction === 12 || planLogDetail?.typeFunction === 13 || planLogDetail?.typeFunction === 14 || planLogDetail?.typeFunction === 15" :span="2" label="Mã lớp">{{ planLogDetail?.codeTutorClassDetail}}</a-descriptions-item>
                         <a-descriptions-item v-if="planLogDetail?.typeFunction === 12" :span="2" label="Giảng viên">{{ planLogDetail?.staffInfo}}</a-descriptions-item>
 
                         <a-descriptions-item v-if="planLogDetail?.typeFunction === 9" :span="2" label="Hình thức">
