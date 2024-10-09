@@ -9,12 +9,7 @@ import udpm.hn.server.core.common.model.request.StaffSearchByRoleRequest;
 import udpm.hn.server.core.common.model.request.StaffSearchRequest;
 import udpm.hn.server.core.common.model.request.StudentSearchRequest;
 import udpm.hn.server.core.common.model.response.SemesterInfoResponse;
-import udpm.hn.server.core.common.repository.CMDepartmentExtendRepository;
-import udpm.hn.server.core.common.repository.CMFacilityExtendRepository;
-import udpm.hn.server.core.common.repository.CMSemesterExtendRepository;
-import udpm.hn.server.core.common.repository.CMStaffExtendRepository;
-import udpm.hn.server.core.common.repository.CMSubjectExtendResponse;
-import udpm.hn.server.core.common.repository.CMStudentTutorExtendRepository;
+import udpm.hn.server.core.common.repository.*;
 
 import java.util.Arrays;
 import java.util.List;
