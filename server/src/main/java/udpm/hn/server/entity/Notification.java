@@ -15,7 +15,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @ToString
 public class Notification extends PrimaryEntity implements Serializable {
-
     @ManyToOne
     @JoinColumn(name = "staff_id")
     private Staff staff;
@@ -32,5 +31,4 @@ public class Notification extends PrimaryEntity implements Serializable {
 
     @Column(name = "user_received", length = EntityProperties.LENGTH_CONTENT)
     private String userReceived;
-
 }

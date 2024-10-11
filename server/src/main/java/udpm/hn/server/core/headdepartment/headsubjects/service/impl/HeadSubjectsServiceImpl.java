@@ -173,7 +173,6 @@ public class HeadSubjectsServiceImpl implements HeadSubjectsService {
             );
         }
     }
-
     @Override
     public ResponseObject<?> reassignSubjectForAnotherHeadSubject(@Valid ReassignHeadSubjectRequest request) {
 

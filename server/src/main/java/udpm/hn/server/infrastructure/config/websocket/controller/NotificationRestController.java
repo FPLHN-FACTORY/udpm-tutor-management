@@ -30,5 +30,4 @@ public class NotificationRestController {
     public ResponseEntity<?> countNotification(final NotificationRequest request) {
         return Helper.createResponseEntity(notificationService.countNotification(request));
     }
-
 }

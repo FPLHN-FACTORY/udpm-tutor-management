@@ -20,7 +20,6 @@ import java.util.Optional;
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationExtendRepository notificationExtendRepository;
-
     @Override
     public ResponseObject<?> getAllNotifications(NotificationRequest request) {
         Pageable pageable = Helper.createPageable(request);

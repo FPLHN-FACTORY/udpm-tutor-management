@@ -9,4 +9,5 @@ public class ReadNotificationRequest {
 
     private String userId;
 
+
 }

@@ -49,4 +49,5 @@ public interface NotificationExtendRepository extends NotificationRepository {
     )
     Integer countNotification(NotificationRequest request);
 
+
 }

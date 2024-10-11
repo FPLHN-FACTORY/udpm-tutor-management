@@ -10,4 +10,5 @@ public interface NotificationResponse extends IsIdentify {
 
     Long getCreatedDate();
 
+
 }

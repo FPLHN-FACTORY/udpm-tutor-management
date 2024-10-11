@@ -23,7 +23,6 @@ import udpm.hn.server.utils.Helper;
 public class HDPLTutorClassServiceImpl implements HDPLTutorClassService {
 
     private final HDPLTutorClassRepository tutorClassRepository;
-
     private final HDPLTutorClassDetailRepository tutorClassDetailRepository;
 
     @Override
