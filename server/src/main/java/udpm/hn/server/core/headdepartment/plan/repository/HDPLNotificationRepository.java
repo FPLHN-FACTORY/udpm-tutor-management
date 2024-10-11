@@ -5,4 +5,5 @@ import udpm.hn.server.repository.NotificationRepository;
 
 @Repository
 public interface HDPLNotificationRepository extends NotificationRepository {
+
 }

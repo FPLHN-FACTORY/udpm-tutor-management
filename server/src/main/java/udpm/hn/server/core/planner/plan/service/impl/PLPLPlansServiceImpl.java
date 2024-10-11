@@ -19,11 +19,13 @@ import udpm.hn.server.core.planner.plan.repository.PLPLDepartmentFacilitysReposi
 import udpm.hn.server.core.planner.plan.repository.PLPLPlansRepository;
 import udpm.hn.server.core.planner.plan.repository.PLPLStaffsRepository;
 import udpm.hn.server.core.planner.plan.repository.PLPLTutorClassRepository;
+import udpm.hn.server.core.planner.plan.repository.PlanNotificationRepository;
 import udpm.hn.server.core.planner.plan.service.PLPLPlansService;
 import udpm.hn.server.entity.Block;
 import udpm.hn.server.entity.Department;
 import udpm.hn.server.entity.DepartmentFacility;
 import udpm.hn.server.entity.Facility;
+import udpm.hn.server.entity.Notification;
 import udpm.hn.server.entity.Plan;
 import udpm.hn.server.entity.Semester;
 import udpm.hn.server.entity.Staff;
@@ -33,6 +35,7 @@ import udpm.hn.server.infrastructure.constant.PlanStatus;
 import udpm.hn.server.infrastructure.constant.Role;
 import udpm.hn.server.utils.Helper;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +52,7 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
     private final PLPLBlocksRepository blocksRepository;
     private final EmailService emailService;
     private final PLPLTutorClassRepository plplTutorClassRepository;
+    private final PlanNotificationRepository notificationRepository;
     private final PlanLogHistoryService planLogHistoryService;
 
     @Override
@@ -99,6 +103,18 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
                 planLogHistory.setStatus(false);
                 return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi lưu kế hoạch");
             }
+
+            List<Notification> listNotificationSave = new ArrayList<>();
+            for (String role : List.of(Role.TRUONG_MON.toString(), Role.CHU_NHIEM_BO_MON.toString())) {
+                Notification item = new Notification();
+                item.setPlan(planSaveResult);
+                item.setContent("Kế hoạch " + planSaveResult.getDescription() + " đã được tạo.");
+                item.setStaff(staffOptional.get());
+                item.setSentTo(role);
+                listNotificationSave.add(item);
+            }
+            notificationRepository.saveAll(listNotificationSave);
+
             planLogHistory.setDescription(request.getDescription());
             planLogHistory.setStartDate(request.getStartTime());
             planLogHistory.setEndDate(request.getEndTime());
@@ -216,54 +232,66 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
         planLogHistory.setAction("Phê duyệt kế hoạch");
         planLogHistory.setRoleStaff(Role.NGUOI_LAP_KE_HOACH.name());
 
-       try {
-           if (planOptional.isEmpty()) {
-               planLogHistory.setStatus(false);
-               return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch không tồn tại");
-           }
+        try {
+            if (planOptional.isEmpty()) {
+                planLogHistory.setStatus(false);
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch không tồn tại");
+            }
 
-           Long canUpdate = plplPlansRepository.canUpdate(planId);
-           if (canUpdate == 0) {
-               planLogHistory.setStatus(false);
-               return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch này chưa có môn tutor!");
-           }
+            Long canUpdate = plplPlansRepository.canUpdate(planId);
+            if (canUpdate == 0) {
+                planLogHistory.setStatus(false);
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch này chưa có môn tutor!");
+            }
 
-           planOptional.map(plan -> {
-               plan.setPlanStatus(PlanStatus.PLANNER_APPROVED);
-               Plan planSaveResult = plplPlansRepository.save(plan);
-               if (planSaveResult == null) {
-                   planLogHistory.setStatus(false);
-                   return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi duyệt kế hoạch");
-               }
-               planLogHistory.setPlanId(planSaveResult.getId());
-               planLogHistory.setStatus(true);
-               return planSaveResult;
-           });
+            //Thêm 2 thông báo đến TRUONG_MON và CHU_NHIEM_BO_MON
+            List<Notification> listNotificationSave = new ArrayList<>();
+            for (String role : List.of(Role.TRUONG_MON.toString(), Role.CHU_NHIEM_BO_MON.toString())) {
+                Notification item = new Notification();
+                item.setPlan(planOptional.get());
+                item.setContent("Kế hoạch " + planOptional.get().getDescription() + " đã được người lập kế hoạch phê duyệt.");
+                item.setStaff(planOptional.get().getPlanner());
+                item.setSentTo(role);
+                listNotificationSave.add(item);
+            }
+            notificationRepository.saveAll(listNotificationSave);
 
-           Department department = planOptional.get().getDepartmentFacility().getDepartment();
-           Facility facility = planOptional.get().getDepartmentFacility().getFacility();
-           Block block = planOptional.get().getBlock();
-           Semester semester = block.getSemester();
-           List<String> list = plplStaffsRepository.getStaffsByRole(Arrays.asList("CHU_NHIEM_BO_MON", "TRUONG_MON"), department.getCode(), facility.getCode());
-           String blockName = block.getName().equals("BLOCK_1") ? "Block 1" : "Block 2";
-           String message = "Kế hoạch học kì " + semester.getSemesterName() + " " + semester.getYear() + " " + blockName + " đã được người lập kế hoạch phê duyệt. Chủ nhiệm bộ môn/Trưởng môn vui lòng hãy kiểm tra và theo dõi kế hoạch tutor .";
-           emailService.sendEmailToHeadSubjectAboutPlan(message, list);
+            planOptional.map(plan -> {
+                plan.setPlanStatus(PlanStatus.PLANNER_APPROVED);
+                Plan planSaveResult = plplPlansRepository.save(plan);
+                if (planSaveResult == null) {
+                    planLogHistory.setStatus(false);
+                    return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi duyệt kế hoạch");
+                }
+                planLogHistory.setPlanId(planSaveResult.getId());
+                planLogHistory.setStatus(true);
+                return planSaveResult;
+            });
 
-           return planOptional
-                   .map(plan -> new ResponseObject<>(null, HttpStatus.OK, "Cập nhật thành công"))
-                   .orElseGet(() -> new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại"));
-       } catch (Exception e) {
-           planLogHistory.setStatus(false);
-       } finally {
-           try {
-               Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);
-               if (!resultLog) {
-                   System.err.println("Có lỗi xảy ra khi lưu log");
-               }
-           } catch (Exception e) {
-               System.err.println("Lỗi khi ghi log: " + e.getMessage());
-           }
-       }
+            Department department = planOptional.get().getDepartmentFacility().getDepartment();
+            Facility facility = planOptional.get().getDepartmentFacility().getFacility();
+            Block block = planOptional.get().getBlock();
+            Semester semester = block.getSemester();
+            List<String> list = plplStaffsRepository.getStaffsByRole(Arrays.asList("CHU_NHIEM_BO_MON", "TRUONG_MON"), department.getCode(), facility.getCode());
+            String blockName = block.getName().equals("BLOCK_1") ? "Block 1" : "Block 2";
+            String message = "Kế hoạch học kì " + semester.getSemesterName() + " " + semester.getYear() + " " + blockName + " đã được người lập kế hoạch phê duyệt. Chủ nhiệm bộ môn/Trưởng môn vui lòng hãy kiểm tra và theo dõi kế hoạch tutor .";
+            emailService.sendEmailToHeadSubjectAboutPlan(message, list);
+
+            return planOptional
+                    .map(plan -> new ResponseObject<>(null, HttpStatus.OK, "Cập nhật thành công"))
+                    .orElseGet(() -> new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại"));
+        } catch (Exception e) {
+            planLogHistory.setStatus(false);
+        } finally {
+            try {
+                Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);
+                if (!resultLog) {
+                    System.err.println("Có lỗi xảy ra khi lưu log");
+                }
+            } catch (Exception e) {
+                System.err.println("Lỗi khi ghi log: " + e.getMessage());
+            }
+        }
         return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi duyệt kế hoạch");
     }
 

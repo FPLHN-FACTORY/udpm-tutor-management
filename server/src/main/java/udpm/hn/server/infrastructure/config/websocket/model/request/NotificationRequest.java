@@ -16,4 +16,5 @@ public class NotificationRequest extends PageableRequest {
 
     private String userId;
 
+
 }

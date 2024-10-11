@@ -18,7 +18,7 @@
                                         <img class="size-full object-cover" src="/images/plan.jpg" />
                                     </div>
                                     <div>
-                                        <p class="break-words w-64">{{ item.content }}</p>
+                                        <p class="break-words w-80">{{ item.content }}</p>
                                         <small :class="item.status ? '' : 'text-blue-700 font-bold'">
                                             {{ getDateFormat(item.createdDate, true) }}
                                         </small>

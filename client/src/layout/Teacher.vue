@@ -9,7 +9,6 @@ const auth = useAuthStore();
 const userInfo = computed(() => auth.user);
 const collapsed = ref<boolean>(false);
 const route = useRoute();
-
 const itemsHeadDepartment = [
     {
         key: "1",

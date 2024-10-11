@@ -81,7 +81,6 @@ public class PLPLTutorClassServiceImpl implements PLPLTutorClassService {
 
     @Override
     public ResponseObject<?> updateTutorClassDetail(List<PLPLUpdateTutorClassDetailRequest> request) {
-
         try {
             // Lọc request chỉ lấy những cái có studentId hoặc room
             List<PLPLUpdateTutorClassDetailRequest> filteredRequest = request.stream()

@@ -9,7 +9,6 @@ public interface NotificationService {
     ResponseObject<?> getAllNotifications(NotificationRequest request);
 
     ResponseObject<?> readNotification(String id, ReadNotificationRequest request);
-
     ResponseObject<?> countNotification(NotificationRequest request);
 
 }

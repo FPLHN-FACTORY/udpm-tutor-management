@@ -3,12 +3,12 @@ import {MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, HistoryOutlined, Use
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import {useAuthStore} from "@/stores/auth.ts";
+import TutorNotification from "@/components/ui/TutorNotification/TutorNotification.vue";
 
 const auth = useAuthStore();
 const userInfo = computed(() => auth.user);
 const collapsed = ref<boolean>(false);
 const route = useRoute();
-
 const itemsHeadDepartment = [
   {
     key: "1",
@@ -63,27 +63,30 @@ const selectedKeys = computed(() => {
                 class="text-xl"
             />
           </div>
-          <a-dropdown placement="bottomRight" arrow>
-            <div class="flex items-center cursor-pointer">
-              <a-avatar
-                  v-if="userInfo?.pictureUrl"
-                  :src="userInfo?.pictureUrl"
-                  size="large"
-              >
-                {{ userInfo?.fullName[0] }}
-              </a-avatar>
-              <span class="ml-2 truncate">
-                {{ userInfo?.fullName }}
-              </span>
-            </div>
-            <template #overlay>
-              <a-menu>
-                <a-menu-item key="logout" @click="handleLogout">
-                  Đăng xuất
-                </a-menu-item>
-              </a-menu>
-            </template>
-          </a-dropdown>
+          <div class="flex gap-x-2 items-center">
+            <a-dropdown placement="bottomRight" arrow>
+              <div class="flex items-center cursor-pointer">
+                <a-avatar
+                    v-if="userInfo?.pictureUrl"
+                    :src="userInfo?.pictureUrl"
+                    size="large"
+                >
+                  {{ userInfo?.fullName[0] }}
+                </a-avatar>
+                <span class="ml-2 truncate">
+                  {{ userInfo?.fullName }}
+                </span>
+              </div>
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item key="logout" @click="handleLogout">
+                    Đăng xuất
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+            <tutor-notification :keyWord="'NGUOI_LAP_KE_HOACH'" />
+          </div>
         </div>
       </a-layout-header>
       <a-layout-content class="mx-4">

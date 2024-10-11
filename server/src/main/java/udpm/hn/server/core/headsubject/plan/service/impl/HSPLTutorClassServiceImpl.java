@@ -3,15 +3,12 @@ package udpm.hn.server.core.headsubject.plan.service.impl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import udpm.hn.server.core.headsubject.plan.repository.HSPLSubjectRepository;
-import udpm.hn.server.core.headsubject.plan.repository.HSPLTutorClassDetailRepository;
-import udpm.hn.server.core.operationlogs.model.request.OperationLogsRequest;
-import udpm.hn.server.core.operationlogs.service.OperationLogsService;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.core.headsubject.plan.model.request.HSPLCreateTutorClassRequest;
@@ -20,24 +17,29 @@ import udpm.hn.server.core.headsubject.plan.model.request.HSPLTutorClassDetailRe
 import udpm.hn.server.core.headsubject.plan.model.request.HSPLUpdateTutorClassDetailRequest;
 import udpm.hn.server.core.headsubject.plan.model.request.HSPLUpdateTutorClassRequest;
 import udpm.hn.server.core.headsubject.plan.model.response.HSPLTutorClassResponse;
+import udpm.hn.server.core.headsubject.plan.repository.HSPLNotificationRepository;
 import udpm.hn.server.core.headsubject.plan.repository.HSPLPlansRepository;
 import udpm.hn.server.core.headsubject.plan.repository.HSPLStaffsRepository;
+import udpm.hn.server.core.headsubject.plan.repository.HSPLSubjectRepository;
+import udpm.hn.server.core.headsubject.plan.repository.HSPLTutorClassDetailRepository;
 import udpm.hn.server.core.headsubject.plan.repository.HSPLTutorClassRepository;
 import udpm.hn.server.core.headsubject.plan.service.HSPLTutorClassService;
+import udpm.hn.server.core.operationlogs.model.request.OperationLogsRequest;
+import udpm.hn.server.core.operationlogs.service.OperationLogsService;
 import udpm.hn.server.core.planloghistory.model.request.PlanLogHistoryRequest;
 import udpm.hn.server.core.planloghistory.service.PlanLogHistoryService;
+import udpm.hn.server.entity.Notification;
 import udpm.hn.server.entity.Plan;
 import udpm.hn.server.entity.Staff;
 import udpm.hn.server.entity.Subject;
 import udpm.hn.server.entity.TutorClass;
 import udpm.hn.server.entity.TutorClassDetail;
-import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.infrastructure.constant.Format;
+import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.infrastructure.constant.Role;
 import udpm.hn.server.utils.Helper;
 
-import org.springframework.data.domain.Pageable;
-
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -59,6 +61,8 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
     private final OperationLogsService operationLogsService;
 
     private final PlanLogHistoryService planLogHistoryService;
+
+    private final HSPLNotificationRepository notificationRepository;
 
     @Override
     public ResponseObject<?> createTutorClass(HSPLCreateTutorClassRequest request) {
@@ -89,7 +93,7 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
                 planLogHistory.setStatus(false);
                 return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi cập nhật lớp toutor");
             }
-            if(plan!=null && plan.getId()!=null) {
+            if (plan != null && plan.getId() != null) {
                 planLogHistory.setPlanId(plan.getId());
             }
             planLogHistory.setFormality(Format.fromString(request.getFormat()));
@@ -107,6 +111,19 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
                     tutorClassDetailRepository.save(tutorClassDetail);
                 }
             }
+            //Thêm 2 thông báo đến NGUOI_LAP_KE_HOACH và CHU_NHIEM_BO_MON
+            List<Notification> listNotificationSave = new ArrayList<>();
+            for (String role : List.of(Role.NGUOI_LAP_KE_HOACH.toString(), Role.CHU_NHIEM_BO_MON.toString())) {
+                Notification item = new Notification();
+                item.setPlan(plan);
+                item.setContent("Kế hoạch " + plan.getDescription() + " đã được trưởng môn thêm lớp tutor.");
+                item.setStaff(plan.getPlanner());
+                item.setSentTo(role);
+                listNotificationSave.add(item);
+            }
+            notificationRepository.saveAll(listNotificationSave);
+
+
             return new ResponseObject<>(tutorClass, HttpStatus.CREATED, "Tạo mới lớp tutor thành công");
         } catch (Exception e) {
             operationLogsRequest.setStatus(false);
@@ -148,7 +165,6 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
             }
             planLogHistory.setPlanId(tutorClassResult.getPlan().getId());
             planLogHistory.setStatus(true);
-
             return new ResponseObject<>(tutorClass, HttpStatus.OK, "Cập nhật trạng thái lớp tutor thành công");
         } catch (Exception e) {
             planLogHistory.setStatus(false);
@@ -229,6 +245,19 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
             planLogHistory.setCodeTutorClassDetail(tutorClassDetailResult.getCode());
             planLogHistory.setPlanId(tutorClassDetailResult.getTutorClass().getPlan().getId());
             planLogHistory.setStatus(true);
+
+            //Thêm 2 thông báo đến GIANG_VIEN
+            List<Notification> listNotificationSave = new ArrayList<>();
+            for (String role : List.of(Role.GIANG_VIEN.toString())) {
+                Notification item = new Notification();
+                item.setPlan(tutorClassDetailResult.getTutorClass().getPlan());
+                item.setContent("Bạn đã được thêm vào lớp " + tutorClassDetailResult.getCode() + ".");
+                item.setStaff(staff);
+                item.setSentTo(role + ": " + staff.getId());
+                listNotificationSave.add(item);
+            }
+            notificationRepository.saveAll(listNotificationSave);
+
             return new ResponseObject<>(tutorClassDetail, HttpStatus.OK, "Cập nhật giáo viên lớp tutor thành công");
         } catch (Exception e) {
             planLogHistory.setStatus(false);
@@ -261,7 +290,7 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
             planLogHistory.setCodeTutorClassDetail(tutorClassDetail.getCode());
             tutorClassDetailRepository.delete(tutorClassDetail);
             TutorClass tutorClass = tutorClassDetail.getTutorClass();
-            if(tutorClass!=null) {
+            if (tutorClass != null) {
                 planLogHistory.setPlanId(tutorClass.getPlan().getId());
             }
             List<TutorClassDetail> list = tutorClassDetailRepository.findByTutorClass(tutorClass);
@@ -326,5 +355,4 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
             }
         }
     }
-
 }
