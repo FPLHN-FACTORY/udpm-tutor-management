@@ -70,6 +70,13 @@
               :disabled="canUpdate"
           />
         </div>
+        <div v-else-if="column.key === 'link'">
+          <a-input
+              v-model:value="record.link"
+              placeholder="Nhập link"
+              :disabled="canUpdate"
+          />
+        </div>
         <div v-else-if="column.key === 'time'">
           <a-range-picker
               :value="[record.startTime ? dayjs(record.startTime) : null, record.endTime ? dayjs(record.endTime) : null]"
@@ -134,7 +141,7 @@ const columns: ColumnType[] = [
   { title: "Giảng viên tutor", dataIndex: "teacherTutor", key: "teacherTutor", ellipsis: true, width: "100px" },
   { title: "Ca học", dataIndex: "shift", key: "shift", ellipsis: true, width: "70px" },
   { title: "Phòng", dataIndex: "room", key: "room", ellipsis: true, width: "100px" },
-  { title: "Thời gian", dataIndex: "time", key: "time", ellipsis: true, width: "250px" }
+  { title: "Link", dataIndex: "link", key: "link", ellipsis: true, width: "100px" }
 ];
 
 interface DataItem {
@@ -171,6 +178,7 @@ const handleUpdateStudentPlan = async () => {
             id: record.id,
             studentId: record.studentTutor,
             room: record.room,
+            link: record.link
           }));
 
       if (selectedRecords.value.length === 0) {

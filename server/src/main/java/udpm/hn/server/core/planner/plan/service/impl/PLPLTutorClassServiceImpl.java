@@ -112,13 +112,14 @@ public class PLPLTutorClassServiceImpl implements PLPLTutorClassService {
                             tutorClassDetail.setStudentConduct(studentTutor);
                         }
                     }
-
                     // Cập nhật phòng nếu có
                     if (updateRequest.getRoom() != null) {
                         tutorClassDetail.setRoom(updateRequest.getRoom());
                         planLogHistory.setRoomPlan(updateRequest.getRoom());
                     }
-
+                    if (updateRequest.getLink() != null) {
+                        tutorClassDetail.setLink(updateRequest.getLink());
+                    }
                     // Lưu lớp tutor
                     TutorClassDetail tutorClassDetailResult = tutorClassDetailRepository.save(tutorClassDetail);
                     if(tutorClassDetailResult==null) {

@@ -52,6 +52,12 @@ public class Plan extends PrimaryEntity implements Serializable {
     @Column(name = "reason_reject")
     private String reason;
 
+    @Column(name = "link_google_form")
+    private String linkGoogleForm;
+
+    @Column(name = "link_sheet")
+    private String linkSheet;
+
     @Column(name = "start_date")
     private Long startDate;
 

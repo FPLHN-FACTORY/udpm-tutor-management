@@ -114,6 +114,7 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
                 for (int i = 0; i < tutorClass.getNumberOfClasses(); i++) {
                     TutorClassDetail tutorClassDetail = new TutorClassDetail();
                     tutorClassDetail.setTutorClass(savedTutorClass);
+                    tutorClassDetail.setName(code + " lớp " + (i + 1));
                     tutorClassDetail.setNumberOfLectures(request.getNumberOfLectures());
                     tutorClassDetail.setCode(Helper.generateTutorClassCodeFromName(code));
                     tutorClassDetailRepository.save(tutorClassDetail);

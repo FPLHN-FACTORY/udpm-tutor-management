@@ -1,13 +1,7 @@
-package udpm.hn.server.core.planner.plan.repository;
+package udpm.hn.server.infrastructure.config.googleform.repository;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import udpm.hn.server.core.common.model.request.StaffSearchByRoleRequest;
-import udpm.hn.server.core.common.model.response.CMStaffOptionsResponse;
-import udpm.hn.server.core.headdepartment.headsubjects.model.request.HeadSubjectRequest;
-import udpm.hn.server.core.headdepartment.headsubjects.model.response.HeadSubjectResponse;
 import udpm.hn.server.entity.Staff;
 import udpm.hn.server.repository.StaffRepository;
 
@@ -15,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PLPLStaffsRepository extends StaffRepository {
+public interface GFPLStaffsRepository extends StaffRepository {
     Optional<Staff> findByStaffCode(String userCode);
 
     @Query(

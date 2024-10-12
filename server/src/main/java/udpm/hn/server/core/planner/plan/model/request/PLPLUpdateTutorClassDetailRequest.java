@@ -13,5 +13,6 @@ public class PLPLUpdateTutorClassDetailRequest{
     private String id;
     private String studentId;
     private String room;
+    private String link;
 
 }

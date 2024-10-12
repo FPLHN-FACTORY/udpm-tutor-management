@@ -17,10 +17,11 @@ public interface HSPLTutorClassDetailRepository extends TutorClassDetailReposito
 
     @Query(value = """
             SELECT
-                ROW_NUMBER() OVER(ORDER BY tcd.code) AS orderNumber,
+                ROW_NUMBER() OVER(ORDER BY tcd.name) AS orderNumber,
                 tcd.id,
                 tcd.code AS tutorClassCode,
                 tcd.room AS room,
+                tcd.name AS name,
                 tcd.student_conduct_id AS studentTutor,
                 tcd.teacher_conduct_id AS teacherTutor,
                 tcd.number_of_lectures AS numberOfLectures,
@@ -45,13 +46,14 @@ public interface HSPLTutorClassDetailRepository extends TutorClassDetailReposito
                 AND (:#{#request.query} IS NULL OR tcd.code LIKE CONCAT('%', :#{#request.query}, '%'))
                 AND (:#{#request.semesterId} IS NULL OR hsbs.id_semester LIKE :#{#request.semesterId})
                 AND (:#{#request.facilityId} IS NULL OR hsbs.id_facility LIKE :#{#request.facilityId})
-            ORDER BY tcd.code
+            ORDER BY tcd.name
             """,
             countQuery = """
                SELECT
                 ROW_NUMBER() OVER(ORDER BY tcd.id DESC) AS orderNumber,
                  tcd.id,
                 tcd.code AS tutorClassCode,
+                tcd.name AS name,
                 tcd.room AS room,
                 tcd.student_conduct_id AS studentTutor,
                 tcd.teacher_conduct_id AS teacherTutor,

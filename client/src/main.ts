@@ -10,7 +10,6 @@ import "vue3-toastify/dist/index.css";
 import App from "./App.vue";
 import "./index.css";
 import { router } from "@/routes/router";
-import "global";
 
 (window as any).global = window;
 

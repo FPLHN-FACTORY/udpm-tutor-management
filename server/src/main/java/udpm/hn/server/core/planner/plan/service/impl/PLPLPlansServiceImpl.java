@@ -19,7 +19,6 @@ import udpm.hn.server.core.planner.plan.repository.PLPLBlocksRepository;
 import udpm.hn.server.core.planner.plan.repository.PLPLDepartmentFacilitysRepository;
 import udpm.hn.server.core.planner.plan.repository.PLPLPlansRepository;
 import udpm.hn.server.core.planner.plan.repository.PLPLStaffsRepository;
-import udpm.hn.server.core.planner.plan.repository.PLPLTutorClassRepository;
 import udpm.hn.server.core.planner.plan.repository.PlanNotificationRepository;
 import udpm.hn.server.core.planner.plan.service.PLPLPlansService;
 import udpm.hn.server.entity.Block;
@@ -33,11 +32,11 @@ import udpm.hn.server.entity.Staff;
 import udpm.hn.server.infrastructure.config.email.service.EmailService;
 import udpm.hn.server.infrastructure.config.websocket.model.NotifyModel;
 import udpm.hn.server.infrastructure.config.websocket.service.NotificationService;
+import udpm.hn.server.infrastructure.config.googleform.service.GoogleFormService;
 import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.infrastructure.constant.PlanStatus;
 import udpm.hn.server.infrastructure.constant.Role;
 import udpm.hn.server.utils.Helper;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,11 +58,11 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
 
     private final EmailService emailService;
 
-    private final PLPLTutorClassRepository plplTutorClassRepository;
-
     private final PlanNotificationRepository notificationRepository;
 
     private final PlanLogHistoryService planLogHistoryService;
+
+    private final GoogleFormService googleFormService;
 
     @Value("${ws.topicPrefix}")
     private String topicPrefix;
@@ -79,7 +78,6 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
                 "Lấy danh sách kế hoach thành công!"
         );
     }
-
     @Override
     public ResponseObject<?> createPlan(PLPLCreatePlanRequest request) {
         Optional<DepartmentFacility> departmentFacilityOptional = plplDepartmentFacilitysRepository.findByDepartment_CodeAndFacilityCode(request.getDepartmentCode(), request.getFacilityCode());
@@ -90,7 +88,7 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
         try {
             if (departmentFacilityOptional.isEmpty()) {
                 planLogHistory.setStatus(false);
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Bộ môn cơ sở không tồn tại tồn tại");
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Bộ môn cơ sở không tồn tại");
             }
 
             Optional<Block> blockOptional = blocksRepository.findById(request.getBlockId());
@@ -158,7 +156,6 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
         }
         return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi lưu kế hoạch");
     }
-
     @Override
     public ResponseObject<?> updatePlan(String planId, PLPLUpdatePlanRequest request) {
         Long canUpdate = plplPlansRepository.canUpdate(planId);
@@ -191,10 +188,7 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
             plan.setStartDate(request.getStartTime());
             plan.setEndDate(request.getEndTime());
             Plan planSaveResult = plplPlansRepository.save(plan);
-            if (planSaveResult == null) {
-                planLogHistory.setStatus(false);
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi cập nhật kế hoạch");
-            }
+
             planLogHistory.setDescription(request.getDescription());
             planLogHistory.setStartDate(request.getStartTime());
             planLogHistory.setEndDate(request.getEndTime());
@@ -348,6 +342,24 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
                 HttpStatus.OK,
                 "Lấy danh sách kế hoach thành công!"
         );
+    }
+
+    @Override
+    public ResponseObject<?> startPlan(String planId) {
+        // Tìm kế hoạch theo ID
+        Plan planOptional = plplPlansRepository.findById(planId).orElse(null);
+        if (planOptional == null) {
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch không tồn tại");
+        }
+
+        // Tạo Google Form và nhận phản hồi
+        ResponseObject<?> formResponse = googleFormService.createForm(planOptional);
+        if (formResponse.getStatus() != HttpStatus.OK) {
+            return formResponse; // Nếu có lỗi, trả về phản hồi lỗi từ createForm
+        }
+
+        // Trả về phản hồi thành công
+        return new ResponseObject<>(null, HttpStatus.OK, "Chuyển trạng thái kế hoạch thành công, URL Google Form: " + formResponse.getData());
     }
 
 }

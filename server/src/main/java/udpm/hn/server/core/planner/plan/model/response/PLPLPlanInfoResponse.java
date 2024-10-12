@@ -5,6 +5,8 @@ public interface PLPLPlanInfoResponse {
     String getPlanName();
     String getBlockName();
     String getStatus();
+    String getLinkForm();
+    String getLinkSheet();
     String getFacilityName();
     Long getNumberSubjects();
     Long getNumberClasses();
