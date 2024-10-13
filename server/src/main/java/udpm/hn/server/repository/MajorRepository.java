@@ -20,4 +20,6 @@ public interface MajorRepository extends JpaRepository<Major, String> {
 
     Optional<Major> findByCode(String code);
 
+    Optional<Major> findByDepartment(Department department);
+
 }

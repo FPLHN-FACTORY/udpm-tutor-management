@@ -18,6 +18,12 @@ const itemsHeadDepartment = [
   },
   {
     key: "2",
+    icon: UserOutlined,
+    text: "Quản lý người lập kế hoạch",
+    path: "/head-subject/planner",
+  },
+  {
+    key: "3",
     icon: HistoryOutlined,
     text: "Quản lý lịch sử kế hoạch",
     path: "/head-subject/plan-log",

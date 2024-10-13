@@ -113,6 +113,10 @@ export const ROUTES_CONSTANTS = {
         path: "subject-plan",
         name: "subject-plan",
       },
+      PLANNER: {
+        path: "planner",
+        name: "subjectPlaner",
+      },
       PLAN_DETAIL: {
         path: "plan/:planId",
         name: "hSPlDetailPlan",
