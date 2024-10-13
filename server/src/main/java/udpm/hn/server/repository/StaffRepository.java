@@ -26,4 +26,13 @@ public interface StaffRepository extends JpaRepository<Staff, String> {
     """)
     Optional<Staff> findStaffByEmail(String emailHeadDepartmentFpt, String emailHeadDepartmentFe);
 
+
+
+
+
+    @Query("""
+        select s from Staff s where s.staffCode = :code
+    """)
+    Optional<Staff> findByStaffCodeV2(String code);
+
 }

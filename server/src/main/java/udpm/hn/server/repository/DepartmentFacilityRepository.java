@@ -18,4 +18,9 @@ public interface DepartmentFacilityRepository extends JpaRepository<DepartmentFa
             """)
     Optional<DepartmentFacility> findDepartmentFacilityByDepartmentFacility(Long departmentFacilityIdentityId);
 
+    @Query("""
+    select d from Department d where d.code = :code
+    """)
+    Optional<DepartmentFacility> findByCodeDepartment(String code);
+
 }

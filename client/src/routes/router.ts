@@ -206,6 +206,15 @@ export const routes: RouteRecordRaw[] = [
           requiresAuth: true,
         },
       },
+      {
+        path: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLANNER.path,
+        name: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLANNER.name,
+        component: () => import("@/pages/headsubject/planner/headSubjectPlanner.vue"),
+        meta: {
+          requiresRole: ROLES.HEAD_SUBJECT,
+          requiresAuth: true,
+        },
+      },
     ],
   },
   {
