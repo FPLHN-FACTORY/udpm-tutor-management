@@ -2,6 +2,7 @@ package udpm.hn.server.core.headdepartment.plan.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,8 @@ import udpm.hn.server.core.planloghistory.model.request.PlanLogHistoryRequest;
 import udpm.hn.server.core.planloghistory.service.PlanLogHistoryService;
 import udpm.hn.server.entity.Notification;
 import udpm.hn.server.entity.Plan;
+import udpm.hn.server.infrastructure.config.websocket.model.NotifyModel;
+import udpm.hn.server.infrastructure.config.websocket.service.NotificationService;
 import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.infrastructure.constant.PlanStatus;
 import udpm.hn.server.infrastructure.constant.Role;
@@ -37,9 +40,14 @@ public class HDPLPlansServiceImpl implements HDPLPlansService {
 
     private final HDPLNotificationRepository notificationRepository;
 
+    private final NotificationService notificationService;
+
+    @Value("${ws.topicPrefix}")
+    private String topicPrefix;
+
     @Override
     public ResponseObject<?> getPlans(HDPLPlanListRequest request) {
-        log.info("Request: " + request.toString());
+        log.info("Request: {}", request.toString());
         Pageable pageable = Helper.createPageable(request, "createdDate");
         return new ResponseObject<>(
                 PageableObject.of(planRepository.getAllPlans(pageable, request)),
@@ -81,6 +89,14 @@ public class HDPLPlansServiceImpl implements HDPLPlansService {
             }
 
             notificationRepository.saveAll(listNotificationSave);
+
+            notificationService.sendNotification(
+                    topicPrefix,
+                    NotifyModel.getRoles(
+                            Role.NGUOI_LAP_KE_HOACH.name(),
+                            Role.TRUONG_MON.name()
+                    )
+            );
 
 
             planOptional.map(plan -> {

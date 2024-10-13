@@ -3,6 +3,7 @@ package udpm.hn.server.core.headsubject.plan.service.impl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,8 @@ import udpm.hn.server.entity.Staff;
 import udpm.hn.server.entity.Subject;
 import udpm.hn.server.entity.TutorClass;
 import udpm.hn.server.entity.TutorClassDetail;
+import udpm.hn.server.infrastructure.config.websocket.model.NotifyModel;
+import udpm.hn.server.infrastructure.config.websocket.service.NotificationService;
 import udpm.hn.server.infrastructure.constant.Format;
 import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.infrastructure.constant.Role;
@@ -63,6 +66,11 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
     private final PlanLogHistoryService planLogHistoryService;
 
     private final HSPLNotificationRepository notificationRepository;
+
+    private final NotificationService notificationService;
+
+    @Value("${ws.topicPrefix}")
+    private String topicPrefix;
 
     @Override
     public ResponseObject<?> createTutorClass(HSPLCreateTutorClassRequest request) {
@@ -122,6 +130,14 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
                 listNotificationSave.add(item);
             }
             notificationRepository.saveAll(listNotificationSave);
+
+            notificationService.sendNotification(
+                    topicPrefix,
+                    NotifyModel.getRoles(
+                            Role.NGUOI_LAP_KE_HOACH.name(),
+                            Role.CHU_NHIEM_BO_MON.name()
+                    )
+            );
 
 
             return new ResponseObject<>(tutorClass, HttpStatus.CREATED, "Tạo mới lớp tutor thành công");

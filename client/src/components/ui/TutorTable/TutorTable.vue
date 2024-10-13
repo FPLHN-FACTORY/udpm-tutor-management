@@ -1,20 +1,20 @@
 <template>
   <div class="flex-1" ref="tableWrapper">
     <a-table
-        class="overflow-hidden"
-        :class="className"
-        :title="title"
-        :columns="columns"
-        :data-source="dataSource || []"
-        :loading="loading"
-        :table-layout="tableLayout || 'auto'"
-        :scroll="computedScroll"
-        :size="size || 'small'"
-        :sticky="true"
-        :show-sorter-tooltip="false"
-        @change="handleTableChange"
-        :pagination="false"
-        v-bind="$attrs"
+      class="overflow-hidden"
+      :class="className"
+      :title="title"
+      :columns="columns"
+      :data-source="dataSource || []"
+      :loading="loading"
+      :table-layout="tableLayout || 'auto'"
+      :scroll="computedScroll"
+      :size="size || 'small'"
+      :sticky="true"
+      :show-sorter-tooltip="false"
+      @change="handleTableChange"
+      :pagination="false"
+      v-bind="$attrs"
     >
       <template #headerCell="{ column }">
         <span>
@@ -36,39 +36,39 @@
     </a-table>
   </div>
   <div
-      v-if="isPagination && dataSource?.length > 0"
-      class="mt-3 flex w-full justify-end"
+    v-if="isPagination && dataSource?.length > 0"
+    class="mt-3 flex w-full justify-end"
   >
     <a-pagination
-        :current="paginationParams.page"
-        :total="
+      :current="paginationParams.page"
+      :total="
         isNaN(totalPages * paginationParams.size)
           ? 0
           : totalPages * paginationParams.size
       "
-        :show-size-changer="!isNaN(totalPages * paginationParams.size)"
-        :page-size-options="
+      :show-size-changer="!isNaN(totalPages * paginationParams.size)"
+      :page-size-options="
         isNaN(totalPages * paginationParams.size) ? [] : ['10', '15', '20']
       "
-        :default-page-size="paginationParams.size"
-        :show-quick-jumper="showSizeChanger"
-        :locale="{
+      :default-page-size="paginationParams.size"
+      :show-quick-jumper="showSizeChanger"
+      :locale="{
         jump_to: 'Đến',
         page: 'Trang',
         prev_page: 'Trang trước',
         next_page: 'Trang sau',
         items_per_page: ' / trang',
       }"
-        :show-total="showTotal ? totalFormatter : undefined"
-        responsive
-        @change="(page: number, pageSize: number) => onPaginationChange(page, pageSize)"
+      :show-total="showTotal ? totalFormatter : undefined"
+      responsive
+      @change="(page: number, pageSize: number) => onPaginationChange(page, pageSize)"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useTableHeight } from "@/composable/useTableHeight";
-import { computed, defineEmits, defineProps, ref } from "vue";
+import { computed, ref } from "vue";
 
 const props = defineProps({
   title: [String, Function],
@@ -138,8 +138,8 @@ const onPaginationChange = (page: number, pageSize: number) => {
 
 const totalFormatter = (total: number, range: [number, number]) => {
   return props.showTotal
-      ? `Hiển thị ${range[0]}-${range[1]} trong tổng số ${total} bản ghi`
-      : "";
+    ? `Hiển thị ${range[0]}-${range[1]} trong tổng số ${total} bản ghi`
+    : "";
 };
 
 const tableWrapper = ref<HTMLElement | null>(null);
@@ -148,12 +148,12 @@ const tableHeight = useTableHeight(tableWrapper, 210);
 const computedScroll = computed(() => {
   const y = tableHeight.value || 0;
   const isScrollable =
-      props.dataSource.length > 1 &&
-      tableWrapper.value &&
-      tableWrapper.value.scrollHeight > y;
+    props.dataSource.length > 1 &&
+    tableWrapper.value &&
+    tableWrapper.value.scrollHeight > y;
 
   return isScrollable
-      ? { y: props.scroll?.y || y, x: props.scroll?.x || "none" }
-      : { x: props.scroll?.x || "none" };
+    ? { y: props.scroll?.y || y, x: props.scroll?.x || "none" }
+    : { x: props.scroll?.x || "none" };
 });
 </script>

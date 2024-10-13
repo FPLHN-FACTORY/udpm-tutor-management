@@ -1,4 +1,4 @@
-package udpm.hn.server.infrastructure.config.websocket.model.request;
+package udpm.hn.server.core.notification.model.request;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,14 +1,17 @@
 package udpm.hn.server.infrastructure.config.websocket.service;
 
-import udpm.hn.server.core.common.base.ResponseObject;
-import udpm.hn.server.infrastructure.config.websocket.model.request.NotificationRequest;
-import udpm.hn.server.infrastructure.config.websocket.model.request.ReadNotificationRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
 
-public interface NotificationService {
+@Service
+@RequiredArgsConstructor
+public class NotificationService {
 
-    ResponseObject<?> getAllNotifications(NotificationRequest request);
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
-    ResponseObject<?> readNotification(String id, ReadNotificationRequest request);
-    ResponseObject<?> countNotification(NotificationRequest request);
+    public void sendNotification(String destination, Object message) {
+        simpMessagingTemplate.convertAndSend(destination, message);
+    }
 
 }

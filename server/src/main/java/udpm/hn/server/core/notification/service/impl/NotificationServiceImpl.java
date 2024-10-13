@@ -1,4 +1,4 @@
-package udpm.hn.server.infrastructure.config.websocket.service.impl;
+package udpm.hn.server.core.notification.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -6,11 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
+import udpm.hn.server.core.notification.model.request.ReadNotificationRequest;
 import udpm.hn.server.entity.Notification;
-import udpm.hn.server.infrastructure.config.websocket.model.request.NotificationRequest;
-import udpm.hn.server.infrastructure.config.websocket.model.request.ReadNotificationRequest;
-import udpm.hn.server.infrastructure.config.websocket.repository.NotificationExtendRepository;
-import udpm.hn.server.infrastructure.config.websocket.service.NotificationService;
+import udpm.hn.server.core.notification.model.request.NotificationRequest;
+import udpm.hn.server.core.notification.repository.NotificationExtendRepository;
+import udpm.hn.server.core.notification.service.NotificationService;
 import udpm.hn.server.utils.Helper;
 
 import java.util.Optional;

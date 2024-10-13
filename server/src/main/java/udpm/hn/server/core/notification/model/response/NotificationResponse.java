@@ -1,4 +1,4 @@
-package udpm.hn.server.infrastructure.config.websocket.model.response;
+package udpm.hn.server.core.notification.model.response;
 
 import udpm.hn.server.core.common.base.IsIdentify;
 

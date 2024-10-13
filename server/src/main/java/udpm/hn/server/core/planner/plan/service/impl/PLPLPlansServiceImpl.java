@@ -2,6 +2,7 @@ package udpm.hn.server.core.planner.plan.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,8 @@ import udpm.hn.server.entity.Plan;
 import udpm.hn.server.entity.Semester;
 import udpm.hn.server.entity.Staff;
 import udpm.hn.server.infrastructure.config.email.service.EmailService;
+import udpm.hn.server.infrastructure.config.websocket.model.NotifyModel;
+import udpm.hn.server.infrastructure.config.websocket.service.NotificationService;
 import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.infrastructure.constant.PlanStatus;
 import udpm.hn.server.infrastructure.constant.Role;
@@ -47,13 +50,25 @@ import java.util.Optional;
 public class PLPLPlansServiceImpl implements PLPLPlansService {
 
     private final PLPLPlansRepository plplPlansRepository;
+
     private final PLPLStaffsRepository plplStaffsRepository;
+
     private final PLPLDepartmentFacilitysRepository plplDepartmentFacilitysRepository;
+
     private final PLPLBlocksRepository blocksRepository;
+
     private final EmailService emailService;
+
     private final PLPLTutorClassRepository plplTutorClassRepository;
+
     private final PlanNotificationRepository notificationRepository;
+
     private final PlanLogHistoryService planLogHistoryService;
+
+    @Value("${ws.topicPrefix}")
+    private String topicPrefix;
+
+    private final NotificationService notificationService;
 
     @Override
     public ResponseObject<?> getAllPlans(PLPLPlanListRequest request) {
@@ -114,6 +129,14 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
                 listNotificationSave.add(item);
             }
             notificationRepository.saveAll(listNotificationSave);
+
+            notificationService.sendNotification(
+                    topicPrefix,
+                    NotifyModel.getRoles(
+                            Role.TRUONG_MON.name(),
+                            Role.CHU_NHIEM_BO_MON.name()
+                    )
+            );
 
             planLogHistory.setDescription(request.getDescription());
             planLogHistory.setStartDate(request.getStartTime());
@@ -256,6 +279,14 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
             }
             notificationRepository.saveAll(listNotificationSave);
 
+            notificationService.sendNotification(
+                    topicPrefix,
+                    NotifyModel.getRoles(
+                            Role.TRUONG_MON.name(),
+                            Role.CHU_NHIEM_BO_MON.name()
+                    )
+            );
+
             planOptional.map(plan -> {
                 plan.setPlanStatus(PlanStatus.PLANNER_APPROVED);
                 Plan planSaveResult = plplPlansRepository.save(plan);
@@ -318,4 +349,5 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
                 "Lấy danh sách kế hoach thành công!"
         );
     }
+
 }

@@ -11,9 +11,9 @@ import java.util.Optional;
 @Repository
 public interface DBGenRoleRepository extends RoleRepository {
 
-    Optional<Role> findByCodeAndNameAndFacility(String code, String name, Facility facility);
+    Optional<Role> findByCodeAndNameAndFacility_Id(String code, String name, String facilityId);
 
-    List<Role> findAllByFacility(Facility facility);
+    List<Role> findAllByFacility_Id(String facilityId);
 
     Optional<Role> findByCodeAndFacility(String code, Facility facility);
 
