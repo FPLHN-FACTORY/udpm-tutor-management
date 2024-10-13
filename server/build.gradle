@@ -18,31 +18,52 @@ repositories {
 }
 
 dependencies {
+    // Spring Boot Starters
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-mail:3.1.1'
+    implementation 'org.springframework.batch:spring-batch-core:5.0.3'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework:spring-messaging:6.1.13'
+
+
+    // Spring Security OAuth2
     implementation 'org.springframework.security:spring-security-oauth2-client'
+
+    // JSON Web Token (JWT)
     implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 
+    // Lombok
     compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Database
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // Testing
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+    // Environment Variables
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 
+    // Apache POI
     implementation 'org.apache.poi:poi:3.17'
     implementation 'org.apache.poi:poi-ooxml:3.17'
-    implementation 'org.springframework.batch:spring-batch-core:5.0.3'
+
+    // Spring Batch Excel
     implementation 'com.github.kumarpankaj18:spring-batch-excel:1.0.6'
+
+    // JSON
     implementation 'org.json:json:20231013'
+
+    // Spring WebFlux
     implementation group: 'org.springframework', name: 'spring-webflux', version: '6.1.5'
-    implementation 'org.springframework.boot:spring-boot-starter-mail:3.1.1'
 }
 
 tasks.named('test') {

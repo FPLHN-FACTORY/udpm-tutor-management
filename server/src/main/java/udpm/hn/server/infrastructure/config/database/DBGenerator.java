@@ -3,7 +3,6 @@ package udpm.hn.server.infrastructure.config.database;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import udpm.hn.server.entity.Block;
 import udpm.hn.server.entity.Facility;
@@ -23,9 +22,9 @@ import udpm.hn.server.infrastructure.constant.SemesterName;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 
 @Component
-@Order(2)
 @RequiredArgsConstructor
 public class DBGenerator {
 
@@ -65,11 +64,15 @@ public class DBGenerator {
                     return facilityRepository.save(fe);
                 });
 
-        Role roleSaved = roleRepository.findByCodeAndNameAndFacility("ADMIN", "Admin", facility)
+        Role roleSaved = roleRepository.findByCodeAndNameAndFacility_Id(
+                        udpm.hn.server.infrastructure.constant.Role.ADMIN.name(),
+                        udpm.hn.server.infrastructure.constant.Role.ADMIN.getNameInVietnamese(),
+                        facility.getId()
+                )
                 .orElseGet(() -> {
                     Role admin = new Role();
                     admin.setCode(udpm.hn.server.infrastructure.constant.Role.ADMIN.name());
-                    admin.setName("Admin");
+                    admin.setName(udpm.hn.server.infrastructure.constant.Role.ADMIN.getNameInVietnamese());
                     admin.setFacility(facility);
                     admin.setStatus(EntityStatus.ACTIVE);
                     return roleRepository.save(admin);
@@ -90,6 +93,30 @@ public class DBGenerator {
             staffRole.setStaff(savedStaff);
             staffRole.setStatus(EntityStatus.ACTIVE);
             staffRoleRepository.save(staffRole);
+        }
+
+        generateRole();
+    }
+
+    private void generateRole() {
+        List<Facility> listFacility = facilityRepository.findAll();
+        for (Facility facility : listFacility) {
+            List<String> roleCodes = udpm.hn.server.infrastructure.constant.Role.getAllRoles();
+            List<String> roleNames = udpm.hn.server.infrastructure.constant.Role.getAllRolesInVietnamese();
+            for (int i = 0; i < roleCodes.size(); i++) {
+                if (roleRepository.findByCodeAndNameAndFacility_Id(
+                        roleCodes.get(i),
+                        roleNames.get(i),
+                        facility.getId()
+                ).isEmpty()) {
+                    udpm.hn.server.entity.Role role = new udpm.hn.server.entity.Role();
+                    role.setCode(roleCodes.get(i));
+                    role.setName(roleNames.get(i));
+                    role.setFacility(facility);
+                    role.setStatus(EntityStatus.ACTIVE);
+                    roleRepository.save(role);
+                }
+            }
         }
     }
 

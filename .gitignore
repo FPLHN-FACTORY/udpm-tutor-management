@@ -17,7 +17,7 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
-### IntelliJ IDEA ###
+### IntelliJ IDEA ### // ### Server ###
 server/.idea
 server//*.iws
 server/*.iml
@@ -27,12 +27,13 @@ server/!**/src/main/**/out/
 server/!**/src/test/**/out/
 .idea/
 
-### VS Code ###
+### VS Code ### // ### Client ###
 client/.vscode/
 client/node_modules/
 client/dist/
 client/!**/src/main/**/dist/
 client/!**/src/test/**/dist/
+client/yarn.lock
 
 ### Environments ###
 client/.env

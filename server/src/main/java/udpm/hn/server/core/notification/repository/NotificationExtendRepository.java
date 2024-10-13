@@ -1,11 +1,11 @@
-package udpm.hn.server.infrastructure.config.websocket.repository;
+package udpm.hn.server.core.notification.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import udpm.hn.server.infrastructure.config.websocket.model.request.NotificationRequest;
-import udpm.hn.server.infrastructure.config.websocket.model.response.NotificationResponse;
+import udpm.hn.server.core.notification.model.request.NotificationRequest;
+import udpm.hn.server.core.notification.model.response.NotificationResponse;
 import udpm.hn.server.repository.NotificationRepository;
 
 @Repository

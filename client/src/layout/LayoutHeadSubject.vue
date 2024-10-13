@@ -1,14 +1,20 @@
 <script lang="ts" setup>
-import {MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, HistoryOutlined, UserSwitchOutlined} from "@ant-design/icons-vue";
-import { computed, ref } from "vue";
-import { useRoute } from "vue-router";
-import {useAuthStore} from "@/stores/auth.ts";
 import TutorNotification from "@/components/ui/TutorNotification/TutorNotification.vue";
+import { useAuthStore } from "@/stores/auth.ts";
+import {
+  HistoryOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UserSwitchOutlined,
+} from "@ant-design/icons-vue";
+import { computed, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 const auth = useAuthStore();
 const userInfo = computed(() => auth.user);
 const collapsed = ref<boolean>(false);
 const route = useRoute();
+const router = useRouter();
 const itemsHeadDepartment = [
   {
     key: "1",
@@ -31,6 +37,11 @@ const selectedKeys = computed(() => {
   );
   return selectedItem ? [selectedItem.key] : [];
 });
+
+const handleLogout = () => {
+  auth.logout();
+  router.push("/login");
+};
 </script>
 
 <template>
@@ -39,9 +50,9 @@ const selectedKeys = computed(() => {
       <div class="logo">
         <a href="/" class="logo">
           <img
-              src="/images/logo-udpm-dark.png"
-              alt="logo-udpm"
-              class="p-2 mt-3"
+            src="/images/logo-udpm-dark.png"
+            alt="logo-udpm"
+            class="p-2 mt-3"
           />
         </a>
       </div>
@@ -59,17 +70,17 @@ const selectedKeys = computed(() => {
         <div class="user-info flex items-center justify-between">
           <div class="cursor-pointer" @click="collapsed = !collapsed">
             <component
-                :is="collapsed ? MenuUnfoldOutlined : MenuFoldOutlined"
-                class="text-xl"
+              :is="collapsed ? MenuUnfoldOutlined : MenuFoldOutlined"
+              class="text-xl"
             />
           </div>
           <div class="flex gap-x-2 items-center">
             <a-dropdown placement="bottomRight" arrow>
               <div class="flex items-center cursor-pointer">
                 <a-avatar
-                    v-if="userInfo?.pictureUrl"
-                    :src="userInfo?.pictureUrl"
-                    size="large"
+                  v-if="userInfo?.pictureUrl"
+                  :src="userInfo?.pictureUrl"
+                  size="large"
                 >
                   {{ userInfo?.fullName[0] }}
                 </a-avatar>
