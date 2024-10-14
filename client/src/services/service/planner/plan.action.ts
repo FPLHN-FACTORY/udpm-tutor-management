@@ -4,7 +4,7 @@ import {
   CreateUpdatePlanParams,
   getDetailPlan, getPlanInfo, getPlanInfoById,
   getPlans, getSemesterInfo,
-  ParamsGetPlans, updatePlan
+  ParamsGetPlans, startPlan, updatePlan
 } from "@/services/api/planner/plan.api.ts";
 import {Ref} from "vue";
 import {useMutation, useQuery, useQueryClient, UseQueryReturnType} from "@tanstack/vue-query";
@@ -107,6 +107,22 @@ export const useApprovePlan = () => {
 
   return useMutation({
     mutationFn: (planId: string) => approvePlan(planId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKey.planner.plan.planList],
+      });
+    },
+    onError: (error: any) => {
+      console.log("🚀 ~ useApprovePlan ~ error:", error);
+    },
+  });
+};
+
+export const useStartPlan = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (planId: string) => startPlan(planId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [queryKey.planner.plan.planList],

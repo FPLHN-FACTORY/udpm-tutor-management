@@ -1,4 +1,4 @@
-package udpm.hn.server.core.planner.plan.repository;
+package udpm.hn.server.infrastructure.config.googleform.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,14 +13,13 @@ import udpm.hn.server.core.planner.plan.model.response.PLPLSemesterInfoResponse;
 import udpm.hn.server.entity.Block;
 import udpm.hn.server.entity.DepartmentFacility;
 import udpm.hn.server.entity.Plan;
-import udpm.hn.server.infrastructure.constant.PlanStatus;
 import udpm.hn.server.repository.PlanRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PLPLPlansRepository extends PlanRepository {
+public interface GFPLPlansRepository extends PlanRepository {
 
     @Query(value = """
             SELECT
@@ -188,7 +187,6 @@ public interface PLPLPlansRepository extends PlanRepository {
             b.name as blockName,
             pl.plan_status AS status,
             pl.link_google_form AS linkForm,
-            pl.link_sheet AS linkSheet,
             f.name AS facilityName,
             b.start_time AS startTime,
             b.end_time AS endTime,

@@ -9,6 +9,7 @@ public interface HSPLTutorClassDetailResponse extends IsIdentify, HasOrderNumber
     String getTeacherTutor();
     String getStudentTutor();
     String getRoom();
+    String getName();
     String getSubjectId();
     Long getStartTime();
     Long getEndTime();

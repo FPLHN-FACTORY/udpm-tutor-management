@@ -99,6 +99,8 @@ export type PlanInfoDetailResponse = {
   blockName: string;
   status: string;
   facilityName: string;
+  linkForm: string;
+  linkSheet: string;
   numberSubjects: number;
   numberClasses: number;
   startTime: number;
@@ -167,6 +169,18 @@ export const getDetailPlan = async (planId: string | null) => {
 export const approvePlan = async (planId: string) => {
   const res = (await request({
     url: `${PREFIX_API_PLANNER_PLAN}/status/${planId}`,
+    method: "PUT",
+  })) as AxiosResponse<
+      DefaultResponse<DefaultResponse<null>>
+  >;
+
+  return res.data;
+};
+
+
+export const startPlan = async (planId: string) => {
+  const res = (await request({
+    url: `${PREFIX_API_PLANNER_PLAN}/start/${planId}`,
     method: "PUT",
   })) as AxiosResponse<
       DefaultResponse<DefaultResponse<null>>

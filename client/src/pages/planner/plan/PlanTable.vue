@@ -33,7 +33,17 @@
                   size="large"
                   @click="handleApprovePlan(record.id)"
                   :icon="h(CheckCircleOutlined)"
-                  :loading="isPending"
+                  :loading="isPendingApprove"
+              />
+            </a-tooltip>
+            <a-tooltip v-if="record.status === 'HEAD_DEPARTMENT_APPROVED'" title="Bắt đầu triển khai" color="#FFC26E">
+              <a-button
+                  class="flex items-center justify-center"
+                  type="primary"
+                  size="large"
+                  @click="handleStartPlan(record.id)"
+                  :icon="h(CheckCircleOutlined)"
+                  :loading="isPendingStart"
               />
             </a-tooltip>
             <a-tooltip title="Chi tiết kế hoạch" color="#FFC26E">
@@ -91,7 +101,7 @@ import {h} from "vue";
 import { PlanResponse } from "@/services/api/planner/plan.api.ts";
 import {useRouter} from "vue-router";
 import {confirmModal, formatBlockName, getDateFormat, getTagColor, getTagStatus} from "@/utils/common.helper.ts";
-import {useApprovePlan, useCheckApprovePlan} from "@/services/service/planner/plan.action.ts";
+import {useApprovePlan, useCheckApprovePlan, useStartPlan} from "@/services/service/planner/plan.action.ts";
 import {toast} from "vue3-toastify";
 import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
 
@@ -101,7 +111,8 @@ const goToDetail = (planId: string) => {
   router.push({ name: 'pLPlDetailPlan', params: { planId } });
 }
 
-const { mutate: approvePlan, isPending } = useApprovePlan();
+const { mutate: approvePlan, isPending: isPendingApprove } = useApprovePlan();
+const { mutate: startPlan, isPending: isPendingStart } = useStartPlan();
 
 const handleApprovePlan = async (id: string) => {
   const message = 'Bạn chắc chắn muốn phê duyệt kế hoạch này chứ!'; // Thông điệp xác nhận
@@ -139,6 +150,28 @@ const handleApprovePlan = async (id: string) => {
     } catch (error: any) {
       console.log(error);
       toast.error("Đã xảy ra lỗi trong quá trình phê duyệt.");
+    }
+  });
+};
+
+const handleStartPlan = async (id: string) => {
+  const message = 'Bạn chắc chắn muốn bắt đầu triển khai kế hoạch này chứ!'; // Thông điệp xác nhận
+
+  confirmModal(message, () => { // Thêm async ở đây
+    try {
+      startPlan(id, {
+        onSuccess: () => {
+          toast.success("Triển khai kế hoạch thành công!");
+        },
+        onError: (error: any) => {
+          toast.error(
+              error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+          );
+        },
+      });
+    } catch (error: any) {
+      console.log(error);
+      toast.error("Đã xảy ra lỗi trong quá trình bắt đầu kế hoạch.");
     }
   });
 };

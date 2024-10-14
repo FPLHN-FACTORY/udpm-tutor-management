@@ -4,7 +4,7 @@ import { useAuthStore } from "@/stores/auth.ts";
 import {
   HistoryOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined,
+  MenuUnfoldOutlined, UserOutlined,
   UserSwitchOutlined,
 } from "@ant-design/icons-vue";
 import { computed, ref } from "vue";

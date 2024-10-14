@@ -21,6 +21,8 @@
           <a-descriptions-item label="Trưởng môn chưa thêm môn">0</a-descriptions-item>
           <a-descriptions-item label="Ngày bắt đầu">{{ getDateFormat(plan?.startTime, false) }}</a-descriptions-item>
           <a-descriptions-item label="Ngày kết thúc">{{ getDateFormat(plan?.endTime, false) }}</a-descriptions-item>
+          <a-descriptions-item label="Form đăng ký"><a :href="plan?.linkForm" target="_blank">{{ plan?.linkForm? 'Tại đây' : '' }}</a></a-descriptions-item>
+          <a-descriptions-item label="Link sheet"><a :href="plan?.linkSheet" target="_blank">{{ plan?.linkSheet? 'Tại đây' : '' }}</a></a-descriptions-item>
           <a-descriptions-item label="Đánh giá">0</a-descriptions-item>
         </a-descriptions>
       </div>

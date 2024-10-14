@@ -278,14 +278,19 @@ export const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-  // const requiresRole = to.matched.some((record) => record.meta.requiresRole);
+  const requiresRole = to.matched.some((record) => record.meta.requiresRole);
   const userRole = authStore?.user?.rolesCodes;
 
   if (userRole === null && requiresAuth) {
     next({ name: ROUTES_CONSTANTS.LOGIN.name });
   } else if (requiresAuth && !authStore.isAuthenticated) {
     next({ name: ROUTES_CONSTANTS.LOGIN.name });
-  } else {
+  }
+  else if (requiresRole && (!userRole || !userRole.includes(to.meta.requiresRole))) {
+    next({name: ROUTES_CONSTANTS.LOGIN.name});
+  }
+  else {
     next();
   }
 });
+

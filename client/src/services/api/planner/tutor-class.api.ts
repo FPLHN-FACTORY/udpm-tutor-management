@@ -19,6 +19,8 @@ export type TutorClassDetailResponse = ResponseList & {
   teacherTutor: string;
   shift: string;
   room: string;
+  name: string;
+  link: string;
   startTime: number;
   endTime: number;
   selected: boolean;

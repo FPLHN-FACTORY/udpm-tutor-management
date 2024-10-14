@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import udpm.hn.server.core.planner.plan.model.request.PLPLCreateGoogleFormPlanRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLCreatePlanRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLPlanInfoRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLPlanListRequest;
@@ -55,13 +56,18 @@ public class PlansRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> getPlanDetail(@RequestBody PLPLUpdatePlanRequest request, @PathVariable String id) {
+    public ResponseEntity<?> updatePlan(@RequestBody PLPLUpdatePlanRequest request, @PathVariable String id) {
         return Helper.createResponseEntity(planService.updatePlan(id, request));
     }
 
     @PutMapping("/status/{id}")
     public ResponseEntity<?> approvePlan(@PathVariable String id) {
         return Helper.createResponseEntity(planService.approvePlan(id));
+    }
+
+    @PutMapping("/start/{id}")
+    public ResponseEntity<?> startPlan(@PathVariable String id) {
+        return Helper.createResponseEntity(planService.startPlan(id));
     }
 
     @GetMapping("/check/{id}")

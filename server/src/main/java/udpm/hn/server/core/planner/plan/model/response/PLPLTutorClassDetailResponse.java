@@ -9,6 +9,7 @@ public interface PLPLTutorClassDetailResponse extends IsIdentify, HasOrderNumber
     String getTeacherTutor();
     String getStudentTutor();
     String getRoom();
+    String getLink();
     String getShift();
     Long getStartTime();
     Long getEndTime();

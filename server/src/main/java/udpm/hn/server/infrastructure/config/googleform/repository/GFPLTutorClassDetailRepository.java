@@ -1,4 +1,4 @@
-package udpm.hn.server.core.planner.plan.repository;
+package udpm.hn.server.infrastructure.config.googleform.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +11,7 @@ import udpm.hn.server.repository.TutorClassDetailRepository;
 import java.util.List;
 
 @Repository
-public interface PLPLTutorClassDetailRepository extends TutorClassDetailRepository {
+public interface GFPLTutorClassDetailRepository extends TutorClassDetailRepository {
 
     @Query(value = """
             SELECT
@@ -96,4 +96,5 @@ public interface PLPLTutorClassDetailRepository extends TutorClassDetailReposito
             """,
             nativeQuery = true)
     List<PLPLTutorClassDetailResponse> getDataTutorClassDetail(String planId);
+
 }
