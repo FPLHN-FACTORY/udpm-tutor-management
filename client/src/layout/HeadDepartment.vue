@@ -1,13 +1,26 @@
 <script lang="ts" setup>
-import {MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined,HistoryOutlined, UserSwitchOutlined} from "@ant-design/icons-vue";
-import { computed, ref } from "vue";
-import { useRoute } from "vue-router";
-import { useAuthStore } from "@/stores/auth.ts";
 import TutorNotification from "@/components/ui/TutorNotification/TutorNotification.vue";
+import { ROUTES_CONSTANTS } from "@/constants/path";
+import { useAuthStore } from "@/stores/auth.ts";
+import {
+  HistoryOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UserSwitchOutlined,
+} from "@ant-design/icons-vue";
+import { computed, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+
 const collapsed = ref<boolean>(false);
+
 const route = useRoute();
+
+const router = useRouter();
+
 const auth = useAuthStore();
+
 const userInfo = computed(() => auth.user);
+
 const itemsHeadDepartment = [
   {
     key: "1",
@@ -36,6 +49,11 @@ const selectedKeys = computed(() => {
   );
   return selectedItem ? [selectedItem.key] : [];
 });
+
+const handleLogout = () => {
+  auth.logout();
+  router.push(ROUTES_CONSTANTS.LOGIN.path);
+};
 </script>
 
 <template>
@@ -64,17 +82,17 @@ const selectedKeys = computed(() => {
         <div class="user-info flex items-center justify-between">
           <div class="cursor-pointer" @click="collapsed = !collapsed">
             <component
-                :is="collapsed ? MenuUnfoldOutlined : MenuFoldOutlined"
-                class="text-xl"
+              :is="collapsed ? MenuUnfoldOutlined : MenuFoldOutlined"
+              class="text-xl"
             />
           </div>
           <div class="flex gap-x-2 items-center">
             <a-dropdown placement="bottomRight" arrow>
               <div class="flex items-center cursor-pointer">
                 <a-avatar
-                    v-if="userInfo?.pictureUrl"
-                    :src="userInfo?.pictureUrl"
-                    size="large"
+                  v-if="userInfo?.pictureUrl"
+                  :src="userInfo?.pictureUrl"
+                  size="large"
                 >
                   {{ userInfo?.fullName[0] }}
                 </a-avatar>

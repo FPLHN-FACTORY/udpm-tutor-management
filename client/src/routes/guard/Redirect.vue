@@ -4,7 +4,8 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
+import { ROUTES_CONSTANTS } from "@/constants/path";
 import { useAuthStore } from "@/stores/auth";
 import { getUserInformation } from "@/utils/token.helper";
 import { onMounted } from "vue";
@@ -32,10 +33,10 @@ onMounted(() => {
       refreshToken,
     });
 
-    router.push({ name: "role-switch" });
+    router.push({ name: ROUTES_CONSTANTS.ROLE_SWITCH.name });
     return;
   }
-  router.push({ name: "login" });
+  router.push({ name: ROUTES_CONSTANTS.LOGIN.name });
 });
 </script>
 

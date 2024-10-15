@@ -1,4 +1,5 @@
 import { DecodedToken, UserInformation } from "@/types/auth.type";
+import dayjs, { Dayjs } from "dayjs";
 import { jwtDecode } from "jwt-decode";
 
 export const getUserInformation = (token: string): UserInformation => {
@@ -27,12 +28,12 @@ export const getRolesUser = (token: string): string[] => {
   return decoded.rolesCode;
 };
 
-export const getExpireTime = (token: string): number => {
+export const getExpireTime = (token: string): Dayjs => {
   const decoded = jwtDecode<DecodedToken>(token);
-  return decoded.exp;
+  return dayjs(decoded.exp);
 };
 
 export const isTokenExpired = (token: string): boolean => {
   const expireTime = getExpireTime(token);
-  return Date.now() >= expireTime * 1000;
+  return dayjs().isAfter(expireTime);
 };

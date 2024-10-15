@@ -41,10 +41,6 @@ import logo from "/images/Logo_FPT.png";
 const isLoginProcessing = ref(false);
 
 const handleLogin = () => {
-  console.log(
-    "URL_OAUTH2_GOOGLE + URL_FRONTEND",
-    URL_OAUTH2_GOOGLE + URL_FRONTEND
-  );
   window.location.href = URL_OAUTH2_GOOGLE + URL_FRONTEND;
 };
 
