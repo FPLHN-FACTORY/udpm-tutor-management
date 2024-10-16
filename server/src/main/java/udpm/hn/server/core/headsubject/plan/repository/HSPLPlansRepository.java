@@ -49,7 +49,7 @@ public interface HSPLPlansRepository extends PlanRepository {
                 SELECT tc.plan_id, COUNT(*) AS numberSubjects
                 FROM tutor_class tc
                 GROUP BY tc.plan_id
-            ) tc ON tc.plan_id = pl.id 
+            ) tc ON tc.plan_id = pl.id
             WHERE
                 s.id = :#{#request.semesterId}
                 AND (:#{#request.facilityCode} IS NULL OR f.code LIKE :#{#request.facilityCode})

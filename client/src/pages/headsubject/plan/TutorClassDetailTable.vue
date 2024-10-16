@@ -51,14 +51,6 @@
                 disabled
             />
           </div>
-          <div v-else-if="column.key === 'time'">
-            <a-range-picker
-                :value="[record.startTime ? dayjs(record.startTime) : null, record.endTime ? dayjs(record.endTime) : null]"
-                :placeholder="['Ngày bắt đầu', 'Ngày kết thúc']"
-                :format="'DD/MM/YYYY'"
-                disabled
-            />
-          </div>
           <div v-else-if="column.key === 'studentTutor'">
             <a-select
                 v-model:value="record.studentTutor"
@@ -108,7 +100,6 @@ import { Modal } from "ant-design-vue";
 import { toast } from "vue3-toastify";
 import { ERROR_MESSAGE } from "@/constants/message.constant.ts";
 import {FormatCommonOptionsResponse} from "@/services/api/common.api.ts";
-import dayjs from "dayjs";
 
 const props = defineProps({
   dataSource: Array as () => TutorClassDetailResponse[],
@@ -168,13 +159,6 @@ const columnsTutorClassDetail = computed(() => [
     key: "room",
     ellipsis: true,
     width: "80px",
-  },
-  {
-    title: "Thời gian",
-    dataIndex: "time",
-    key: "time",
-    ellipsis: true,
-    width: "200px",
   },
   ...(props.canUpdate ? [] : [
     {

@@ -24,8 +24,8 @@
             </a-tooltip>
           </div>
           <div v-if="column.key === 'format'" class="text-center">
-            <a-tag v-if="record.format === 0" color="success">ONLINE</a-tag>
-            <a-tag v-else-if="record.format === 1" color="warning">OFFLINE</a-tag>
+            <a-tag v-if="record.format === 'ONLINE'" color="success">ONLINE</a-tag>
+            <a-tag v-else-if="record.format === 'OFFLINE'" color="warning">OFFLINE</a-tag>
             <a-tag v-else color="error">CHƯA PHÂN LỚP</a-tag>
           </div>
         </template>

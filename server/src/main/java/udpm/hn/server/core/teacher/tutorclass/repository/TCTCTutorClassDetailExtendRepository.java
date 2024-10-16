@@ -4,5 +4,5 @@ import org.springframework.stereotype.Repository;
 import udpm.hn.server.repository.TutorClassDetailRepository;
 
 @Repository
-public interface TcTcTutorClassDetailExtendRepository extends TutorClassDetailRepository {
+public interface TCTCTutorClassDetailExtendRepository extends TutorClassDetailRepository {
 }

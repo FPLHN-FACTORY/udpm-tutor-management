@@ -7,12 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.core.planner.plan.model.response.PLPLTutorClassDetailResponse;
-import udpm.hn.server.core.planner.plan.repository.PLPLStaffsRepository;
 import udpm.hn.server.entity.Block;
 import udpm.hn.server.entity.Plan;
 import udpm.hn.server.entity.Semester;
 import udpm.hn.server.entity.Staff;
 import udpm.hn.server.infrastructure.config.googleform.repository.GFPLPlansRepository;
+import udpm.hn.server.infrastructure.config.googleform.repository.GFPLStaffsRepository;
 import udpm.hn.server.infrastructure.config.googleform.repository.GFPLTutorClassDetailRepository;
 import udpm.hn.server.infrastructure.constant.PlanStatus;
 import udpm.hn.server.utils.UserContextHelper;
@@ -33,7 +33,7 @@ public class GoogleFormService {
 
     @Value("${google.app-script}")
     private String googleAppScript;
-    private final PLPLStaffsRepository pLPLStaffsRepository;
+    private final GFPLStaffsRepository pLPLStaffsRepository;
     private final GFPLTutorClassDetailRepository tutorClassDetailRepository;
     private final GFPLPlansRepository pLPLPlansRepository;
 

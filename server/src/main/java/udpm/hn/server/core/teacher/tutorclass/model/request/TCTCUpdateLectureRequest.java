@@ -7,10 +7,14 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class TCTCUpdateTutorClassDetailRequest {
+public class TCTCUpdateLectureRequest {
 
     private String id;
 
     private String shift;
+
+    private String format;
+
+    private Long startTime;
 
 }

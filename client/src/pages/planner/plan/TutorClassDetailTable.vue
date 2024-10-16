@@ -37,6 +37,7 @@
               style="width: 100%"
               :options="studentOption"
               :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
+              :bordered="false"
               :disabled="canUpdate"
           >
           </a-select>
@@ -49,6 +50,7 @@
               :options="teacherOption"
               :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
               style="width: 100%"
+              :bordered="false"
               disabled
           />
         </div>
@@ -60,6 +62,7 @@
               :options="shiftOptions"
               :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
               style="width: 100%"
+              :bordered="false"
               disabled
           />
         </div>
@@ -77,14 +80,6 @@
               :disabled="canUpdate"
           />
         </div>
-        <div v-else-if="column.key === 'time'">
-          <a-range-picker
-              :value="[record.startTime ? dayjs(record.startTime) : null, record.endTime ? dayjs(record.endTime) : null]"
-              :placeholder="['Ngày bắt đầu', 'Ngày kết thúc']"
-              :format="'DD/MM/YYYY'"
-              disabled
-          />
-        </div>
       </template>
     </a-table>
   </div>
@@ -100,7 +95,6 @@ import { ERROR_MESSAGE } from "@/constants/message.constant.ts";
 import { FormatCommonOptionsResponse } from "@/services/api/common.api.ts";
 import { confirmModal } from "@/utils/common.helper.ts";
 import {PlusCircleOutlined} from "@ant-design/icons-vue";
-import dayjs from "dayjs";
 
 const props = defineProps({
   dataSource: {
@@ -162,6 +156,7 @@ const { mutate: updateStudentPlan } = useUpdateStudentPlan();
 
 const rowSelection = ref({
   onChange: (selectedRowKeys: (string | number)[], selectedRows: DataItem[]) => {
+    console.log(selectedRowKeys);
     selectedIds.value = selectedRows.map(record => record.id);
   },
 });

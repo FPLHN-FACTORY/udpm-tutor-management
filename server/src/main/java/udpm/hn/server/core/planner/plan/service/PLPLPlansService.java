@@ -1,13 +1,11 @@
 package udpm.hn.server.core.planner.plan.service;
 
 import udpm.hn.server.core.common.base.ResponseObject;
-import udpm.hn.server.core.planner.plan.model.request.PLPLCreateGoogleFormPlanRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLCreatePlanRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLPlanInfoRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLPlanListRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLTutorListRequest;
 import udpm.hn.server.core.planner.plan.model.request.PLPLUpdatePlanRequest;
-import udpm.hn.server.entity.Plan;
 
 public interface PLPLPlansService {
 

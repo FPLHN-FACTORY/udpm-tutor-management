@@ -156,7 +156,6 @@ const handleApprovePlan = async (id: string) => {
 
 const handleStartPlan = async (id: string) => {
   const message = 'Bạn chắc chắn muốn bắt đầu triển khai kế hoạch này chứ!'; // Thông điệp xác nhận
-
   confirmModal(message, () => { // Thêm async ở đây
     try {
       startPlan(id, {

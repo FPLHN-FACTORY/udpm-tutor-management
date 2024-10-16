@@ -142,6 +142,17 @@ export const getTagStatus = (status: string): string => {
   }
 };
 
+export const getTagFormat = (status: string): string => {
+  switch (status) {
+    case "ONLINE":
+      return "success";
+    case "OFFLINE":
+      return "warning";
+    default:
+      return "default";
+  }
+};
+
 export const formatBlockName = (blockName: string): string => {
   return blockName.replace(/^BLOCK_/, "Block ");
 };

@@ -8,10 +8,12 @@ import udpm.hn.server.core.common.base.PageableRequest;
 @Getter
 @Setter
 @ToString
-public class TutorClassListRequest extends PageableRequest {
+public class TCTCTutorClassListRequest extends PageableRequest {
 
     private String classCode;
 
     private String subjectId;
+
+    private String teacherId;
 
 }

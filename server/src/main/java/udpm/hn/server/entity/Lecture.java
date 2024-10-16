@@ -13,9 +13,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Nationalized;
 import udpm.hn.server.entity.base.PrimaryEntity;
 import udpm.hn.server.infrastructure.constant.EntityProperties;
-import udpm.hn.server.infrastructure.constant.LectureType;
+import udpm.hn.server.infrastructure.constant.Format;
+import udpm.hn.server.infrastructure.constant.LectureStatus;
 import udpm.hn.server.infrastructure.constant.Shift;
 
 import java.io.Serializable;
@@ -37,6 +39,9 @@ public class Lecture extends PrimaryEntity implements Serializable {
     @Column(name = "order_number")
     private Integer orderNumber;
 
+    @Column(name = "name")
+    private String name;
+
     @Column(name = "lecture_content", length = EntityProperties.LENGTH_CONTENT)
     private String lectureContent;
 
@@ -52,12 +57,17 @@ public class Lecture extends PrimaryEntity implements Serializable {
     @Column(name = "evidence_link", length = EntityProperties.LENGTH_URL)
     private String evidenceLink;
 
-    @Column(name = "lecture_type")
+    @Column(name = "format")
     @Enumerated(EnumType.STRING)
-    private LectureType lectureType;
+    private Format format;
 
     @Column(name = "shift")
     @Enumerated(EnumType.STRING)
     private Shift shift;
+
+    @Column(name = "lecture_status")
+    @Nationalized
+    @Enumerated(EnumType.STRING)
+    private LectureStatus lectureStatus;
 
 }

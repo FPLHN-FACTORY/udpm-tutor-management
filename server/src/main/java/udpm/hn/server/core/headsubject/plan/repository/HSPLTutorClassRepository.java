@@ -45,7 +45,6 @@ public interface HSPLTutorClassRepository extends TutorClassRepository {
                  sj.code AS subjectCode,
                  sj.name AS subjectName,
                  CONCAT(st.staff_code, ' - ', st.name) AS headSubject,
-                 COALESCE(tc.tutor_class_status, 0) AS status,
                  COALESCE(tcd.numberClasses, 0) AS numberClasses,
                  COALESCE(tc.number_of_lectures, 0) AS numberLectures,
                  tc.format AS format
@@ -73,7 +72,6 @@ public interface HSPLTutorClassRepository extends TutorClassRepository {
                  sj.id AS subjectId,
                  sj.name AS subjectName,
                  CONCAT(st.staff_code, ' - ', st.name) AS headSubject,
-                 COALESCE(tc.tutor_class_status, 0) AS status,
                  COALESCE(tcd.numberClasses, 0) AS numberClasses,
                  COALESCE(tc.number_of_lectures, 0) AS numberLectures,
                  tc.format AS format

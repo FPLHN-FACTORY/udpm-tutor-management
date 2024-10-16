@@ -11,11 +11,11 @@ export interface ParamsGetPlans extends PaginationParams {
 }
 
 export interface ParamsGetListPlaner extends PaginationParams {
-  currentSemesterId: string | null,
-  currentBlockId: string | null,
-  currentFacilityCode: string | null,
-  currentDepartmentCode: string | null,
-  currentUserId: string | null,
+  currentSemesterId?: string | null,
+  currentBlockId?: string | null,
+  currentFacilityCode?: string | null,
+  currentDepartmentCode?: string | null,
+  currentUserId?: string | null,
 }
 
 export interface AssignedPlannerRequest {

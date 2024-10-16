@@ -25,8 +25,8 @@ import java.io.Serializable;
 public class ClassStudentJoined extends PrimaryEntity implements Serializable {
 
     @ManyToOne
-    @JoinColumn(name = "tutor_class_id")
-    private TutorClass tutorClass;
+    @JoinColumn(name = "tutor_class_detail_id")
+    private TutorClassDetail tutorClassDetail;
 
     @ManyToOne
     @JoinColumn(name = "student_id")
