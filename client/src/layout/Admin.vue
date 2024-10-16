@@ -4,7 +4,6 @@ import {
   BookOutlined,
   BuildOutlined,
   CalendarOutlined,
-  HomeOutlined,
   IdcardOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -45,12 +44,6 @@ const itemsAdmin = computed(() => [
     icon: BookOutlined,
     text: "Quản lý môn học",
     path: "/admin/subject",
-  },
-  {
-    key: "5",
-    icon: HomeOutlined,
-    text: "Quản lý cơ sở",
-    path: "/admin/facility",
   },
   {
     key: "6",
@@ -115,8 +108,8 @@ const handleLogout = () => {
               class="text-xl"
             />
           </div>
-          <a-dropdown placement="bottomRight" arrow>
-            <div class="flex items-center cursor-pointer">
+          <a-dropdown arrow placement="bottomCenter">
+            <div class="flex items-center cursor-pointer h-8">
               <a-avatar
                 v-if="userInfo?.pictureUrl"
                 :src="userInfo?.pictureUrl"

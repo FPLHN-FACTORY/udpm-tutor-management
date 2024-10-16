@@ -86,8 +86,8 @@ const handleLogout = () => {
             />
           </div>
           <div class="flex gap-x-2 items-center">
-            <a-dropdown placement="bottomRight" arrow>
-              <div class="flex items-center cursor-pointer">
+            <a-dropdown placement="bottomCenter" arrow>
+              <div class="flex items-center cursor-pointer h-8">
                 <a-avatar
                   v-if="userInfo?.pictureUrl"
                   :src="userInfo?.pictureUrl"

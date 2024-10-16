@@ -15,10 +15,6 @@ export const ROUTES_CONSTANTS = {
         path: "department",
         name: "department",
       },
-      FACILITY: {
-        path: "facility",
-        name: "facility",
-      },
       ROLE: {
         path: "role",
         name: "role",
@@ -60,7 +56,7 @@ export const ROUTES_CONSTANTS = {
       PLAN_LOG_HISTORY: {
         path: "plan-log",
         name: "hDPplanLogHistory",
-      }
+      },
     },
   },
   PLANNER: {
@@ -95,8 +91,8 @@ export const ROUTES_CONSTANTS = {
       },
     },
   },
-  SYSTEM_LOG: {
-    path: "/log-system",
+  SUPER_ADMIN: {
+    path: "/super-admin",
     name: "logSystem",
     children: {
       OPERATION_LOG: {
@@ -106,6 +102,10 @@ export const ROUTES_CONSTANTS = {
       USER_ACTIVITY_LOG: {
         path: "user-log",
         name: "userActivityLog",
+      },
+      FACILITY: {
+        path: "facility",
+        name: "facility",
       },
     },
   },
