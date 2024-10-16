@@ -8,7 +8,7 @@ import udpm.hn.server.repository.RoleRepository;
 import java.util.List;
 
 @Repository
-public interface RoleCustomRepository extends RoleRepository {
+public interface ConfigRoleCustomRepository extends RoleRepository {
 
     @Query(
             value = """
@@ -16,11 +16,18 @@ public interface RoleCustomRepository extends RoleRepository {
                     FROM role r
                     LEFT JOIN facility f ON f.id = r.id_facility
                     WHERE r.status = 0
-                    AND r.id_facility LIKE :idFacility
                     """,
             nativeQuery = true
     )
     List<String> findAllByFacilityId(String idFacility);
+
+    @Query(
+            value = """
+                     SELECT DISTINCT r
+                     FROM Role r
+                     WHERE r.name = :roleName
+                    """)
+    List<Role> findAllByRoleName(String roleName);
 
     @Query(
             value = """

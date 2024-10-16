@@ -4,7 +4,8 @@ import { useAuthStore } from "@/stores/auth.ts";
 import {
   HistoryOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined, UserOutlined,
+  MenuUnfoldOutlined,
+  UserOutlined,
   UserSwitchOutlined,
 } from "@ant-design/icons-vue";
 import { computed, ref } from "vue";
@@ -71,7 +72,7 @@ const handleLogout = () => {
         </a-menu-item>
       </a-menu>
     </a-layout-sider>
-    <a-layout>
+    <a-layout class="gap-4">
       <a-layout-header class="bg-white pl-3 mt-1">
         <div class="user-info flex items-center justify-between">
           <div class="cursor-pointer" @click="collapsed = !collapsed">
@@ -106,10 +107,8 @@ const handleLogout = () => {
           </div>
         </div>
       </a-layout-header>
-      <a-layout-content class="mx-4">
-        <div class="min-h-[calc(100vh-9.5rem)] bg-white">
-          <router-view />
-        </div>
+      <a-layout-content class="mx-4 bg-white">
+        <router-view />
       </a-layout-content>
       <a-layout-footer class="text-center">
         FPL - UDPM ©2021 Created by BIT

@@ -1,8 +1,13 @@
 <script lang="ts" setup>
-import {MenuFoldOutlined, MenuUnfoldOutlined,HistoryOutlined,LoginOutlined,ScheduleOutlined} from "@ant-design/icons-vue";
+import { useAuthStore } from "@/stores/auth.ts";
+import {
+  HistoryOutlined,
+  LoginOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+} from "@ant-design/icons-vue";
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import {useAuthStore} from "@/stores/auth.ts";
 
 const auth = useAuthStore();
 const userInfo = computed(() => auth.user);
@@ -43,7 +48,6 @@ const handleLogout = () => {
   auth.logout();
   router.push("/login");
 };
-
 </script>
 
 <template>
@@ -52,9 +56,9 @@ const handleLogout = () => {
       <div class="logo">
         <a href="/" class="logo">
           <img
-              src="/images/logo-udpm-dark.png"
-              alt="logo-udpm"
-              class="p-2 mt-3"
+            src="/images/logo-udpm-dark.png"
+            alt="logo-udpm"
+            class="p-2 mt-3"
           />
         </a>
       </div>
@@ -72,16 +76,16 @@ const handleLogout = () => {
         <div class="user-info flex items-center justify-between">
           <div class="cursor-pointer" @click="collapsed = !collapsed">
             <component
-                :is="collapsed ? MenuUnfoldOutlined : MenuFoldOutlined"
-                class="text-xl"
+              :is="collapsed ? MenuUnfoldOutlined : MenuFoldOutlined"
+              class="text-xl"
             />
           </div>
           <a-dropdown placement="bottomRight" arrow>
             <div class="flex items-center cursor-pointer">
               <a-avatar
-                  v-if="userInfo?.pictureUrl"
-                  :src="userInfo?.pictureUrl"
-                  size="large"
+                v-if="userInfo?.pictureUrl"
+                :src="userInfo?.pictureUrl"
+                size="large"
               >
                 {{ userInfo?.fullName[0] }}
               </a-avatar>

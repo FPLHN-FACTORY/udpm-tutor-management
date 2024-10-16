@@ -1,6 +1,8 @@
 <template>
   <div class="redirect-container">
-    <p class="redirect-message">Redirecting...</p>
+    <p class="redirect-message">
+      <a-spin size="large" />
+    </p>
   </div>
 </template>
 

@@ -8,6 +8,7 @@ import org.apache.poi.ss.usermodel.DataValidation;
 import org.apache.poi.ss.usermodel.DataValidationConstraint;
 import org.apache.poi.ss.usermodel.DataValidationHelper;
 import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -15,11 +16,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import udpm.hn.server.core.common.base.ResponseObject;
-import udpm.hn.server.infrastructure.config.job.staff.repository.DepartmentFacilityCustomRepository;
-import udpm.hn.server.infrastructure.config.job.staff.repository.RoleCustomRepository;
-import udpm.hn.server.infrastructure.config.job.staff.service.ExcelFileStaffService;
+import udpm.hn.server.infrastructure.config.job.staff.repository.ConfigDepartmentFacilityCustomRepository;
+import udpm.hn.server.infrastructure.config.job.staff.repository.ConfigRoleCustomRepository;
 import udpm.hn.server.infrastructure.constant.SessionConstant;
 
 import java.io.ByteArrayInputStream;
@@ -27,36 +27,41 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-@Service
+@Component
 @Slf4j
-public class ExcelFileStaffServiceImpl implements ExcelFileStaffService {
+public class DownloadStaffTemplate {
 
-    private final DepartmentFacilityCustomRepository departmentFacilityRepository;
+    private final ConfigDepartmentFacilityCustomRepository departmentFacilityRepository;
 
-    private final RoleCustomRepository roleRepository;
+    private final ConfigRoleCustomRepository roleRepository;
 
     private final HttpSession httpSession;
 
-    public ExcelFileStaffServiceImpl(DepartmentFacilityCustomRepository departmentFacilityRepository,
-                                     RoleCustomRepository roleRepository,
-                                     HttpSession httpSession) {
+    public DownloadStaffTemplate(
+            ConfigDepartmentFacilityCustomRepository departmentFacilityRepository,
+            ConfigRoleCustomRepository roleRepository,
+            HttpSession httpSession
+    ) {
         this.departmentFacilityRepository = departmentFacilityRepository;
         this.roleRepository = roleRepository;
         this.httpSession = httpSession;
     }
 
-    @Override
-    public ResponseObject<ByteArrayInputStream> downloadTemplate() {
+    public ResponseObject<?> downloadTemplate() {
 
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Template Thông Tin Nhân Viên");
 
             Row row = sheet.createRow(0);
 
+            Font font = workbook.createFont();
+            font.setColor(IndexedColors.WHITE.getIndex());
+
             CellStyle headerCellStyle = workbook.createCellStyle();
             headerCellStyle.setLocked(true);
-            headerCellStyle.setFillForegroundColor(IndexedColors.LAVENDER.getIndex());
+            headerCellStyle.setFillForegroundColor(IndexedColors.BLACK.getIndex());
             headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerCellStyle.setFont(font);
             headerCellStyle.setWrapText(true);
 
             Cell cell = row.createCell(0);
@@ -80,30 +85,55 @@ public class ExcelFileStaffServiceImpl implements ExcelFileStaffService {
             cell.setCellStyle(headerCellStyle);
 
             cell = row.createCell(5);
-            cell.setCellValue("Bộ Môn");
+            cell.setCellValue("Bộ Môn - Chuyên Ngành");
             cell.setCellStyle(headerCellStyle);
 
             cell = row.createCell(6);
             cell.setCellValue("Chức vụ");
             cell.setCellStyle(headerCellStyle);
 
-            String facilityId = (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID) != null ? (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID) : "12345";
-            List<String> validDepartmentFacility = departmentFacilityRepository.findAllByIdFacility(facilityId);
-            List<String> validRole = roleRepository.findAllByFacilityId(facilityId);
-//            if(validDepartmentFacility.isEmpty()){
-//                throw new RuntimeException("DepartmentFacility is empty");
-//            }
-//
-//            if(validRole.isEmpty() || validRole.size() == 0){
-//                throw new RuntimeException("RoleFacility is empty");
-//            }
-            CellRangeAddressList dataDepartmentFacility = new CellRangeAddressList(1, 1000, 5, 5);
-            CellRangeAddressList dataRole = new CellRangeAddressList(1, 1000, 6, 6);
+            List<String> validDepartmentFacility = departmentFacilityRepository.findAllByIdFacility(
+                    (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID)
+            );
+
+            if (validDepartmentFacility.isEmpty()) {
+                return ResponseObject.errorForward(
+                        "Không có dữ liệu bộ môn - chuyên ngành",
+                        HttpStatus.BAD_REQUEST
+                );
+            }
+
+            List<String> validRole = roleRepository.findAllByFacilityId(
+                    (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID)
+            );
+
+            if (validRole.isEmpty()) {
+                return ResponseObject.errorForward(
+                        "Không có dữ liệu chức vụ",
+                        HttpStatus.BAD_REQUEST
+                );
+            }
+
+            CellRangeAddressList dataDepartmentFacility = new CellRangeAddressList(
+                    1,
+                    1000,
+                    5,
+                    5
+            );
+            CellRangeAddressList dataRole = new CellRangeAddressList(
+                    1,
+                    1000,
+                    6,
+                    6
+            );
 
             DataValidationHelper validationHelper = sheet.getDataValidationHelper();
 
-            DataValidationConstraint constraintDepartmentFacility = validationHelper.createExplicitListConstraint(validDepartmentFacility.toArray(new String[0]));
-            DataValidationConstraint constraintRole = validationHelper.createExplicitListConstraint(validRole.toArray(new String[0]));
+            DataValidationConstraint constraintDepartmentFacility = validationHelper.createExplicitListConstraint(
+                    validDepartmentFacility.toArray(new String[0]));
+            DataValidationConstraint constraintRole = validationHelper.createExplicitListConstraint(
+                    validRole.toArray(new String[0])
+            );
 
             DataValidation dataValidationDepartmentFacility = validationHelper.createValidation(constraintDepartmentFacility, dataDepartmentFacility);
             DataValidation dataValidationRole = validationHelper.createValidation(constraintRole, dataRole);
@@ -135,8 +165,6 @@ public class ExcelFileStaffServiceImpl implements ExcelFileStaffService {
         } catch (IOException ex) {
             log.error("Error during export Excel file", ex);
             return null;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 

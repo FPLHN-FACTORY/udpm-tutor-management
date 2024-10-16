@@ -18,6 +18,8 @@ public interface UploadStaffService {
 
     void deleteAll();
 
+    void delete(String filename);
+
     Stream<Path> loadAll();
 
     ResponseObject<Optional<String>> getExtensionByStringHandling(String filename);
