@@ -16,8 +16,8 @@ import udpm.hn.server.core.admin.departments.department.model.request.FindDepart
 import udpm.hn.server.core.admin.departments.department.model.response.DDepartmentResponse;
 import udpm.hn.server.core.admin.departments.department.repository.DepartmentExtendRepository;
 import udpm.hn.server.core.admin.departments.department.service.DepartmentService;
-import udpm.hn.server.core.operationlogs.model.request.OperationLogsRequest;
-import udpm.hn.server.core.operationlogs.service.OperationLogsService;
+import udpm.hn.server.core.superadmin.operation.model.request.OperationLogsRequest;
+import udpm.hn.server.core.superadmin.operation.service.OperationLogsService;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.entity.Department;

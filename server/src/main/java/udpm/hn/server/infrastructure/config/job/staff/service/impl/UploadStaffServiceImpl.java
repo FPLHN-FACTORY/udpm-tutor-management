@@ -10,7 +10,7 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.infrastructure.config.job.staff.service.UploadStaffService;
-import udpm.hn.server.infrastructure.constant.GoogleDriveConstant;
+import udpm.hn.server.infrastructure.constant.FileInfoConstant;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -29,13 +29,13 @@ import java.util.stream.Stream;
 public class UploadStaffServiceImpl implements UploadStaffService {
 
     @Value("${file.upload.staff.path}")
-    public String FILE_UPLOAD_CLASS_SUBJECT_PATH;
+    public String FILE_UPLOAD_STAFF_PATH;
 
     private Path root;
 
     @PostConstruct
     public void init() {
-        root = Paths.get(FILE_UPLOAD_CLASS_SUBJECT_PATH);
+        root = Paths.get(FILE_UPLOAD_STAFF_PATH);
         try {
             Files.createDirectories(root);
         } catch (IOException e) {
@@ -46,8 +46,8 @@ public class UploadStaffServiceImpl implements UploadStaffService {
     @Override
     public String save(MultipartFile file) {
         try {
-            if (file.getSize() > GoogleDriveConstant.MAX_FILE_SIZE) {
-                throw new RuntimeException(GoogleDriveConstant.MAX_FILE_SIZE_MESSAGE);
+            if (file.getSize() > FileInfoConstant.MAX_FILE_SIZE) {
+                throw new RuntimeException(FileInfoConstant.MAX_FILE_SIZE_MESSAGE);
             }
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             String fileExtension = getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
@@ -109,6 +109,15 @@ public class UploadStaffServiceImpl implements UploadStaffService {
         return new ResponseObject<>(Optional.ofNullable(filename)
                 .filter(f -> f.contains("."))
                 .map(f -> f.substring(filename.lastIndexOf(".") + 1)), HttpStatus.OK, "get extension successfully");
+    }
+
+    public void delete(String filename) {
+        try {
+            Files.delete(root.resolve(filename));
+        } catch (IOException e) {
+            e.printStackTrace(System.out);
+            throw new RuntimeException("Could not delete the file!");
+        }
     }
 
 }

@@ -54,6 +54,15 @@ public class SecurityConfig {
     @Value("${frontend.url}")
     private String allowedOrigin;
 
+    @Value("${ws.registerEndpoint}")
+    private String WEB_SOCKET_ENDPOINT;
+
+    @Value("${ws.applicationPrefix}")
+    private String WEB_SOCKET_APP_PREFIX;
+
+    @Value("${ws.topicPrefix}")
+    private String WEB_SOCKET_TOPIC_PREFIX;
+
     @Bean
     public TokenAuthenticationFilter tokenAuthenticationFilter() {
         return new TokenAuthenticationFilter();
@@ -100,19 +109,7 @@ public class SecurityConfig {
         http.formLogin(AbstractHttpConfigurer::disable);
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.exceptionHandling(e -> e.authenticationEntryPoint(new RestAuthenticationEntryPoint()));
-        http.authorizeHttpRequests(auth -> auth.requestMatchers(
-                        "/",
-                        "/error",
-                        "/favicon.ico",
-                        "/*/*.png",
-                        "/*/*.gif",
-                        "/*/*.svg",
-                        "/*/*.jpg",
-                        "/*/*.html",
-                        "/*/*.css",
-                        "/*/*.js"
-                )
-                .permitAll());
+        // Public APIs
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
                                 Helper.appendWildcard(MappingConstants.API_AUTH_PREFIX),
@@ -123,16 +120,20 @@ public class SecurityConfig {
         );
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
-                                Helper.appendWildcard(MappingConstants.API_COMMON))
+                                Helper.appendWildcard(MappingConstants.API_COMMON),
+                                Helper.appendWildcard(MappingConstants.API_NOTIFICATION)
+                        )
                         .hasAnyAuthority(
                                 Role.ADMIN.name(),
-                                Role.TRUONG_MON.name(),
+                                Role.CHU_NHIEM_BO_MON.name(),
                                 Role.GIANG_VIEN.name(),
-                                Role.SINH_VIEN.name(),
-                                    Role.CHU_NHIEM_BO_MON.name(),
-                                Role.NGUOI_LAP_KE_HOACH.name()
+                                Role.TRUONG_MON.name(),
+                                Role.NGUOI_LAP_KE_HOACH.name(),
+                                Role.SUPER_ADMIN.name(),
+                                Role.SINH_VIEN.name()
                         )
         );
+        // Admin APIs
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
                                 Helper.appendWildcard(MappingConstants.API_ADMIN_DEPARTMENT),
@@ -144,12 +145,60 @@ public class SecurityConfig {
                                 Helper.appendWildcard(MappingConstants.API_ADMIN_DEPARTMENT_FACILITY),
                                 Helper.appendWildcard(MappingConstants.API_ADMIN_STAFF),
                                 Helper.appendWildcard(MappingConstants.API_ADMIN_ROLE),
-                                Helper.appendWildcard(MappingConstants.API_ADMIN_FACILITY)
+                                Helper.appendWildcard(MappingConstants.API_SUPER_ADMIN_FACILITY)
                         )
                         .hasAnyAuthority(Role.ADMIN.name())
         );
-        http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
-        http.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
+        // Head of Department APIs
+        http.authorizeHttpRequests(
+                auth -> auth.requestMatchers(
+                                Helper.appendWildcard(MappingConstants.API_HEAD_DEPARTMENT_HEAD_PLAN),
+                                Helper.appendWildcard(MappingConstants.API_HEAD_DEPARTMENT_HEAD_SUBJECT)
+                        )
+                        .hasAnyAuthority(Role.CHU_NHIEM_BO_MON.name())
+        );
+        // Teacher APIs
+        http.authorizeHttpRequests(
+                auth -> auth.requestMatchers(
+                                Helper.appendWildcard(MappingConstants.API_TEACHER_TUTOR_CLASS)
+                        )
+                        .hasAnyAuthority(Role.GIANG_VIEN.name())
+        );
+        // Head of Subject APIs
+        http.authorizeHttpRequests(
+                auth -> auth.requestMatchers(
+                                Helper.appendWildcard(MappingConstants.API_HEAD_SUBJECT_PLAN),
+                                Helper.appendWildcard(MappingConstants.API_HEAD_SUBJECT_TUTOR_DETAIL)
+                        )
+                        .hasAnyAuthority(Role.TRUONG_MON.name())
+        );
+        // Planner APIs
+        http.authorizeHttpRequests(
+                auth -> auth.requestMatchers(
+                                Helper.appendWildcard(MappingConstants.API_PLANNER_PLAN)
+                        )
+                        .hasAnyAuthority(Role.NGUOI_LAP_KE_HOACH.name())
+        );
+        // Super Admin APIs
+        http.authorizeHttpRequests(
+                auth -> auth.requestMatchers(
+                                Helper.appendWildcard(MappingConstants.API_SUPER_ADMIN_OPERATION_LOG),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_PLAN_LOG_HISTORY),
+                                Helper.appendWildcard(MappingConstants.API_SUPER_ADMIN_USER_ACTIVITY)
+                        )
+                        .hasAnyAuthority(Role.SUPER_ADMIN.name())
+        );
+        // WebSocket
+        http.authorizeHttpRequests(
+                auth -> auth.requestMatchers(
+                                Helper.appendWildcard(WEB_SOCKET_ENDPOINT),
+                                Helper.appendWildcard(WEB_SOCKET_APP_PREFIX),
+                                Helper.appendWildcard(WEB_SOCKET_TOPIC_PREFIX)
+                        )
+                        .permitAll()
+        );
+        http.authorizeHttpRequests(auth -> auth.anyRequest().denyAll());
+        http.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.oauth2Login(oauth2 -> oauth2.authorizationEndpoint(
                         a -> a.baseUri(MappingConstants.PATH_OAUTH2 + "/authorize")
                 )

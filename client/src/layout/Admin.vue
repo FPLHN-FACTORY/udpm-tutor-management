@@ -4,7 +4,6 @@ import {
   BookOutlined,
   BuildOutlined,
   CalendarOutlined,
-  HomeOutlined,
   IdcardOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -45,12 +44,6 @@ const itemsAdmin = computed(() => [
     icon: BookOutlined,
     text: "Quản lý môn học",
     path: "/admin/subject",
-  },
-  {
-    key: "5",
-    icon: HomeOutlined,
-    text: "Quản lý cơ sở",
-    path: "/admin/facility",
   },
   {
     key: "6",
@@ -106,7 +99,7 @@ const handleLogout = () => {
         </a-menu-item>
       </a-menu>
     </a-layout-sider>
-    <a-layout>
+    <a-layout class="gap-4">
       <a-layout-header class="bg-white pl-3 mt-1">
         <div class="user-info flex items-center justify-between">
           <div class="cursor-pointer" @click="collapsed = !collapsed">
@@ -115,8 +108,8 @@ const handleLogout = () => {
               class="text-xl"
             />
           </div>
-          <a-dropdown placement="bottomRight" arrow>
-            <div class="flex items-center cursor-pointer">
+          <a-dropdown arrow placement="bottomCenter">
+            <div class="flex items-center cursor-pointer h-8">
               <a-avatar
                 v-if="userInfo?.pictureUrl"
                 :src="userInfo?.pictureUrl"
@@ -138,10 +131,8 @@ const handleLogout = () => {
           </a-dropdown>
         </div>
       </a-layout-header>
-      <a-layout-content class="mx-4">
-        <div class="min-h-[calc(100vh-9.5rem)] bg-white">
-          <router-view />
-        </div>
+      <a-layout-content class="mx-4 bg-white">
+        <router-view />
       </a-layout-content>
       <a-layout-footer class="text-center">
         FPL - UDPM ©2021 Created by BIT

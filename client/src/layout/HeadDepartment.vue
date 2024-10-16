@@ -1,13 +1,25 @@
 <script lang="ts" setup>
-import {MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined,HistoryOutlined, UserSwitchOutlined} from "@ant-design/icons-vue";
-import { computed, ref } from "vue";
-import { useRoute } from "vue-router";
-import { useAuthStore } from "@/stores/auth.ts";
 import TutorNotification from "@/components/ui/TutorNotification/TutorNotification.vue";
+import { useAuthStore } from "@/stores/auth.ts";
+import {
+  HistoryOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UserSwitchOutlined,
+} from "@ant-design/icons-vue";
+import { computed, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+
 const collapsed = ref<boolean>(false);
+
 const route = useRoute();
+
+const router = useRouter();
+
 const auth = useAuthStore();
+
 const userInfo = computed(() => auth.user);
+
 const itemsHeadDepartment = [
   {
     key: "1",
@@ -36,6 +48,11 @@ const selectedKeys = computed(() => {
   );
   return selectedItem ? [selectedItem.key] : [];
 });
+
+const handleLogout = () => {
+  auth.logout();
+  router.push("/login");
+};
 </script>
 
 <template>
@@ -59,22 +76,22 @@ const selectedKeys = computed(() => {
         </a-menu-item>
       </a-menu>
     </a-layout-sider>
-    <a-layout>
+    <a-layout class="gap-4">
       <a-layout-header class="bg-white pl-3 mt-1">
         <div class="user-info flex items-center justify-between">
           <div class="cursor-pointer" @click="collapsed = !collapsed">
             <component
-                :is="collapsed ? MenuUnfoldOutlined : MenuFoldOutlined"
-                class="text-xl"
+              :is="collapsed ? MenuUnfoldOutlined : MenuFoldOutlined"
+              class="text-xl"
             />
           </div>
           <div class="flex gap-x-2 items-center">
-            <a-dropdown placement="bottomRight" arrow>
-              <div class="flex items-center cursor-pointer">
+            <a-dropdown placement="bottomCenter" arrow>
+              <div class="flex items-center cursor-pointer h-8">
                 <a-avatar
-                    v-if="userInfo?.pictureUrl"
-                    :src="userInfo?.pictureUrl"
-                    size="large"
+                  v-if="userInfo?.pictureUrl"
+                  :src="userInfo?.pictureUrl"
+                  size="large"
                 >
                   {{ userInfo?.fullName[0] }}
                 </a-avatar>
@@ -94,10 +111,8 @@ const selectedKeys = computed(() => {
           </div>
         </div>
       </a-layout-header>
-      <a-layout-content class="mx-4">
-        <div class="min-h-[calc(100vh-9.5rem)] bg-white">
-          <router-view />
-        </div>
+      <a-layout-content class="mx-4 bg-white">
+        <router-view />
       </a-layout-content>
       <a-layout-footer class="text-center">
         FPL - UDPM ©2021 Created by BIT

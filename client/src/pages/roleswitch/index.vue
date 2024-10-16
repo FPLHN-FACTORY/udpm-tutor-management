@@ -35,6 +35,7 @@
 </template>
 
 <script lang="ts" setup>
+import { ROUTES_CONSTANTS } from "@/constants/path";
 import { ROLES } from "@/constants/roles";
 import { useAuthStore } from "@/stores/auth";
 import { computed, onMounted } from "vue";
@@ -45,37 +46,37 @@ const roleMappings = computed(() => [
     code: ROLES.ADMIN,
     displayName: "Admin",
     image: "/images/BanDaoTao.png",
-    route: "/admin",
+    route: ROUTES_CONSTANTS.ADMIN.path,
   },
   {
     code: ROLES.HEAD_DEPARTMENT,
     displayName: "Chủ nhiệm bộ môn",
     image: "/images/TM_CNBM.png",
-    route: "/head-department",
+    route: ROUTES_CONSTANTS.HEAD_DEPARTMENT.path,
   },
   {
-    code: ROLES.PLANER,
+    code: ROLES.PLANNER,
     displayName: "Người lập kế hoạch",
     image: "/images/TM_CNBM.png",
-    route: "/planner",
+    route: ROUTES_CONSTANTS.PLANNER.path,
   },
   {
     code: ROLES.HEAD_SUBJECT,
     displayName: "Trưởng môn",
     image: "/images/TM_CNBM.png",
-    route: "/head-subject",
+    route: ROUTES_CONSTANTS.HEAD_SUBJECT.path,
   },
   {
     code: ROLES.TEACHER,
     displayName: "Giảng viên",
     image: "/images/GV.png",
-    route: "/teacher",
+    route: ROUTES_CONSTANTS.TEACHER.path,
   },
   {
-    code: ROLES.SUPPORTER,
-    displayName: "Hỗ trợ",
+    code: ROLES.SUPER_ADMIN,
+    displayName: "Super Admin",
     image: "/images/GV.png",
-    route: "/log-system",
+    route: ROUTES_CONSTANTS.SUPER_ADMIN.path,
   },
 ]);
 
@@ -96,7 +97,7 @@ const navigateToRole = (role: { route: string }) => {
 
 onMounted(() => {
   if (!authStore.isAuthenticated) {
-    router.push({ name: "login" });
+    router.push({ name: ROUTES_CONSTANTS.LOGIN.name });
   }
 });
 </script>

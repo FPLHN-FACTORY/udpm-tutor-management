@@ -141,7 +141,7 @@ const notificationData = computed(
 const totalNotify = computed(() => totalNotificationData.value?.data || null);
 
 subscribe(WEBSOCKET_TOPIC.NOTIFICATION, (message) => {
-  if (message.role.includes(keyWord)) {
+  if (message.roles.includes(keyWord)) {
     refetchNotificationData();
     refetchCountNotification();
   }

@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 @Getter
 public enum Role {
 
+    SUPER_ADMIN("Super Admin"),
+
     ADMIN("Admin"),
 
     TRUONG_MON("Trưởng Môn"),
