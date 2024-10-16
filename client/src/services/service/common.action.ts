@@ -6,7 +6,13 @@ import {
   getSemesterOptions,
   getStaffByRole,
   ParamsStaffSearchByRole,
-  getSubjectOptions, getStudentTutor
+  getSubjectOptions, getStudentTutor,
+  getRoleOptions,
+  ParamsRoleSearch,
+  ParamsMajorOption,
+  getMajorOptions,
+  ParamsStaffOptions,
+  getStaffOptions
 } from "@/services/api/common.api";
 import { UseQueryReturnType, useQuery } from "@tanstack/vue-query";
 import {Ref} from "vue";
@@ -106,4 +112,46 @@ export const useGetStudentTutorOptions = (
     queryFn: () => getStudentTutor(),
     ...options,
   });
+};
+
+export const useGetRoleOptions = (
+  params: ParamsRoleSearch,
+  options?: any
+): UseQueryReturnType<
+  Awaited<ReturnType<typeof getRoleOptions>>,
+  Error
+> => {
+  return useQuery({
+      queryKey: [queryKey.common.roleOptions],
+      queryFn: () => getRoleOptions(params),
+      ...options,
+  });
+};
+
+export const useGetMajorOptions = (
+  params: Ref<ParamsMajorOption>,
+  options?: any
+): UseQueryReturnType<
+  Awaited<ReturnType<typeof getStaffByRole>>,
+  Error
+> => {
+return useQuery({
+  queryKey: [queryKey.common.majorOptions],
+  queryFn: () => getMajorOptions(params.value),
+  ...options,
+});
+};
+
+export const useGetStaffOptions = (
+  params: Ref<ParamsStaffOptions>,
+  options?: any
+): UseQueryReturnType<
+  Awaited<ReturnType<typeof getStaffOptions>>,
+  Error
+> => {
+return useQuery({
+  queryKey: [queryKey.common.staffOptions],
+  queryFn: () => getStaffOptions(params.value),
+  ...options,
+});
 };

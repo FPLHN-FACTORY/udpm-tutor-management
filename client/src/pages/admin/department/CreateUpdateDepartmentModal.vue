@@ -128,24 +128,35 @@ const handleAddOrUpdate = () => {
     async onOk() {
       try {
         await validate();
-        props.departmentDetail
-          ? updateDepartment({
+        // Tạo biến để giữ thông tin về hành động (cập nhật hay tạo mới)
+        const actionParams = props.departmentDetail
+          ? {
               departmentId: props.departmentDetail.departmentId,
               params: {
                 departmentCode: modelRef.departmentCode,
                 departmentName: modelRef.departmentName,
               },
-            })
-          : createDepartment({
+            }
+          : {
               departmentCode: modelRef.departmentCode,
               departmentName: modelRef.departmentName,
-            });
-        toast.success(
-          props.departmentDetail
-            ? "Cập nhật bộ môn thành công"
-            : "Thêm bộ môn thành công"
-        );
-        emit("handleClose");
+          };
+
+          // Gọi hàm phù hợp dựa vào facilityDetail
+          const action = props.departmentDetail ? updateDepartment : createDepartment;
+          const message = props.departmentDetail ? "Cập nhật bộ môn thành công!" : "Tạo bộ môn thành công!";
+
+          action(actionParams, {
+              onSuccess: () => {
+                  toast.success(message);
+                  handleClose();
+              },
+              onError: (error: any) => {
+                  toast.error(
+                      error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+                  )
+              },
+          })
       } catch (error: any) {
         console.error("🚀 ~ handleAddOrUpdate ~ error:", error);
         toast.error(

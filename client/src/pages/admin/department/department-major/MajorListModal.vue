@@ -27,6 +27,14 @@
           :total-pages="totalPages"
           @update:pagination-params="handlePaginationChange"
           @syncSuccess="refetchMajorData"
+          @handle-open-modal-update="handleOpenUpdateModal"
+          @handle-open-modal-add="handleOpenAddModal"
+        />
+        <create-update-major-modal
+          :open="openModalMajor"
+          :major-detail="majorDetail"
+          :department-id="departmentId"
+          @handle-close="handleCloseMajorModal"
         />
       </div>
     </a-modal>
@@ -35,12 +43,13 @@
 
 <script lang="ts" setup>
 import { defineEmits, defineProps, ref, watch, computed } from 'vue';
-import MajorFilter from '@/pages/admin/department/MajorFilter.vue';
-import MajorTable from '@/pages/admin/department/MajorTable.vue';
-import { ParamsGetMajor } from '@/services/api/admin/major.api';
+import MajorFilter from './MajorFilter.vue';
+import MajorTable from './MajorTable.vue';
+import { MajorResponse, ParamsGetMajor } from '@/services/api/admin/major.api';
 import { useGetMajors } from '@/services/service/admin/major.action';
 import { keepPreviousData } from '@tanstack/vue-query';
 import { ParamsGetDepartment } from '@/services/api/admin/department.api';
+import CreateUpdateMajorModal from './CreateUpdateMajorModal.vue';
 
 const emit = defineEmits(['handleClose']);
 
@@ -48,6 +57,24 @@ const props = defineProps({
   open: Boolean,
   departmentId: Object as () => any,
 });
+
+const majorDetail = ref<MajorResponse | null>(null)
+const openModalMajor = ref<boolean>(false)
+
+const handleOpenAddModal = () => {
+  majorDetail.value = null;
+  openModalMajor.value = true
+}
+
+const handleOpenUpdateModal = (record: MajorResponse) => {
+  majorDetail.value = record;
+  openModalMajor.value = true
+}
+
+const handleCloseMajorModal = () => {
+  openModalMajor.value = false;
+  majorDetail.value = null
+}
 
 const handleClose = () => {
   emit('handleClose');

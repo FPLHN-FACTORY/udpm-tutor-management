@@ -3,6 +3,7 @@ package udpm.hn.server.core.common.model.request;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
 import java.util.List;
 
 @Setter
@@ -13,5 +14,6 @@ public class StaffSearchByRoleRequest {
     private List<String> role;
     private String departmentCode;
     private String facilityCode;
+    private String roleCode;
 
 }

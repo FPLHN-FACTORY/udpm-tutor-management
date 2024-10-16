@@ -3,14 +3,10 @@ package udpm.hn.server.core.admin.departments.department.service.impl;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 import udpm.hn.server.core.admin.departments.department.model.request.CreateOrUpdateMajorRequest;
 import udpm.hn.server.core.admin.departments.department.model.request.FindMajorRequest;
 import udpm.hn.server.core.admin.departments.department.repository.DepartmentExtendRepository;
@@ -27,7 +23,6 @@ import udpm.hn.server.repository.MajorRepository;
 import udpm.hn.server.utils.Helper;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -56,6 +51,7 @@ public class MajorServiceImpl implements MajorService {
     @Override
     public ResponseObject<?> addMajor(@Valid CreateOrUpdateMajorRequest request) {
         request.setMajorName(request.getMajorName().replaceAll("\\s+", " "));
+        request.setMajorCode(request.getMajorCode().replaceAll("\\s+", " "));
         Optional<Major> existsMajor = majorExtendRepository.findMajorByNameAndDepartmentId(request.getMajorName().trim(), request.getDepartmentId());
         Optional<Department> departmentOptional = departmentExtendRepository.findById(request.getDepartmentId());
 
@@ -64,6 +60,7 @@ public class MajorServiceImpl implements MajorService {
             if (existsMajor.isEmpty()) {
                 Major addMajor = new Major();
                 addMajor.setName(request.getMajorName().trim());
+                addMajor.setCode(request.getMajorCode().trim());
                 addMajor.setDepartment(currentDepartment);
                 addMajor.setStatus(EntityStatus.ACTIVE);
                 majorRepository.save(addMajor);
@@ -83,6 +80,7 @@ public class MajorServiceImpl implements MajorService {
     @Override
     public ResponseObject<?> updateMajor(@Valid CreateOrUpdateMajorRequest request, String id) {
         request.setMajorName(request.getMajorName().replaceAll("\\s+", " "));
+        request.setMajorCode(request.getMajorCode().replaceAll("\\s+", " "));
         Optional<Major> majorOptional = majorRepository.findById(id);
         Optional<Department> departmentOptional = departmentExtendRepository.findById(request.getDepartmentId());
 
@@ -101,6 +99,7 @@ public class MajorServiceImpl implements MajorService {
 
                 majorUpdate.setName(request.getMajorName().trim());
                 majorUpdate.setDepartment(currentDepartment);
+                majorUpdate.setCode(request.getMajorCode().trim());
                 majorRepository.save(majorUpdate);
 
                 return new ResponseObject<>(null, HttpStatus.OK, "Cập nhât chuyên ngành vào bộ môn " +
@@ -167,7 +166,7 @@ public class MajorServiceImpl implements MajorService {
             postMajor = majorOptional.orElseGet(Major::new);
         }
         Department department = departmentExtendRepository.findDepartmentByDepartmentIdentityId(majorResponse.getDepartmentId()).orElse(null);
-        if(department==null) {
+        if (department == null) {
             throw new RuntimeException("Dữ liệu bộ môn chưa được đồng bộ, vui lòng đồng dữ liệu bộ môn");
         }
         postMajor.setName(majorResponse.getMajorName());

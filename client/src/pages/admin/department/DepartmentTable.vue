@@ -5,19 +5,14 @@
         <v-icon name="bi-list-ul" scale="2" />
         <span class="ml-2 text-2xl">Danh sách bộ môn</span>
       </h2>
-      <a-popconfirm placement="top" ok-text="Yes" cancel-text="No" @confirm="handleSync">
-        <template #title>
-          <p>Bạn chắc chắn muốn đồng bộ chứ?</p>
-        </template>
-        <a-button
-          type="primary"
-          size="large"
-          class="m-4 flex justify-between items-center"
-        >
-          <v-icon name="bi-arrow-repeat" scale="1.5" class="me-1" />
-          Đồng bộ
-        </a-button>
-      </a-popconfirm>
+      <a-button
+        type="primary"
+        size="large"
+        class="m-4 flex justify-between items-center"
+        @click="$emit('handleOpenModalAdd')"
+      >
+        Thêm bộ môn
+      </a-button>
     </div>
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table

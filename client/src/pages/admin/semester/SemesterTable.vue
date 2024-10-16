@@ -5,19 +5,14 @@
         <v-icon name="bi-list-ul" scale="2" />
         <span class="ml-2 text-2xl">Danh sách học kỳ</span>
       </h2>
-      <a-popconfirm placement="bottom" ok-text="Yes" cancel-text="No" @confirm="handleSync">
-        <template #title>
-          <p>Bạn chắc chắn muốn đồng bộ chứ?</p>
-        </template>
-        <a-button
-            type="primary"
-            size="large"
-            class="m-4 flex justify-between items-center"
-        >
-          <v-icon name="bi-arrow-counterclockwise" scale="2" />
-          Đồng bộ
-        </a-button>
-      </a-popconfirm>
+      <a-button
+          type="primary"
+          size="large"
+          class="m-4 flex justify-between items-center"
+          @click="$emit('handleOpenModalAdd')"
+      >
+        Thêm học kì
+      </a-button>
     </div>
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
@@ -51,7 +46,7 @@
                         type="primary"
                         size="large"
                         :icon="h(EyeOutlined)"
-                        @click="$emit('handleOpenModalDetail', record)" />
+                        @click="$emit('handleOpenModalUpdate', record)" />
             </a-tooltip>
           </div>
         </template>
@@ -67,9 +62,6 @@ import { getDateFormat } from "@/utils/common.helper";
 import { ColumnType } from "ant-design-vue/es/table";
 import {h} from "vue";
 import {EyeOutlined} from "@ant-design/icons-vue";
-import {useSemesterSynchronize} from "@/services/service/admin/semester.action.ts";
-import {toast} from "vue3-toastify";
-import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
 
 defineProps({
   dataSource: Array<SemesterResponse>,
@@ -78,23 +70,7 @@ defineProps({
   totalPages: Number,
 });
 
-const emit = defineEmits(["update:paginationParams", "handleOpenModalDetail"]);
-
-const { mutate: onSync } = useSemesterSynchronize();
-
-// Handle button click
-const handleSync = () => {
-    onSync(undefined, {
-      onSuccess: () => {
-        toast.success("Đồng bộ học kỳ thành công");
-      },
-      onError: (error: any) => {
-        toast.error(
-            error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-        )
-      },
-    }); // Chỉ gọi khi nhấn nút
-};
+const emit = defineEmits(["update:paginationParams", "handleOpenModalUpdate", "handleOpenModalAdd"]);
 
 const columnsSemester: ColumnType[] = [
   {

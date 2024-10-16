@@ -16,9 +16,10 @@
       @handleOpenDepartmentDetailModal="handleOpenDepartmentDetailModal"
       @handleOpenMajorListModal="handleOpenMajorListModal"
       @handleOpenDepartmentsFacilityListModal="handleOpenDepartmentsFacilityListModal"
+      @handle-open-modal-add="handleOpenDepartmentAddModal"
       @syncSuccess="refetchDepartmentData"
     />
-    <department-detail-modal
+    <create-update-department-modal
       :open="openDepartmentDetailModal"
       @handleClose="handleCloseDepartmentDetailModal"
       :department-detail="departmentDetail"
@@ -41,12 +42,11 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
 import { keepPreviousData } from '@tanstack/vue-query';
-import DepartmentDetailModal from '@/pages/admin/department/DepartmentDetailModal.vue';
 import DepartmentFilter from '@/pages/admin/department/DepartmentFilter.vue';
 import DepartmentTable from '@/pages/admin/department/DepartmentTable.vue';
-import MajorListModal from '@/pages/admin/department/MajorListModal.vue';
-import DepartmentFacilityModal from '@/pages/admin/department/DepartmentFacilityModal.vue';
-
+import MajorListModal from './department-major/MajorListModal.vue';
+import DepartmentFacilityModal from './department-facility/DepartmentFacilityModal.vue';
+import CreateUpdateDepartmentModal from './CreateUpdateDepartmentModal.vue';
 import { useDetailDepartment, useGetDepartment } from '@/services/service/admin/department.action';
 import { DepartmentFacilityResponse, DepartmentResponse, ParamsGetDepartment } from '@/services/api/admin/department.api';
 import { MajorResponse } from '@/services/api/admin/major.api';
@@ -81,6 +81,11 @@ const handleCloseDepartmentDetailModal = () => {
 
 const handleOpenDepartmentDetailModal = (record: DepartmentResponse) => {
   departmentId.value = record.id;
+  openDepartmentDetailModal.value = true;
+};
+
+const handleOpenDepartmentAddModal = () => {
+  departmentId.value = null;
   openDepartmentDetailModal.value = true;
 };
 

@@ -14,4 +14,7 @@ public class CreateOrUpdateMajorRequest {
     @NotBlank(message = "Tên chuyên ngành không được để trống")
     private String majorName;
 
+    @NotBlank(message = "Mã chuyên ngành không được để trống")
+    private String majorCode;
+
 }

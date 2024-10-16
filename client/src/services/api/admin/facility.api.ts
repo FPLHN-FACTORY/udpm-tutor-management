@@ -53,3 +53,41 @@ export const getFacilitySynchronize = async () => {
 
     return res.data;
 };
+
+export interface CreateUpdateFacilityParams {
+    facilityName: string;
+}
+
+export const createFacility = async (params: CreateUpdateFacilityParams) => {
+    const res = (await request({
+        url: `${PREFIX_API_FACILITY_ADMIN}`,
+        method: "POST",
+        data: params,
+    })) as AxiosResponse<DefaultResponse<null>>;
+
+    return res.data;
+};
+
+export const updateFacility = async (
+    facilityId: string,
+    params: CreateUpdateFacilityParams
+) => {
+    const res = (await request({
+        url: `${PREFIX_API_FACILITY_ADMIN}/${facilityId}`,
+        method: "PUT",
+        data: params,
+    })) as AxiosResponse<DefaultResponse<null>>;
+
+    return res.data;
+};
+
+export const changeStatusFacility = async (
+    facilityId: string
+) => {
+    const res = (await request({
+        url: `${PREFIX_API_FACILITY_ADMIN}/${facilityId}/change-status`,
+        method: "PUT",
+    })) as AxiosResponse<DefaultResponse<null>>;
+
+    return res.data;
+};

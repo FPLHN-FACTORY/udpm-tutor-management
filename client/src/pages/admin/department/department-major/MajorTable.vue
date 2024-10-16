@@ -4,16 +4,14 @@
       <h2 class="flex items-center text-primary text-3xl font-semibold p-2">
         <span class="text-xl">Danh Sách Chuyên Ngành</span>
       </h2>
-      <!-- <a-button
+      <a-button
         type="primary"
         size="large"
         class="m-4 flex justify-between items-center"
-        @click="handleSync"
-        :disabled="isSyncing"
-    >
-      <v-icon name="bi-arrow-repeat" scale="1.5" class="me-1" />
-      Đồng bộ
-    </a-button> -->
+        @click="$emit('handleOpenModalAdd')"
+      >
+        Thêm chuyên ngành
+      </a-button>
     </div>
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
@@ -30,6 +28,14 @@
             <a-tag v-if="record.majorStatus === 0" color="success">Hoạt động</a-tag>
             <a-tag v-else-if="record.majorStatus === 1" color="error">Không hoạt động</a-tag>
           </div>
+          <div v-else-if="column.key === 'action'" class="space-x-2 text-center">
+            <a-button
+              type="primary"
+              size="regular"
+              @click="$emit('handleOpenModalUpdate', record)"
+              :icon="h(EyeOutlined)"
+            />
+          </div>
         </template>
       </tutor-table>
     </div>
@@ -38,15 +44,12 @@
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
-import { ERROR_MESSAGE } from "@/constants/message.constant";
-import { queryKey } from "@/constants/queryKey";
 import { MajorResponse } from "@/services/api/admin/major.api";
-import { useMajorSynchronize } from "@/services/service/admin/major.action";
-import { useQueryClient } from "@tanstack/vue-query";
+import { EyeOutlined } from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
-import { toast } from "vue3-toastify";
+import { h } from "vue";
 
-const props = defineProps({
+defineProps({
   dataSource: Array as () => MajorResponse[],
   loading: Boolean,
   paginationParams: Object as () => any,
@@ -55,30 +58,11 @@ const props = defineProps({
 
 const emit = defineEmits([
   "update:paginationParams",
-  "handleOpenModalDetail",
+  "handleOpenModalUpdate",
+  "handleOpenModalAdd",
   "syncSuccess",
 ]);
 
-const queryClient = useQueryClient();
-
-const { mutate: onSync, isLoading: isSyncing } = useMajorSynchronize();
-
-const handleSync = async () => {
-  try {
-    await onSync();
-    toast.success("Đồng bộ chuyên ngành thành công");
-
-    await queryClient.invalidateQueries({ queryKey: [queryKey.admin.major.majorList] });
-    await queryClient.refetchQueries({ queryKey: [queryKey.admin.major.majorList] });
-
-    emit('syncSuccess');
-  } catch (error: any) {
-    console.error("🚀 ~ handleSync ~ error:", error);
-    toast.error(
-        error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-    );
-  }
-};
 
 const columnsMajor: ColumnType[] = [
   {
@@ -98,6 +82,13 @@ const columnsMajor: ColumnType[] = [
     dataIndex: "majorName",
     key: "majorName",
     ellipsis: true,
-  }
+  },
+  {
+    title: "Hành động",
+    key: "action",
+    align: "center",
+    width: "150px",
+    ellipsis: true,
+  },
 ];
 </script>

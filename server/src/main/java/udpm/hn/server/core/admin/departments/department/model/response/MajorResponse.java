@@ -1,10 +1,9 @@
 package udpm.hn.server.core.admin.departments.department.model.response;
 
 import udpm.hn.server.core.common.base.HasOrderNumber;
+import udpm.hn.server.core.common.base.IsIdentify;
 
-public interface MajorResponse extends HasOrderNumber {
-
-    String getMajorId();
+public interface MajorResponse extends HasOrderNumber, IsIdentify {
 
     String getMajorName();
 

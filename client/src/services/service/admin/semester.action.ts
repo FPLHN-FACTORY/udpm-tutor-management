@@ -1,8 +1,11 @@
 import { Ref } from "vue";
 import {
+  createSemester,
+  CreateUpdateSemesterParams,
   getDetailSemester,
   getSemesters, getSemesterSynchronize,
   ParamsGetSemester,
+  updateSemester,
 } from "../../api/admin/semester.api.ts";
 import {useMutation, useQuery, useQueryClient, UseQueryReturnType} from "@tanstack/vue-query";
 import { queryKey } from "@/constants/queryKey.ts";
@@ -45,3 +48,41 @@ export function useSemesterSynchronize() {
     }
   });
 }
+
+export const useCreateSemester = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+      mutationFn: (params: CreateUpdateSemesterParams) => createSemester(params),
+      onSuccess: () => {
+          queryClient.invalidateQueries({
+              queryKey: [queryKey.admin.semester.semesterList],
+          });
+      },
+      onError: (error: any) => {
+          console.log("🚀 ~ useCreateSemester ~ error:", error);
+      },
+  });
+};
+
+export const useUpdateSemester = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+      mutationFn: ({
+          semesterId,
+          params,
+      }: {
+          semesterId: string;
+          params: CreateUpdateSemesterParams;
+      }) => updateSemester(semesterId, params),
+      onSuccess: () => {
+          queryClient.invalidateQueries({
+              queryKey: [queryKey.admin.semester.semesterList],
+          });
+      },
+      onError: (error: any) => {
+          console.log("🚀 ~ useUpdateSemester ~ error:", error);
+      },
+  });
+};

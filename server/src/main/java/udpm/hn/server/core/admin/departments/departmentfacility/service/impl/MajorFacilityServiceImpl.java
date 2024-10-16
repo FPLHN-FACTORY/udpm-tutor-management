@@ -3,14 +3,10 @@ package udpm.hn.server.core.admin.departments.departmentfacility.service.impl;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 import udpm.hn.server.core.admin.departments.departmentfacility.model.request.CreateMajorFacilityRequest;
 import udpm.hn.server.core.admin.departments.departmentfacility.model.request.MajorFacilityRequest;
 import udpm.hn.server.core.admin.departments.departmentfacility.model.request.UpdateMajorFacilityRequest;
@@ -24,7 +20,6 @@ import udpm.hn.server.core.admin.departments.departmentfacility.repository.Major
 import udpm.hn.server.core.admin.departments.departmentfacility.service.MajorFacilityService;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
-import udpm.hn.server.entity.Department;
 import udpm.hn.server.entity.DepartmentFacility;
 import udpm.hn.server.entity.Major;
 import udpm.hn.server.entity.MajorFacility;
@@ -32,12 +27,10 @@ import udpm.hn.server.entity.Staff;
 import udpm.hn.server.infrastructure.connection.IdentityConnection;
 import udpm.hn.server.infrastructure.connection.response.MajorCampusResponse;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
-import udpm.hn.server.repository.DepartmentFacilityRepository;
 import udpm.hn.server.repository.MajorFacilityRepository;
 import udpm.hn.server.utils.Helper;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -81,10 +74,9 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
 
     @Override
     public ResponseObject<?> getMajorFacilityById(String majorFacilityId) {
-        return ResponseObject.successForward(
-                majorFacilityExtendRepository.findMajorFacilityById(majorFacilityId),
-                "Lấy thông tin chuyên ngành theo cơ sở thành công"
-        );
+        return majorFacilityExtendRepository.findMajorFacilityById(majorFacilityId)
+                .map(subject -> new ResponseObject<>(subject, HttpStatus.OK, "Get major facility successfully"))
+                .orElseGet(() -> new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Major facility not found"));
     }
 
     @Override
@@ -225,7 +217,7 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
                     return ResponseObject.errorForward("Vui lòng đồng bộ bộ môn theo cơ sở", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
 
-                if(majorFacilities.isEmpty()) {
+                if (majorFacilities.isEmpty()) {
                     syncMajorCampus(null, majorCampusResponse, departmentFacility, major);
                 } else {
                     MajorFacility correspondingFacility = majorFacilityRepository.findMajorFacilityByMajorFacilityIdentityId(majorCampusResponse.getMajorCampusId()).orElse(null);
@@ -255,7 +247,7 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
                     .orElseGet(MajorFacility::new);
         }
         Optional<Staff> staff = staffRepository.findById(departmentFacility.getStaff().getId());
-        if(staff.isEmpty()) {
+        if (staff.isEmpty()) {
             throw new RuntimeException("Vui lòng đồng bộ nhân viên");
         }
         posMajorFacility.setStaff(staff.get());

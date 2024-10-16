@@ -1,0 +1,184 @@
+<template>
+    <div>
+        <a-modal :open="open" :title="modalTitle" @cancel="handleClose" @ok="handleAddOrUpdate" :ok-text="okText"
+            destroyOnClose centered>
+            <div v-if="props.isLoadingDetail" class="flex justify-center items-center">
+                <a-spin />
+            </div>
+            <div v-else>
+                <a-form layout="vertical">
+                    <template v-for="field in formFields">
+                        <a-form-item
+                            :label="field.label"
+                            :name="field.name"
+                            v-bind="validateInfos[field.name]"
+                        >
+                            <component
+                                :is="field.component"
+                                v-bind="field.props"
+                                v-model:value="modelRef[field.name]"
+                            >
+                                <template v-if="field.options" v-for="option in field.options" :key="option.value">
+                                    <a-select-option :value="option.value">
+                                        {{ option.label }}
+                                    </a-select-option>
+                                </template>
+                            </component>
+                        </a-form-item>
+                    </template>
+                </a-form>
+            </div>
+        </a-modal>
+    </div>
+</template>
+
+<script lang="ts" setup>
+import { ERROR_MESSAGE } from "@/constants/message.constant";
+import { ParamsMajorOption } from "@/services/api/common.api";
+import { useCreateMajorFacility, useUpdateMajorFacility } from "@/services/service/admin/major.action";
+import { useGetMajorOptions } from "@/services/service/common.action";
+import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
+import { Form, Modal } from "ant-design-vue";
+import { computed, createVNode, reactive, ref, watch } from "vue";
+import { toast } from "vue3-toastify";
+
+interface MajorFacilityForm {
+    majorId: string;
+}
+
+const props = defineProps({
+    open: Boolean,
+    majorFacilityDetail: Object as () => any | null,
+    isLoadingDetail: Boolean,
+    departmentFacilityId: String,
+    headMajorId: String,
+    departmentId: String
+});
+
+const emit = defineEmits(["handleClose"]);
+
+const paramsGetMajorOption = ref<ParamsMajorOption>({
+    departmentId: props.departmentId || '',
+    facilityId: null
+})
+
+const { data: majorOptionsData } = useGetMajorOptions(paramsGetMajorOption, {
+    refetchOnWindowFocus: false,
+    enabled: () => !!props.departmentId && props.open
+});
+
+const { mutate: createMajorFacility } = useCreateMajorFacility();
+
+const { mutate: updateMajorFacility } = useUpdateMajorFacility();
+
+const modelRef = reactive<MajorFacilityForm>({
+    majorId: "",
+});
+
+const rulesRef = reactive({
+    majorId: [
+        { required: true, message: "Vui lòng chọn chuyên ngành", trigger: "blur" },
+    ],
+});
+
+const { resetFields, validate, validateInfos } = Form.useForm(
+    modelRef,
+    rulesRef
+);
+
+const modalTitle = computed(() =>
+    props.majorFacilityDetail ? "Cập nhật chuyên ngành theo cơ sở" : "Thêm chuyên ngành theo cơ sở"
+);
+
+const okText = computed(() => (props.majorFacilityDetail ? "Cập nhật" : "Thêm"));
+
+watch(
+    () => props.majorFacilityDetail,
+    (newVal) => {
+        if (newVal) {
+            Object.assign(modelRef, {
+                majorId: newVal.majorId,
+            });
+        } else {
+            resetFields();
+        }
+    },
+    { immediate: true }
+);
+
+const formFields = computed(() => [
+    {
+        label: "Chuyên ngành",
+        name: "majorId",
+        component: "a-select",
+        props: { placeholder: "Chọn chuyên ngành" },
+        options: majorOptions.value,
+    },
+]);
+
+const handleAddOrUpdate = () => {
+    Modal.confirm({
+        content: 'Bạn chắc chắn muốn cập nhật chứ',
+        icon: createVNode(ExclamationCircleOutlined),
+        centered: true,
+        async onOk() {
+            try {
+                
+                await validate();
+                // Tạo biến để giữ thông tin về hành động (cập nhật hay tạo mới)
+                const actionParams = props.majorFacilityDetail
+                    ? {
+                        majorFacilityId: props.majorFacilityDetail.id,
+                        params: {
+                            majorId: modelRef.majorId,
+                            headMajorId: props.headMajorId,
+                            // departmentFacilityId: props.departmentFacilityId
+                        },
+                    }
+                    : {
+                            majorId: modelRef.majorId,
+                            headMajorId: props.headMajorId,
+                            departmentFacilityId: props.departmentFacilityId
+                    };
+
+                // Gọi hàm phù hợp dựa vào facilityDetail
+                const action = props.majorFacilityDetail ? updateMajorFacility : createMajorFacility;
+                const message = props.majorFacilityDetail ? "Cập nhật chuyên ngành theo cơ sở thành công!" : "Tạo chuyên ngành theo cơ sở thành công!";
+
+                action(actionParams, {
+                    onSuccess: () => {
+                        toast.success(message);
+                        handleClose();
+                    },
+                    onError: (error: any) => {
+                        toast.error(
+                            error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+                        )
+                    },
+                })
+            } catch (error: any) {
+                console.error("🚀 ~ handleAddOrUpdate ~ error:", error);
+                toast.error(
+                    error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+                );
+            }
+        },
+        cancelText: 'Huỷ',
+        onCancel() {
+            Modal.destroyAll();
+        },
+    });
+};
+
+const handleClose = () => {
+    emit("handleClose");
+    resetFields();
+};
+
+const majorOptions = computed(() => {
+    return majorOptionsData?.value?.data?.map((item) => ({
+        value: item.id,
+        label: item.name,
+    }));
+});
+</script>

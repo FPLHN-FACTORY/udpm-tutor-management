@@ -7,6 +7,8 @@ export const queryKey = {
     subjectOptions: "subjectOptionsKey",
     staffOptions: "staffOptionsKey",
     studentOptions: "studentOptionsKey",
+    roleOptions: "roleOptionsKey",
+    majorOptions: "majorOptionsKey",
   },
   notification: {
     notificationList: "notificationListKey",
@@ -36,6 +38,7 @@ export const queryKey = {
     majorFacility: {
       majorFacilityList: "majorFacilityListKey",
       majorFacilitySynchronize: "majorFacilitySynchronizeKey",
+      majorFacilityDetail: "majorFacilityDetailKey",
     },
     departmentFacility: {
       departmentFacilityList: "departmentFacilityListKey",
@@ -64,6 +67,7 @@ export const queryKey = {
       staffDetail: "staffDetailKey",
       staffRole: "staffRole",
       staffDepartmentMajor: "staffDepartmentMajor",
+      staffDepartmentMajorDetail: "staffDepartmentMajorDetail",
     },
     operationLogs: {
       operationLogList: "operationLogListKey",

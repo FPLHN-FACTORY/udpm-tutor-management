@@ -5,11 +5,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.core.common.model.request.CMOptionsFilterRequest;
+import udpm.hn.server.core.common.model.request.MajorSearchRequest;
+import udpm.hn.server.core.common.model.request.RoleSearchRequest;
 import udpm.hn.server.core.common.model.request.StaffSearchByRoleRequest;
 import udpm.hn.server.core.common.model.request.StaffSearchRequest;
 import udpm.hn.server.core.common.model.request.StudentSearchRequest;
 import udpm.hn.server.core.common.model.response.SemesterInfoResponse;
-import udpm.hn.server.core.common.repository.*;
+import udpm.hn.server.core.common.repository.CMDepartmentExtendRepository;
+import udpm.hn.server.core.common.repository.CMFacilityExtendRepository;
+import udpm.hn.server.core.common.repository.CMMajorExtendRepository;
+import udpm.hn.server.core.common.repository.CMRoleExtendRepository;
+import udpm.hn.server.core.common.repository.CMSemesterExtendRepository;
+import udpm.hn.server.core.common.repository.CMStaffExtendRepository;
+import udpm.hn.server.core.common.repository.CMStudentTutorExtendRepository;
+import udpm.hn.server.core.common.repository.CMSubjectExtendResponse;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +38,10 @@ public class CommonServiceHelper {
     private final CMFacilityExtendRepository facilityExtendRepository;
 
     private final CMSubjectExtendResponse subjectExtendResponse;
+
+    private final CMRoleExtendRepository roleExtendRepository;
+
+    private final CMMajorExtendRepository majorExtendRepository;
 
     public ResponseObject<?> getSemesterInfo(String semesterId) {
 
@@ -124,4 +137,27 @@ public class CommonServiceHelper {
         );
     }
 
+    public ResponseObject<?> getRole(RoleSearchRequest request) {
+        return new ResponseObject<>(
+                roleExtendRepository.getRoles(request),
+                HttpStatus.OK,
+                "Lấy thông tin chức vụ thành công"
+        );
+    }
+
+    public ResponseObject<?> getMajor(MajorSearchRequest request) {
+        return new ResponseObject<>(
+                majorExtendRepository.getAllMajorByDepartmentId(request),
+                HttpStatus.OK,
+                "Lấy thông tin chức vụ thành công"
+        );
+    }
+
+    public ResponseObject<?> getStaffOptions(StaffSearchByRoleRequest request) {
+        return new ResponseObject<>(
+                cMStaffExtendRepository.getStaffOptions(request),
+                HttpStatus.OK,
+                "Lấy thông tin nhân viên thành công"
+        );
+    }
 }

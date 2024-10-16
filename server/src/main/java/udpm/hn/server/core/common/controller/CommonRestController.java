@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import udpm.hn.server.core.common.model.request.CMOptionsFilterRequest;
+import udpm.hn.server.core.common.model.request.MajorSearchRequest;
+import udpm.hn.server.core.common.model.request.RoleSearchRequest;
 import udpm.hn.server.core.common.model.request.StaffSearchByRoleRequest;
 import udpm.hn.server.core.common.model.request.StaffSearchRequest;
 import udpm.hn.server.core.common.model.request.StudentSearchRequest;
@@ -68,4 +70,18 @@ public class CommonRestController {
         return Helper.createResponseEntity(commonServiceHelper.getSubject());
     }
 
+    @GetMapping("/role")
+    public ResponseEntity<?> getRole(final RoleSearchRequest request) {
+        return Helper.createResponseEntity(commonServiceHelper.getRole(request));
+    }
+
+    @GetMapping("/major")
+    public ResponseEntity<?> getMajor(final MajorSearchRequest request) {
+        return Helper.createResponseEntity(commonServiceHelper.getMajor(request));
+    }
+
+    @GetMapping("/staff")
+    public ResponseEntity<?> searchStaffOptions(StaffSearchByRoleRequest request) {
+        return Helper.createResponseEntity(commonServiceHelper.getStaffOptions(request));
+    }
 }
