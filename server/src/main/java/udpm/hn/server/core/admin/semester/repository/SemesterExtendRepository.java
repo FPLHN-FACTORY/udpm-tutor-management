@@ -10,6 +10,7 @@ import udpm.hn.server.core.admin.semester.model.response.SemesterResponse;
 import udpm.hn.server.entity.Semester;
 import udpm.hn.server.repository.SemesterRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,26 +18,26 @@ public interface SemesterExtendRepository extends SemesterRepository {
 
     @Query(
             value = """
-                    SELECT
-                    s.id AS id,
-                    ROW_NUMBER() over (ORDER BY s.id DESC) AS orderNumber,
-                    s.name AS semesterName,
-                    s.year AS semesterYear,
-                    s.start_time AS startTime,
-                    s.end_time AS endTime,
-                    MAX(CASE WHEN b.name = 'BLOCK_1' THEN b.start_time END) AS startTimeFirstBlock,
-               		MAX(CASE WHEN b.name = 'BLOCK_1' THEN b.end_time END) AS endTimeFirstBlock,
-               		MAX(CASE WHEN b.name = 'BLOCK_2' THEN b.start_time END) AS startTimeSecondBlock,
-               		MAX(CASE WHEN b.name = 'BLOCK_2' THEN b.end_time END) AS endTimeSecondBlock
-                    FROM
-                        semester s
-                        JOIN block b ON b.semester_id = s.id
-                    WHERE
-                         (:#{#request.semesterName} IS NULL OR s.name LIKE %:#{#request.semesterName}%)
-                        AND (:#{#request.semesterYear} IS NULL OR s.year = :#{#request.semesterYear})
-                    GROUP BY
-               			s.id, s.name, s.start_time, s.end_time
-                    """,
+                       SELECT
+                       s.id AS id,
+                       ROW_NUMBER() over (ORDER BY s.id DESC) AS orderNumber,
+                       s.name AS semesterName,
+                       s.year AS semesterYear,
+                       s.start_time AS startTime,
+                       s.end_time AS endTime,
+                       MAX(CASE WHEN b.name = 'BLOCK_1' THEN b.start_time END) AS startTimeFirstBlock,
+                    MAX(CASE WHEN b.name = 'BLOCK_1' THEN b.end_time END) AS endTimeFirstBlock,
+                    MAX(CASE WHEN b.name = 'BLOCK_2' THEN b.start_time END) AS startTimeSecondBlock,
+                    MAX(CASE WHEN b.name = 'BLOCK_2' THEN b.end_time END) AS endTimeSecondBlock
+                       FROM
+                           semester s
+                           JOIN block b ON b.semester_id = s.id
+                       WHERE
+                            (:#{#request.semesterName} IS NULL OR s.name LIKE %:#{#request.semesterName}%)
+                           AND (:#{#request.semesterYear} IS NULL OR s.year = :#{#request.semesterYear})
+                       GROUP BY
+                    	s.id, s.name, s.start_time, s.end_time
+                       """,
             countQuery = """
                         SELECT
                             COUNT(s.id)
@@ -52,26 +53,57 @@ public interface SemesterExtendRepository extends SemesterRepository {
 
     @Query(
             value = """
-                    SELECT
-                        s.id AS id,
-                        s.name AS semesterName,
-                        s.year AS semesterYear,
-                        s.start_time AS startTime,
-                        s.end_time AS endTime,
-                        MAX(CASE WHEN b.name = 'BLOCK_1' THEN b.start_time END) AS startTimeFirstBlock,
-                        MAX(CASE WHEN b.name = 'BLOCK_1' THEN b.end_time END) AS endTimeFirstBlock,
-                        MAX(CASE WHEN b.name = 'BLOCK_2' THEN b.start_time END) AS startTimeSecondBlock,
-                        MAX(CASE WHEN b.name = 'BLOCK_2' THEN b.end_time END) AS endTimeSecondBlock
-                    FROM
-                        semester s
-                    JOIN block b ON b.semester_id = s.id
-                    WHERE
-                        s.id = :id
-                    GROUP BY
-               			s.id, s.name, s.start_time, s.end_time
-                    """,
+                      SELECT
+                          s.id AS id,
+                          s.name AS semesterName,
+                          s.year AS semesterYear,
+                          s.start_time AS startTime,
+                          s.end_time AS endTime,
+                          MAX(CASE WHEN b.name = 'BLOCK_1' THEN b.start_time END) AS startTimeFirstBlock,
+                          MAX(CASE WHEN b.name = 'BLOCK_1' THEN b.end_time END) AS endTimeFirstBlock,
+                          MAX(CASE WHEN b.name = 'BLOCK_2' THEN b.start_time END) AS startTimeSecondBlock,
+                          MAX(CASE WHEN b.name = 'BLOCK_2' THEN b.end_time END) AS endTimeSecondBlock
+                      FROM
+                          semester s
+                      JOIN block b ON b.semester_id = s.id
+                      WHERE
+                          s.id = :id
+                      GROUP BY
+                    s.id, s.name, s.start_time, s.end_time
+                      """,
             nativeQuery = true
     )
     Optional<DetailSemesterResponse> getDetailSemesterById(String id);
+
+    @Query(
+            value = """
+                    SELECT
+                        s.id,
+                        s.name,
+                        s.year,
+                        s.status,
+                        s.start_time,
+                        s.end_time,
+                        s.created_date,
+                        s.last_modified_date
+                    FROM
+                        semester s
+                    WHERE
+                        s.name = :semesterName
+                    AND s.year = :semesterYear
+                    AND s.status = 'ACTIVE'
+                    """, nativeQuery = true
+    )
+    Optional<Semester> existingBySemesterNameAndSemesterYear(String semesterName, Integer semesterYear);
+
+    @Query("""
+             SELECT s
+             FROM Semester s
+             WHERE (s.startTime >= :startTime AND s.startTime <= :endTime)
+             OR (s.endTime >= :startTime AND s.endTime <= :endTime)
+             OR (:startTime >= s.startTime AND :startTime <= s.endTime)
+             OR (:endTime >= s.startTime AND :endTime <= s.endTime)
+            """)
+    List<Semester> checkConflictTime(Long startTime, Long endTime);
 
 }

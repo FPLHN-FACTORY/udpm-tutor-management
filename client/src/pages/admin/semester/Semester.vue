@@ -13,9 +13,10 @@
       :pagination-params="params"
       :total-pages="totalPages"
       @update:pagination-params="handlePaginationChange"
-      @handleOpenModalDetail="handleOpenModalDetail"
+      @handleOpenModalUpdate="handleOpenModalUpdate"
+      @handle-open-modal-add="handleOpenModalAdd"
     />
-    <detail-semester-modal
+    <create-update-semester-modal
       :open="open"
       :semester-detail="semesterDetail || null"
       :loading="isLoadingDetail"
@@ -26,7 +27,7 @@
 
 <script lang="ts" setup>
 import SemesterTable from "@/pages/admin/semester/SemesterTable.vue";
-import DetailSemesterModal from "@/pages/admin/semester/DetailSemesterModal.vue";
+import CreateUpdateSemesterModal from "@/pages/admin/semester/CreateUpdateSemesterModal.vue";
 import SemesterFilter from "@/pages/admin/semester/SemesterFilter.vue";
 import { SemesterResponse, ParamsGetSemester} from "@/services/api/admin/semester.api";
 import { useDetailSemester, useGetSemester} from "@/services/service/admin/semester.action";
@@ -47,7 +48,7 @@ const { data, isLoading, isFetching } = useGetSemester(params, {
   placeholderData: keepPreviousData,
 });
 
-const { data: dataDetail, isLoading: isLoadingDetail } = useDetailSemester(
+const { data: dataDetail, isLoading: isLoadingDetail, refetch } = useDetailSemester(
   semesterId,
   {
     refetchOnWindowFocus: false,
@@ -68,12 +69,20 @@ const handleCloseModal = () => {
   semesterId.value = null;
 };
 
-const handleOpenModalDetail = (record: SemesterResponse) => {
+const handleOpenModalAdd = () => {
+  semesterId.value = null;
+  open.value = true;
+};
+
+const handleOpenModalUpdate = (record: SemesterResponse) => {
   semesterId.value = record.id;
   open.value = true;
 };
 
 const semesterData = computed(() => data?.value?.data?.data || []);
 const totalPages = computed(() => data?.value?.data?.totalPages || 0);
-const semesterDetail = computed(() => dataDetail.value?.data || null);
+const semesterDetail = computed(() => 
+    semesterId.value ? dataDetail.value?.data : null
+);
+
 </script>

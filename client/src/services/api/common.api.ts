@@ -79,6 +79,12 @@ export type ParamsStaffSearchByRole = {
   facilityCode?: string;
 };
 
+export type ParamsStaffOptions = {
+  roleCode?: string;
+  departmentCode?: string;
+  facilityCode?: string;
+};
+
 export const getStaffByRole = async (
     params: ParamsStaffSearchByRole,
 ) => {
@@ -94,6 +100,18 @@ export const getStaffByRole = async (
   return res.data;
 };
 
+export const getStaffOptions = async (
+  params: ParamsStaffOptions,
+) => {
+const res = (await request({
+  url: `${PREFIX_API_COMMON}/staff`,  // Thay đổi URL nếu cần
+  params: params,
+  method: 'GET',
+})) as AxiosResponse<DefaultResponse<Array<CommonOptionsResponse>>>;
+
+return res.data;
+};
+
 export type ParamsStudentTutorSearch = {
   departmentCode?: string;
   facilityCode?: string;
@@ -107,4 +125,35 @@ export const getStudentTutor = async (
   })) as AxiosResponse<DefaultResponse<Array<CommonOptionsResponse>>>;
 
   return res.data;
+};
+
+export type ParamsRoleSearch = {
+  facilityCode: string;
+};
+
+export const getRoleOptions = async (params: ParamsRoleSearch) => {
+  const res = (await request({
+    url: `${PREFIX_API_COMMON}/role`,
+    method: "GET",
+    params: params,
+  })) as AxiosResponse<DefaultResponse<Array<CommonOptionsResponse>>>;
+
+  return res.data;
+};
+
+export interface ParamsMajorOption {
+  departmentId: string | null;
+  facilityId: string | null
+};
+
+export const getMajorOptions = async (
+  params: ParamsMajorOption,
+) => {
+const res = (await request({
+  url: `${PREFIX_API_COMMON}/major`,  // Thay đổi URL nếu cần
+  method: 'GET',
+  params: params,
+})) as AxiosResponse<DefaultResponse<Array<CommonOptionsResponse>>>;
+
+return res.data;
 };

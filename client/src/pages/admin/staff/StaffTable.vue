@@ -5,18 +5,14 @@
         <v-icon name="bi-list-ul" scale="2" />
         <span class="ml-2 text-2xl">Danh sách nhân viên</span>
       </h2>
-      <a-popconfirm placement="bottom" ok-text="Yes" cancel-text="No" @confirm="handleSync">
-        <template #title>
-          <p>Bạn chắc chắn muốn đồng bộ chứ?</p>
-        </template>
-        <a-button
-            type="primary"
-            size="large"
-            class="m-4"
-        >
-          Đồng bộ
-        </a-button>
-      </a-popconfirm>
+      <a-button
+          type="primary"
+          size="large"
+          class="m-4"
+          @click="handleOpenModalAdd"
+      >
+        Thêm
+      </a-button>
     </div>
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
@@ -42,6 +38,7 @@
           </div>
         </template>
       </tutor-table>
+      <create-staff-modal :open="open" @handle-close-modal="handleCloseModalAdd" />
     </div>
     <router-view />
   </div>
@@ -52,17 +49,19 @@ import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
 import {StaffResponse} from "@/services/api/admin/staff.api.ts";
 import {ColumnType} from "ant-design-vue/es/table";
 import {EyeOutlined} from "@ant-design/icons-vue";
-import {computed, h} from "vue";
+import {computed, h, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStaffSynchronize} from "@/services/service/admin/staff.action.ts";
 import {useAuthStore} from "@/stores/auth.ts";
 import {toast} from "vue3-toastify";
 import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
+import CreateStaffModal from "./CreateStaffModal.vue";
 
 const router = useRouter();
 // Khởi tạo Auth Store và lấy thông tin người dùng
 const auth = useAuthStore();
 const userInfo = computed(() => auth.user);
+const open = ref<boolean>(false)
 
 function goToDetail(staffId: string) {
   router.push({ name: 'detailStaff', params: { staffId } });
@@ -97,6 +96,14 @@ const handleSync = async () => {
   }catch (error) {
   }
 };
+
+const handleOpenModalAdd = () => {
+  open.value = true;
+}
+
+const handleCloseModalAdd = () => {
+  open.value = false;
+}
 
 const columnsStaff: ColumnType[] = [
   {

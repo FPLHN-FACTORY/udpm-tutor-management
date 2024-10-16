@@ -19,7 +19,7 @@ public interface MajorExtendRepository extends MajorRepository {
             value = """
                         SELECT
                             ROW_NUMBER() OVER (ORDER BY mj.id DESC) AS orderNumber,
-                            mj.id AS majorId,
+                            mj.id AS id,
                             mj.name AS majorName,
                             mj.code AS majorCode, 
                             mj.status AS majorStatus,

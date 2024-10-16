@@ -1,7 +1,7 @@
 import { Ref } from "vue";
 import { useMutation, useQuery, useQueryClient, UseQueryReturnType } from "@tanstack/vue-query";
 import { queryKey } from "@/constants/queryKey";
-import { getDetailFacility, getFacilities, getFacilitySynchronize, ParamsGetFacility } from "@/services/api/admin/facility.api";
+import { changeStatusFacility, createFacility, CreateUpdateFacilityParams, getDetailFacility, getFacilities, getFacilitySynchronize, ParamsGetFacility, updateFacility } from "@/services/api/admin/facility.api";
 
 export const useGetFacility = (
     params: Ref<ParamsGetFacility>,
@@ -41,3 +41,58 @@ export function useFacilitySynchronize() {
         }
     });
 }
+
+
+export const useCreateFacility = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (params: CreateUpdateFacilityParams) => createFacility(params),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [queryKey.admin.facility.facilityList],
+            });
+        },
+        onError: (error: any) => {
+            console.log("🚀 ~ useCreateFacility ~ error:", error);
+        },
+    });
+};
+
+export const useUpdateFacility = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({
+            facilityId,
+            params,
+        }: {
+            facilityId: string;
+            params: CreateUpdateFacilityParams;
+        }) => updateFacility(facilityId, params),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [queryKey.admin.facility.facilityList],
+            });
+        },
+        onError: (error: any) => {
+            console.log("🚀 ~ useUpdateFacility ~ error:", error);
+        },
+    });
+};
+
+export const useChangeStatusFacility = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (facilityId: string) => changeStatusFacility(facilityId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [queryKey.admin.facility.facilityList],
+            });
+        },
+        onError: (error: any) => {
+            console.log("🚀 ~ useChangeStatusFacility ~ error:", error);
+        },
+    });
+};

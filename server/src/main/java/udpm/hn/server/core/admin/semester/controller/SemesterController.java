@@ -24,24 +24,24 @@ public class SemesterController {
 
 
     @GetMapping
-    public ResponseEntity<?> getAllSemesters( SemesterRequest request) {
+    public ResponseEntity<?> getAllSemesters(SemesterRequest request) {
         return ResponseEntity.ok(semesterService.getAllSemester(request));
     }
 
-//    @PostMapping
-//    public ResponseEntity<?> create(@RequestBody CreateUpdateSemesterRequest createUpdateSemesterRequest) {
-//        return Helper.createResponseEntity(semesterService.createSemester(createUpdateSemesterRequest));
-//    }
+    @PostMapping
+    public ResponseEntity<?> create(@RequestBody CreateUpdateSemesterRequest createUpdateSemesterRequest) {
+        return Helper.createResponseEntity(semesterService.createSemester(createUpdateSemesterRequest));
+    }
 
     @GetMapping("/{semesterId}")
     public ResponseEntity<?> getSemesterById(@PathVariable String semesterId) {
         return Helper.createResponseEntity(semesterService.getSemesterById(semesterId));
     }
 
-//    @PutMapping("/{semesterId}")
-//    public ResponseEntity<?> update(@PathVariable String semesterId, @RequestBody CreateUpdateSemesterRequest createUpdateSemesterRequest) {
-//        return Helper.createResponseEntity(semesterService.updateSemester(semesterId, createUpdateSemesterRequest));
-//    }
+    @PutMapping("/{semesterId}")
+    public ResponseEntity<?> update(@PathVariable String semesterId, @RequestBody CreateUpdateSemesterRequest request) {
+        return Helper.createResponseEntity(semesterService.updateSemester(semesterId, request));
+    }
 
     @PutMapping("/status/{semesterId}")
     public ResponseEntity<?> statusChangeSemester(@PathVariable String semesterId) {

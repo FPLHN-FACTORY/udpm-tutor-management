@@ -5,18 +5,13 @@
                 <v-icon name="bi-list-ul" scale="2" />
                 <span class="ml-2 text-2xl">Danh sách cở sở</span>
             </h2>
-            <a-popconfirm placement="bottom" ok-text="Yes" cancel-text="No" @confirm="handleSync">
-                <template #title>
-                    <p>Bạn chắc chắn muốn đồng bộ chứ?</p>
-                </template>
-                <a-button
-                    :loading="loadingSync"
-                    type="primary" size="large"
-                    class="m-4 flex justify-between items-center"
-                    :disabled="isSyncing">
-                    Đồng bộ
-                </a-button>
-            </a-popconfirm>
+            <a-button
+                type="primary" size="large"
+                class="m-4 flex justify-between items-center"
+                @click="$emit('handleOpenModalAdd')"
+            >
+                Thêm cơ sở
+            </a-button>
         </div>
         <div class="flex h-0 flex-1 flex-col">
             <tutor-table
@@ -37,6 +32,13 @@
                             :icon="h(EditOutlined)"
                             @click="$emit('handleOpenModalUpdate', record)"
                         />
+                        <a-button
+                            type="primary"
+                            size="large"
+                            class="flex items-center justify-center"
+                            :icon="h(SwapOutlined)"
+                            @click="handleChangeStatusFacility(record.id)"
+                        />
                     </div>
                     <div v-else-if="column.key === 'facilityStatus'">
                         <a-tag :color="record.facilityStatus === 0 ? 'green' : 'red'">
@@ -52,48 +54,49 @@
 <script lang="ts" setup>
 import TutorTable from '@/components/ui/TutorTable/TutorTable.vue';
 import { ERROR_MESSAGE } from '@/constants/message.constant';
-import { queryKey } from '@/constants/queryKey';
-import { FacilityResponse } from '@/services/api/admin/department.api';
-import { useFacilitySynchronize } from '@/services/service/admin/facility.action';
-import { EditOutlined } from '@ant-design/icons-vue';
-import { useQueryClient } from '@tanstack/vue-query';
+import { FacilityResponse } from '@/services/api/admin/facility.api';
+import { useChangeStatusFacility } from '@/services/service/admin/facility.action';
+import { EditOutlined, ExclamationCircleOutlined, SwapOutlined } from '@ant-design/icons-vue';
+import { Modal } from 'ant-design-vue';
 import { ColumnType } from 'ant-design-vue/es/table';
-import { h } from 'vue';
+import { createVNode, h } from 'vue';
 import { toast } from 'vue3-toastify';
 
 defineProps({
     dataSource: Array<FacilityResponse>,
     totalPages: Number,
     paginationParams: Object,
-    loadingSync: Boolean,
     loading: Boolean
 })
 
 const emit = defineEmits(['handleOpenModalAdd', 'handleOpenModalUpdate', 'update:paginationParams', "syncSuccess"])
 
-const { mutate: onSync, isLoading: isSyncing } = useFacilitySynchronize();
+const { mutate: update } = useChangeStatusFacility();
 
-// Sử dụng useQueryClient để lấy queryClient
-const queryClient = useQueryClient();
+const handleChangeStatusFacility = (id: string) => {
+    Modal.confirm({
+        content: 'Bạn chắc chắn muốn đổi trạng thái chứ?',
+        icon: createVNode(ExclamationCircleOutlined),
+        centered: true,
+        onOk() {
+            update(id, {
+            onSuccess: () => {
+                toast.success("Cập nhật trạng thái thành công!");
+            },
+            onError: (error: any) => {
+                toast.error(
+                error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+                )
+            },
+            })
+        },
+        cancelText: 'Huỷ',
+        onCancel() {
+        Modal.destroyAll();
+        },
+    });
+}
 
-// Handle button click
-const handleSync = async () => {
-    try {
-        await onSync(); // Chỉ gọi khi nhấn nút
-
-        // Chờ invalidate hoàn tất trước khi thực hiện refetch
-        // Invalidating query và refetch ngay lập tức
-        await queryClient.invalidateQueries({ queryKey: [queryKey.admin.facility.facilityList] });
-        await queryClient.refetchQueries({ queryKey: [queryKey.admin.facility.facilityList] });
-
-        emit('syncSuccess');
-    } catch (error: any) {
-        console.error("🚀 ~ handleSync ~ error:", error); // Log lỗi để dễ dàng debug
-        toast.error(
-            error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-        );
-    }
-};
 
 const columnsFacility: ColumnType[] = [
     {

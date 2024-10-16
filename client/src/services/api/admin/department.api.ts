@@ -130,3 +130,34 @@ export const getDepartmentCampusSynchronize = async () => {
 
     return res.data;
 };
+
+export interface CreateUpdateDepartmentFacilityParams {
+  departmentId: string;
+  facilityId: string;
+  headOfDepartmentId: string;
+}
+
+export const createDepartmentFacility = async (
+    params: CreateUpdateDepartmentFacilityParams
+) => {
+  const res = (await request({
+    url: `${PREFIX_API_DEPARTMENT_FACILITY_ADMIN}/add-department-facility`,
+    method: "POST",
+    data: params,
+  })) as AxiosResponse<DefaultResponse<null>>;
+
+  return res.data;
+};
+
+export const updateDepartmentFacility = async (
+    id: string,
+    params: CreateUpdateDepartmentFacilityParams
+) => {
+  const res = (await request({
+    url: `${PREFIX_API_DEPARTMENT_FACILITY_ADMIN}/update-department-facility/${id}`,
+    method: "PUT",
+    data: params,
+  })) as AxiosResponse<DefaultResponse<null>>;
+
+  return res.data;
+};

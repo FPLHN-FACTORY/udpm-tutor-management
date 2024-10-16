@@ -10,17 +10,15 @@
       @filter="handleFilter"
     />
     <facility-table
-      @handle-open-modal-add="handleOpenModal"
+      @handle-open-modal-add="handleOpenModalAdd"
       :data-source="facilityData"
       @handle-open-modal-update="handleOpenModalUpdate"
       :total-pages="totalPages"
       :pagination-params="facilityParams"
-      @update:pagination-params="handleParentChangePagination"
-      @syncSuccess="refetchFacilityData"
-      :loading-sync="isLoadingSync"
+      @update:pagination-params="handleChangePagination"
       :loading="isLoading || isFetching"
     />
-    <detail-facility-modal
+    <create-update-facility-modal
       :open="openModal"
       @handle-close="handleCloseModal"
       :facility-detail="facilityDetailData || null"
@@ -33,23 +31,21 @@
 import { computed, ref } from 'vue';
 import FacilityFilter from './FacilityFilter.vue';
 import FacilityTable from './FacilityTable.vue';
-import DetailFacilityModal from './DetailFacilityModal.vue';
+import CreateUpdateFacilityModal from './CreateUpdateFacilityModal.vue';
 import { keepPreviousData } from '@tanstack/vue-query';
-import { toast } from 'vue3-toastify';
 import { useDetailFacility, useGetFacility } from '@/services/service/admin/facility.action';
 import { ParamsGetFacility } from '@/services/api/admin/facility.api';
-import { FacilityResponse } from '@/services/api/admin/department.api';
+import { FacilityResponse } from '@/services/api/admin/facility.api';
 
 const openModal = ref(false);
 const facilityId = ref<string | any>(null);
-const isLoadingSync = ref<boolean>(false);
 
 const facilityParams = ref<ParamsGetFacility>({
   page: 1,
   size: 5
 })
 
-const { data, isLoading,  isFetching, refetch } = useGetFacility(facilityParams, {
+const { data, isLoading,  isFetching } = useGetFacility(facilityParams, {
   refetchOnWindowFocus: false,
   placeholderData: keepPreviousData,
 });
@@ -60,7 +56,7 @@ const { data: facilityDetail, isLoading: isLoadingDetail } = useDetailFacility(f
   }
 )
 
-const handleParentChangePagination = (newParams: ParamsGetFacility) => {
+const handleChangePagination = (newParams: ParamsGetFacility) => {
   facilityParams.value = { ...facilityParams.value, ...newParams }
 }
 
@@ -69,8 +65,9 @@ const handleFilter = (newParams: ParamsGetFacility) => {
 
 }
 
-const handleOpenModal = () => {
+const handleOpenModalAdd = () => {
   openModal.value = true;
+  facilityId.value = null;
 }
 
 const handleOpenModalUpdate = (record: FacilityResponse) => {
@@ -83,22 +80,13 @@ const handleCloseModal = () => {
   facilityId.value = null;
 }
 
-// Hàm refetch dữ liệu
-const refetchFacilityData = () => {
-  setTimeout(() => {
-    refetch(); // Gọi lại hàm refetch để cập nhật dữ liệu
-    isLoadingSync.value = false;
-    toast.success("Đồng bộ cơ sở thành công");
-  }, 2000)
-  isLoadingSync.value = true;
-};
 
 const facilityData = computed(() => data?.value?.data?.data || []);
 const facilityDetailData = computed(() =>
   facilityId.value ? {
     ...facilityDetail.value?.data,
     facilityId: facilityId.value
-  } : {})
+  } : null)
 const totalPages = computed(() => data?.value?.data?.totalPages || 0)
 
 </script>

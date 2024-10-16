@@ -66,3 +66,33 @@ export const getDetailSemester = async (id: string | null) => {
 
   return res.data;
 };
+
+export interface CreateUpdateSemesterParams {
+  semesterName: string;
+  startTime: number;
+  endTime: number;
+  endTimeBlock1: number;
+}
+
+export const createSemester = async (params: CreateUpdateSemesterParams) => {
+  const res = (await request({
+    url: `${PREFIX_API_SEMESTER_ADMIN}`,
+    method: "POST",
+    data: params,
+  })) as AxiosResponse<DefaultResponse<null>>;
+
+  return res.data;
+};
+
+export const updateSemester = async (
+    semesterId: string,
+    params: CreateUpdateSemesterParams
+) => {
+  const res = (await request({
+    url: `${PREFIX_API_SEMESTER_ADMIN}/${semesterId}`,
+    method: "PUT",
+    data: params,
+  })) as AxiosResponse<DefaultResponse<null>>;
+
+  return res.data;
+};

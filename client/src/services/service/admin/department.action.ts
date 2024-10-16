@@ -1,6 +1,8 @@
 import { queryKey } from "@/constants/queryKey.ts";
 import {
   createDepartment,
+  createDepartmentFacility,
+  CreateUpdateDepartmentFacilityParams,
   CreateUpdateDepartmentParams,
   getDepartmentCampusSynchronize,
   getDepartmentFacility,
@@ -10,6 +12,7 @@ import {
   ParamsGetDepartment,
   ParamsGetDepartmentFacility,
   updateDepartment,
+  updateDepartmentFacility,
 } from "../../api/admin/department.api.ts";
 import {
   useMutation,
@@ -136,3 +139,42 @@ export function useDepartmentCampusSynchronize() {
     },
   });
 }
+
+export const useCreateDepartmentFacility = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (params: CreateUpdateDepartmentFacilityParams) =>
+      createDepartmentFacility(params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKey.admin.departmentFacility.departmentFacilityList],
+      });
+    },
+    onError: (error: any) => {
+      console.log("🚀 ~ useCreateDepartmentFacility ~ error:", error);
+    },
+  });
+};
+
+export const useUpdateDepartmentFacility = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      params,
+    }: {
+      id: string;
+      params: CreateUpdateDepartmentFacilityParams;
+    }) => updateDepartmentFacility(id, params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKey.admin.departmentFacility.departmentFacilityList],
+      });
+    },
+    onError: (error: any) => {
+      console.log("🚀 ~ useUpdateDepartmentFacility ~ error:", error);
+    },
+  });
+};
