@@ -52,14 +52,6 @@
                 :disabled="canUpdate"
             />
           </div>
-          <div v-else-if="column.key === 'time'">
-            <a-range-picker
-                :value="[record.startTime ? dayjs(record.startTime) : null, record.endTime ? dayjs(record.endTime) : null]"
-                :placeholder="['Ngày bắt đầu', 'Ngày kết thúc']"
-                :format="'DD/MM/YYYY'"
-                disabled
-            />
-          </div>
         </template>
       </tutor-table>
     </div>
@@ -72,7 +64,6 @@ import { ColumnType } from "ant-design-vue/es/table";
 import { TutorClassDetailResponse } from "@/services/api/headdepartment/tutor-class.api.ts";
 import {defineProps} from "vue";
 import {FormatCommonOptionsResponse} from "@/services/api/common.api.ts";
-import dayjs from "dayjs";
 
 defineProps({
   dataSource: Array as () => TutorClassDetailResponse[],
@@ -131,13 +122,6 @@ const columnsTutorClassDetail: ColumnType[] = [
     key: "room",
     ellipsis: true,
     width: "80px",
-  },
-  {
-    title: "Thời gian",
-    dataIndex: "time",
-    key: "time",
-    ellipsis: true,
-    width: "250px",
   },
 ];
 

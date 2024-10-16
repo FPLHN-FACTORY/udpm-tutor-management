@@ -20,7 +20,7 @@ public interface HDHSHeadSubjectBySemesterRepository extends HeadSubjectBySemest
 
     @Query(
             value = """
-                    SELECT 
+                    SELECT
                         ROW_NUMBER() OVER (ORDER BY s.id DESC ) as orderNumber,
                         s.id as id,
                         s.staff_code as staffCode,
@@ -42,7 +42,6 @@ public interface HDHSHeadSubjectBySemesterRepository extends HeadSubjectBySemest
                     LEFT JOIN role r ON r.id = sr.id_role
                     WHERE
                         r.code = :#{#request.headSubjectRoleCode}
-                        AND s.id != :#{#request.currentUserId}
                         AND d.code = :#{#request.currentDepartmentCode}
                         AND f.code = :#{#request.currentFacilityCode}
                         AND ((:#{#request.q} IS NULL OR s.staff_code LIKE CONCAT('%',:#{#request.q},'%')) OR (:#{#request.q} IS NULL OR s.name LIKE CONCAT('%',:#{#request.q},'%')) )
@@ -63,7 +62,6 @@ public interface HDHSHeadSubjectBySemesterRepository extends HeadSubjectBySemest
                     LEFT JOIN role r ON r.id = sr.id_role
                     WHERE
                         r.code = :#{#request.headSubjectRoleCode}
-                        AND s.id != :#{#request.currentUserId}
                         AND d.code = :#{#request.currentDepartmentCode}
                         AND f.code = :#{#request.currentFacilityCode}
                         AND ((:#{#request.q} IS NULL OR s.staff_code LIKE CONCAT('%',:#{#request.q},'%')) OR (:#{#request.q} IS NULL OR s.name LIKE CONCAT('%',:#{#request.q},'%')) )

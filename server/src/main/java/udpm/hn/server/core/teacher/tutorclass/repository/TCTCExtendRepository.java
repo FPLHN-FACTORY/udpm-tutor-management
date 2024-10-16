@@ -4,5 +4,5 @@ import org.springframework.stereotype.Repository;
 import udpm.hn.server.repository.StaffRepository;
 
 @Repository
-public interface TeacherExtendRepository extends StaffRepository {
+public interface TCTCExtendRepository extends StaffRepository {
 }

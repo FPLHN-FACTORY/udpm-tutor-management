@@ -23,7 +23,9 @@ import TutorClassFilter from './TutorClassFilter.vue';
 import TutorClassTable from './TutorClassTable.vue';
 import { computed, ref } from 'vue';
 import { ParamsGetTutorClass } from '@/services/api/teacher/tutor-class.api';
-import { useGetTutorClassByTeacher } from '@/services/service/teacher/tutor-class.action';
+import {
+  useGetTutorClassByTeacher
+} from '@/services/service/teacher/tutor-class.action';
 import { keepPreviousData } from '@tanstack/vue-query';
 
 const { user } = useAuthStore();
@@ -31,7 +33,8 @@ const { user } = useAuthStore();
 const params = ref<ParamsGetTutorClass>({
     page: 1,
     size: 5,
-    subjectId: ""
+    subjectId: "",
+    teacherId: user?.userId
 })
 
 const handleChangePagination = (newParams: ParamsGetTutorClass) => {
@@ -43,8 +46,7 @@ const handleFilter = (newParams: ParamsGetTutorClass) => {
 
 }
 
-
-const { data, isLoading, isFetching } = useGetTutorClassByTeacher(user?.userId || null, params, {
+const { data, isLoading, isFetching } = useGetTutorClassByTeacher(params, {
     refetchOnWindowFocus: false,
     placeholderData: keepPreviousData,
     enabled: !!user?.userId

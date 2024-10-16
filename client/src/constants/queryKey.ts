@@ -121,7 +121,8 @@ export const queryKey = {
   },
   teacher: {
     tutorClass: {
-      tutorClassDetailList: 'tutorClassDetailListKey'
+      tutorClassDetailList: 'tCTutorClassDetailListKey',
+      lectureList: 'tCLectureListKey'
     }
   }
 };

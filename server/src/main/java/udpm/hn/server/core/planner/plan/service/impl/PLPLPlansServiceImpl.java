@@ -103,6 +103,10 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
                 planLogHistory.setStatus(false);
                 return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch đã tồn tại");
             }
+            if (staffOptional.isEmpty()) {
+                planLogHistory.setStatus(false);
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Nhân viên không tồn tại");
+            }
             Plan plan = new Plan();
             plan.setPlanStatus(PlanStatus.PLANNING);
             plan.setDepartmentFacility(departmentFacilityOptional.get());
@@ -112,10 +116,6 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
             plan.setStartDate(request.getStartTime());
             plan.setEndDate(request.getEndTime());
             Plan planSaveResult = plplPlansRepository.save(plan);
-            if (planSaveResult == null) {
-                planLogHistory.setStatus(false);
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi lưu kế hoạch");
-            }
 
             List<Notification> listNotificationSave = new ArrayList<>();
             for (String role : List.of(Role.TRUONG_MON.toString(), Role.CHU_NHIEM_BO_MON.toString())) {
@@ -284,10 +284,6 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
             planOptional.map(plan -> {
                 plan.setPlanStatus(PlanStatus.PLANNER_APPROVED);
                 Plan planSaveResult = plplPlansRepository.save(plan);
-                if (planSaveResult == null) {
-                    planLogHistory.setStatus(false);
-                    return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi duyệt kế hoạch");
-                }
                 planLogHistory.setPlanId(planSaveResult.getId());
                 planLogHistory.setStatus(true);
                 return planSaveResult;
@@ -298,7 +294,7 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
             Block block = planOptional.get().getBlock();
             Semester semester = block.getSemester();
             List<String> list = plplStaffsRepository.getStaffsByRole(Arrays.asList("CHU_NHIEM_BO_MON", "TRUONG_MON"), department.getCode(), facility.getCode());
-            String blockName = block.getName().equals("BLOCK_1") ? "Block 1" : "Block 2";
+            String blockName = block.getName().name().equals("BLOCK_1") ? "Block 1" : "Block 2";
             String message = "Kế hoạch học kì " + semester.getSemesterName() + " " + semester.getYear() + " " + blockName + " đã được người lập kế hoạch phê duyệt. Chủ nhiệm bộ môn/Trưởng môn vui lòng hãy kiểm tra và theo dõi kế hoạch tutor .";
             emailService.sendEmailToHeadSubjectAboutPlan(message, list);
 
@@ -317,7 +313,7 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
                 System.err.println("Lỗi khi ghi log: " + e.getMessage());
             }
         }
-        return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi duyệt kế hoạch");
+        return new ResponseObject<>(null, HttpStatus.OK, "Phê duyệt kế hoạch thành công");
     }
 
     @Override

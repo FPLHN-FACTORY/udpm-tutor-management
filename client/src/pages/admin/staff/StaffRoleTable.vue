@@ -13,6 +13,8 @@
           :data-source="dataSource"
           :loading="loading"
           :is-pagination="false"
+           pagination-params=""
+           total-pages=""
       >
       </tutor-table>
     </div>

@@ -22,8 +22,13 @@
       >
         <template #bodyCell="{ column, record }">
           <div v-if="column.key === 'action'" class="space-x-2 flex items-center justify-center">
-            <a-button type="primary" size="large" class="flex items-center justify-center"
-                      :icon="h(EditOutlined)" />
+            <a-button
+                type="primary"
+                size="large"
+                class="flex items-center justify-center"
+                :icon="h(EyeOutlined)"
+                @click="goToDetail(record.id)"
+            />
           </div>
           <div v-else-if="column.key === 'shift'">
             <a-select
@@ -33,14 +38,7 @@
                 :options="shiftOptions"
                 :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
                 style="width: 100%"
-            />
-          </div>
-          <div v-else-if="column.key === 'time'">
-            <a-range-picker
-                :value="[record.startTime ? dayjs(record.startTime) : null, record.endTime ? dayjs(record.endTime) : null]"
-                @change="(dates) => handleTimeChange(record, dates)"
-                :placeholder="['Ngày bắt đầu', 'Ngày kết thúc']"
-                :format="'DD/MM/YYYY'"
+                :bordered="false"
             />
           </div>
         </template>
@@ -50,21 +48,29 @@
 </template>
 
 <script lang="ts" setup>
-import { EditOutlined } from '@ant-design/icons-vue';
+import {EyeOutlined} from '@ant-design/icons-vue';
 import { ColumnType } from 'ant-design-vue/es/table';
 import {h, ref, watch} from 'vue';
 import TutorTable from '@/components/ui/TutorTable/TutorTable.vue';
 import {confirmModal} from "@/utils/common.helper.ts";
-import {TutorClassResponse, UpdateTutorClassDetailParams} from "@/services/api/teacher/tutor-class.api.ts";
+import {
+  TutorClassResponse,
+  UpdateTutorClassDetailParams,
+} from "@/services/api/teacher/tutor-class.api.ts";
 import {useUpdateTutorClassDetail} from "@/services/service/teacher/tutor-class.action.ts";
 import {toast} from "vue3-toastify";
 import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
-import dayjs from "dayjs";
+import {useRouter} from "vue-router";
+
+const router = useRouter();
+function goToDetail(tutorClassDetailId: string) {
+  router.push({ name: 'tcTutorClassDetail', params: { tutorClassDetailId } });
+}
 
 const props = defineProps({
   dataSource: {
     type: Array as () => TutorClassResponse[],
-    default: () => []  // Đảm bảo rằng dataSource luôn là một mảng, tránh trường hợp undefined
+    default: () => []
   },
   totalPages: Number,
   paginationParams: Object,
@@ -87,32 +93,15 @@ const emit = defineEmits(['update:paginationParams'])
 const selectedRecords = ref<UpdateTutorClassDetailParams[]>([]);
 const selectedIds = ref<string[]>([]);
 const { mutate: updateTutorClassDetail } = useUpdateTutorClassDetail();
-const dateFormat = 'DD/MM/YYYY';
 const tempDataSource = ref([...props?.dataSource?.map((record, index) => ({
   ...record,
   key: index.toString()
 }))]);
 
-const shiftOptions = Array.from({ length: 6 }, (_, index) => ({
+const shiftOptions = Array.from({ length: 10 }, (_, index) => ({
   value: `Ca ${index + 1}`,
   label: `Ca ${index + 1}`,
 }));
-
-const handleTimeChange = (record, dates) => {
-  console.log('Dates:', dates); // Kiểm tra xem dates có nhận giá trị không
-
-  if (dates && dates.length) {
-    record.startTime = dates[0] ? dates[0].valueOf() : null;
-    record.endTime = dates[1] ? dates[1].valueOf() : null;
-  } else {
-    record.startTime = null;
-    record.endTime = null;
-  }
-
-  console.log('Updated Record:', record); // Kiểm tra giá trị đã cập nhật
-};
-
-
 
 const handleTutorClassDetail = async () => {
   const message = 'Bạn chắc chắn muốn lưu các lớp tutor này chứ!'; // Thông điệp xác nhận
@@ -123,9 +112,7 @@ const handleTutorClassDetail = async () => {
           .filter(record => selectedIds.value.includes(record.id))
           .map(record => ({
             id: record.id,
-            shift: record.shift,
-            startTime: record.startTime,
-            endTime: record.endTime,
+            shift: record.shift
           }));
 
       if (selectedRecords.value.length === 0) {
@@ -158,6 +145,7 @@ watch(() => props.dataSource, (newData) => {
 
 const rowSelection = ref({
   onChange: (selectedRowKeys: (string | number)[], selectedRows: DataItem[]) => {
+    console.log(selectedRowKeys);
     selectedIds.value = selectedRows.map(record => record.id);
   },
 });
@@ -193,6 +181,7 @@ const columnsTutorClass: ColumnType[] = [
     dataIndex: "totalStudent",
     key: "totalStudent",
     ellipsis: true,
+    width: "100px"
   },
   {
     title: "Ca học",
@@ -200,13 +189,6 @@ const columnsTutorClass: ColumnType[] = [
     key: "shift",
     ellipsis: true,
     width: "70px"
-  },
-  {
-    title: "Thời gian",
-    dataIndex: "time",
-    key: "time",
-    ellipsis: true,
-    width: "250px"
   },
   {
     title: "Hành động",

@@ -87,7 +87,11 @@ export const ROUTES_CONSTANTS = {
     children: {
       TUTOR_CLASS: {
         path: "tutor-class",
-        name: "tutorClass",
+        name: "tcTutorClass",
+      },
+      TUTOR_CLASS_DETAIL: {
+        path: "tutor-class-detail/:tutorClassDetailId",
+        name: "tcTutorClassDetail",
       },
     },
   },

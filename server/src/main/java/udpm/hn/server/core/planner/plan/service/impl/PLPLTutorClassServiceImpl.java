@@ -112,19 +112,19 @@ public class PLPLTutorClassServiceImpl implements PLPLTutorClassService {
                             tutorClassDetail.setStudentConduct(studentTutor);
                         }
                     }
+
                     // Cập nhật phòng nếu có
                     if (updateRequest.getRoom() != null) {
                         tutorClassDetail.setRoom(updateRequest.getRoom());
                         planLogHistory.setRoomPlan(updateRequest.getRoom());
                     }
+
                     if (updateRequest.getLink() != null) {
                         tutorClassDetail.setLink(updateRequest.getLink());
                     }
+
                     // Lưu lớp tutor
-                    TutorClassDetail tutorClassDetailResult = tutorClassDetailRepository.save(tutorClassDetail);
-                    if(tutorClassDetailResult==null) {
-                        planLogHistory.setStatus(false);
-                    }
+                    tutorClassDetailRepository.save(tutorClassDetail);
                     try {
                         Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);
                         if (!resultLog) {
@@ -175,11 +175,7 @@ public class PLPLTutorClassServiceImpl implements PLPLTutorClassService {
             studentTutor.setStudentName(request.getName());
             studentTutor.setStatus(EntityStatus.ACTIVE);
             planLogHistory.setStudentTutor(request.getCode() + "-" + request.getName());
-            StudentTutor studentTutorResult = studentTutorClassRepository.save(studentTutor);
-            if (studentTutorResult == null) {
-                planLogHistory.setStatus(false);
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi cập nhật kế hoạch");
-            }
+            studentTutorClassRepository.save(studentTutor);
             planLogHistory.setStatus(true);
             studentTutorClassRepository.save(studentTutor);
             return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm sinh viên thành công thành công");

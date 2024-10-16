@@ -22,13 +22,11 @@ export const routes: RouteRecordRaw[] = [
     path: ROUTES_CONSTANTS.REDIRECT.path,
     component: () => import("@/routes/guard/Redirect.vue"),
   },
-  // ROLE SWITCH ROUTES
   {
     path: ROUTES_CONSTANTS.ROLE_SWITCH.path,
     name: ROUTES_CONSTANTS.ROLE_SWITCH.name,
     component: () => import("@/pages/roleswitch/index.vue"),
   },
-  // ADMIN ROUTES
   {
     path: ROUTES_CONSTANTS.ADMIN.path,
     redirect: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.SUBJECT.path}`,
@@ -97,9 +95,9 @@ export const routes: RouteRecordRaw[] = [
           requiresAuth: true,
         },
       },
+
     ],
   },
-  // SYSTEM LOG ROUTES
   {
     path: ROUTES_CONSTANTS.SYSTEM_LOG.path,
     redirect: `${ROUTES_CONSTANTS.SYSTEM_LOG.path}/${ROUTES_CONSTANTS.SYSTEM_LOG.children.OPERATION_LOG.path}`,
@@ -125,7 +123,6 @@ export const routes: RouteRecordRaw[] = [
       },
     ],
   },
-  // HEAD DEPARTMENT ROUTES
   {
     path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.path,
     redirect: `${ROUTES_CONSTANTS.HEAD_DEPARTMENT.path}/${ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_SUBJECT.path}`,
@@ -134,8 +131,7 @@ export const routes: RouteRecordRaw[] = [
       {
         path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_SUBJECT.path,
         name: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_SUBJECT.name,
-        component: () =>
-          import("@/pages/headdepartment/headsubject/HeadSubject.vue"),
+        component: () => import("@/pages/headdepartment/headsubject/HeadSubject.vue"),
         meta: {
           requiresRole: ROLES.HEAD_DEPARTMENT,
           requiresAuth: true,
@@ -162,10 +158,7 @@ export const routes: RouteRecordRaw[] = [
       {
         path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLAN_LOG_HISTORY.path,
         name: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLAN_LOG_HISTORY.name,
-        component: () =>
-          import(
-            "@/pages/headdepartment/planloghistory/HeadDepartmentPlanLogHistory.vue"
-          ),
+        component: () => import("@/pages/headdepartment/planloghistory/HeadDepartmentPlanLogHistory.vue"),
         meta: {
           requiresRole: ROLES.HEAD_DEPARTMENT,
           requiresAuth: true,
@@ -173,7 +166,14 @@ export const routes: RouteRecordRaw[] = [
       },
     ],
   },
-  // HEAD SUBJECT ROUTES
+  {
+    path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.path,
+    redirect: `${ROUTES_CONSTANTS.HEAD_DEPARTMENT.path}/${ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.HEAD_SUBJECT.path}`,
+    component: () => import("@/layout/HeadDepartment.vue"),
+    children: [
+     
+    ],
+  },
   {
     path: ROUTES_CONSTANTS.HEAD_SUBJECT.path,
     redirect: `${ROUTES_CONSTANTS.HEAD_SUBJECT.path}/${ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLAN.path}`,
@@ -200,10 +200,7 @@ export const routes: RouteRecordRaw[] = [
       {
         path: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLAN_LOG.path,
         name: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLAN_LOG.name,
-        component: () =>
-          import(
-            "@/pages/headsubject/planloghistory/HeadSubjectPlanLogHistory.vue"
-          ),
+        component: () => import("@/pages/headsubject/planloghistory/HeadSubjectPlanLogHistory.vue"),
         meta: {
           requiresRole: ROLES.HEAD_SUBJECT,
           requiresAuth: true,
@@ -212,8 +209,7 @@ export const routes: RouteRecordRaw[] = [
       {
         path: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLANNER.path,
         name: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLANNER.name,
-        component: () =>
-          import("@/pages/headsubject/planner/HeadSubjectPlanner.vue"),
+        component: () => import("@/pages/headsubject/planner/headSubjectPlanner.vue"),
         meta: {
           requiresRole: ROLES.HEAD_SUBJECT,
           requiresAuth: true,
@@ -221,7 +217,6 @@ export const routes: RouteRecordRaw[] = [
       },
     ],
   },
-  // PLANNER ROUTES
   {
     path: ROUTES_CONSTANTS.PLANNER.path,
     redirect: `${ROUTES_CONSTANTS.PLANNER.path}/${ROUTES_CONSTANTS.PLANNER.children.PLAN.path}`,
@@ -248,16 +243,14 @@ export const routes: RouteRecordRaw[] = [
       {
         path: ROUTES_CONSTANTS.PLANNER.children.PLAN_LOG_HISTORY.path,
         name: ROUTES_CONSTANTS.PLANNER.children.PLAN_LOG_HISTORY.name,
-        component: () =>
-          import("@/pages/planner/planloghistory/PlanLogHistory.vue"),
+        component: () => import("@/pages/planner/planloghistory/PlanLogHistory.vue"),
         meta: {
           requiresRole: ROLES.PLANER,
           requiresAuth: true,
         },
-      },
+      }
     ],
   },
-  // TEACHER ROUTES
   {
     path: ROUTES_CONSTANTS.TEACHER.path,
     redirect: `${ROUTES_CONSTANTS.TEACHER.path}/${ROUTES_CONSTANTS.TEACHER.children.TUTOR_CLASS.path}`,
@@ -266,10 +259,23 @@ export const routes: RouteRecordRaw[] = [
       {
         path: ROUTES_CONSTANTS.TEACHER.children.TUTOR_CLASS.path,
         name: ROUTES_CONSTANTS.TEACHER.children.TUTOR_CLASS.name,
-        component: () => import("@/pages/teacher/tutor-class/TutorClass.vue"),
+        component: () =>
+            import(
+                "@/pages/teacher/tutor-class/TutorClass.vue"
+                ),
+      },
+      {
+        path: ROUTES_CONSTANTS.TEACHER.children.TUTOR_CLASS_DETAIL.path,
+        name: ROUTES_CONSTANTS.TEACHER.children.TUTOR_CLASS_DETAIL.name,
+        component: () =>
+            import(
+                "@/pages/teacher/tutor-class/TutorClassDetail.vue"
+                ),
       },
     ],
   },
+
+ 
 ];
 
 export const router = createRouter({
@@ -277,20 +283,16 @@ export const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
+  console.log(from);
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-  const requiresRole = to.matched.some((record) => record.meta.requiresRole);
+  // const requiresRole = to.matched.some((record) => record.meta.requiresRole);
   const userRole = authStore?.user?.rolesCodes;
 
   if (userRole === null && requiresAuth) {
     next({ name: ROUTES_CONSTANTS.LOGIN.name });
   } else if (requiresAuth && !authStore.isAuthenticated) {
-    next({ name: ROUTES_CONSTANTS.LOGIN.name });
-  } else if (
-    requiresRole &&
-    (!userRole || !userRole.includes(to.meta.requiresRole as string))
-  ) {
     next({ name: ROUTES_CONSTANTS.LOGIN.name });
   } else {
     next();

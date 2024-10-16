@@ -23,17 +23,16 @@
     </div>
   </template>
   
-  <script lang="ts" setup>
-  import { ref, computed } from "vue";
-  import { keepPreviousData } from "@tanstack/vue-query";
-  import { useAuthStore } from "@/stores/auth.ts";
-  import headSubjectPlannerTable from "./headSubjectPlannerTable.vue";
-  import HeadSubjectPlannerFilter from "./HeadSubjectPlannerFilter.vue";
-  import CreatePlanner from "./CreatePlanner.vue";
+<script lang="ts" setup>
+import { ref, computed } from "vue";
+import { keepPreviousData } from "@tanstack/vue-query";
+import { useAuthStore } from "@/stores/auth.ts";
+import headSubjectPlannerTable from "./headSubjectPlannerTable.vue";
+import HeadSubjectPlannerFilter from "./HeadSubjectPlannerFilter.vue";
+import CreatePlanner from "./CreatePlanner.vue";
 import { ParamsGetListPlaner } from "@/services/api/headsubject/plan.api";
 import { useGetSubjectPlanner } from "@/services/service/headsubject/plan.action";
-import { Form } from "ant-design-vue";
-  
+
   // Khởi tạo Auth Store và lấy thông tin người dùng
   const auth = useAuthStore();
   const userInfo = computed(() => auth.user);
@@ -47,13 +46,11 @@ import { Form } from "ant-design-vue";
     currentDepartmentCode: userInfo.value?.departmentCode,
     currentUserId: userInfo.value?.userId,
     currentSemesterId: userInfo.value?.semesterId,
-    currentBlokId: userInfo.value?.blockId,
+    currentBlockId: userInfo.value?.blockId,
   });
   
- 
-
   // Lấy dữ liệu cho head subjects và subjects
-  const { data, isLoading, isFetching, refetch } = useGetSubjectPlanner(params, {
+  const { data, isLoading, isFetching } = useGetSubjectPlanner(params, {
     refetchOnWindowFocus: false,
     placeholderData: keepPreviousData,
   });
@@ -80,5 +77,5 @@ import { Form } from "ant-design-vue";
   const headSubjectPlannerData = computed(() => data?.value?.data?.data || []);
   const totalPages = computed(() => data?.value?.data?.totalPages || 0);
   
-  </script>
+</script>
   

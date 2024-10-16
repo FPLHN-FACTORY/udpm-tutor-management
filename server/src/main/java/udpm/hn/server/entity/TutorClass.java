@@ -37,6 +37,7 @@ public class TutorClass extends PrimaryEntity implements Serializable {
     private Subject subject;
 
     @Column(name = "format")
+    @Enumerated(EnumType.STRING)
     private Format format;
 
     @Column(name = "number_of_classes")

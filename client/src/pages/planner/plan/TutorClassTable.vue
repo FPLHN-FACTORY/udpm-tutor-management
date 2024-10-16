@@ -12,8 +12,7 @@
       >
         <template #bodyCell="{ column, record }">
           <div v-if="column.key === 'format'" class="text-center">
-            <a-tag v-if="record.format === 0" color="success">ONLINE</a-tag>
-            <a-tag v-else-if="record.format === 1" color="warning">OFFLINE</a-tag>
+            <a-tag :color="getTagFormat(record.format)"> {{record.format}}</a-tag>
           </div>
         </template>
       </tutor-table>
@@ -25,6 +24,7 @@
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { TutorClassResponse } from "@/services/api/planner/plan.api.ts";
+import {getTagFormat} from "@/utils/common.helper.ts";
 
 defineProps({
   dataSource: Array<TutorClassResponse>,
