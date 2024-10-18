@@ -305,6 +305,14 @@ export const routes: RouteRecordRaw[] = [
         component: () =>
           import("@/pages/teacher/tutor-class/TutorClassDetail.vue"),
       },
+      {
+        path: ROUTES_CONSTANTS.TEACHER.children.STUDENT_ATTENDANCE.path,
+        name: ROUTES_CONSTANTS.TEACHER.children.STUDENT_ATTENDANCE.name,
+        component: () =>
+            import(
+                "@/pages/teacher/student-attendance/StudentAttendance.vue"
+                ),
+      },
     ],
   },
 ];

@@ -40,4 +40,6 @@ public class Attendance extends PrimaryEntity implements Serializable {
     @Column(name = "reason", length = EntityProperties.LENGTH_NAME)
     private String reason;
 
+    private String note;
+
 }

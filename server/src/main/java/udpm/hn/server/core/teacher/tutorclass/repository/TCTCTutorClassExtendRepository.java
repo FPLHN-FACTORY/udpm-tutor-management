@@ -27,7 +27,7 @@ public interface TCTCTutorClassExtendRepository extends TutorClassRepository {
                 FROM tutor_class_detail tcd LEFT JOIN tutor_class tc on tc.id = tcd.tutor_class_id
                                             LEFT JOIN student_tutor st on tcd.student_conduct_id = st.id
                                             LEFT JOIN subject s on s.id = tc.subject_id
-                                            LEFT JOIN class_student_joined csj on tc.id = csj.tutor_class_id
+                                            LEFT JOIN class_student_joined csj on tc.id = csj.tutor_class_detail_id
                 WHERE (:#{#request.classCode} IS NULL OR tcd.code LIKE CONCAT('%',:#{#request.classCode},'%'))
                     AND (:#{#request.subjectId} IS NULL OR s.id LIKE CONCAT('%',:#{#request.subjectId},'%'))
                     AND (tcd.teacher_conduct_id = :#{#request.teacherId})

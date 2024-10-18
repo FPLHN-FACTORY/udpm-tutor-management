@@ -27,6 +27,7 @@
                   size="large"
                   class="flex items-center justify-center"
                   :icon="h(EyeOutlined)"
+                  @click="goToDetail(record.id)"
               />
             </a-tooltip>
             <a-tooltip title="Thêm evidence" color="#FFC26E">
@@ -108,6 +109,13 @@ import {useUpdateLecture} from "@/services/service/teacher/tutor-class.action.ts
 import {toast} from "vue3-toastify";
 import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
 import dayjs from "dayjs";
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+function goToDetail(lectureId: string) {
+  router.push({ name: 'tcStudentAttendance', params: { lectureId } });
+}
+
 
 const props = defineProps({
   dataSource: {

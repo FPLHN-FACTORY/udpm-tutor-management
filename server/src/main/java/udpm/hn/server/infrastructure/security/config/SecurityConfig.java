@@ -153,14 +153,16 @@ public class SecurityConfig {
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
                                 Helper.appendWildcard(MappingConstants.API_HEAD_DEPARTMENT_HEAD_PLAN),
-                                Helper.appendWildcard(MappingConstants.API_HEAD_DEPARTMENT_HEAD_SUBJECT)
+                                Helper.appendWildcard(MappingConstants.API_HEAD_DEPARTMENT_HEAD_SUBJECT),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_PLAN_LOG_HISTORY)
                         )
                         .hasAnyAuthority(Role.CHU_NHIEM_BO_MON.name())
         );
         // Teacher APIs
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
-                                Helper.appendWildcard(MappingConstants.API_TEACHER_TUTOR_CLASS)
+                                Helper.appendWildcard(MappingConstants.API_TEACHER_TUTOR_CLASS),
+                                Helper.appendWildcard(MappingConstants.API_TEACHER_STUDENT_ATTENDANCE)
                         )
                         .hasAnyAuthority(Role.GIANG_VIEN.name())
         );
@@ -168,14 +170,16 @@ public class SecurityConfig {
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
                                 Helper.appendWildcard(MappingConstants.API_HEAD_SUBJECT_PLAN),
-                                Helper.appendWildcard(MappingConstants.API_HEAD_SUBJECT_TUTOR_DETAIL)
+                                Helper.appendWildcard(MappingConstants.API_HEAD_SUBJECT_TUTOR_DETAIL),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_PLAN_LOG_HISTORY)
                         )
                         .hasAnyAuthority(Role.TRUONG_MON.name())
         );
         // Planner APIs
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
-                                Helper.appendWildcard(MappingConstants.API_PLANNER_PLAN)
+                                Helper.appendWildcard(MappingConstants.API_PLANNER_PLAN),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_PLAN_LOG_HISTORY)
                         )
                         .hasAnyAuthority(Role.NGUOI_LAP_KE_HOACH.name())
         );

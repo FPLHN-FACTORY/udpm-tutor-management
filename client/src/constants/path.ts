@@ -89,6 +89,10 @@ export const ROUTES_CONSTANTS = {
         path: "tutor-class-detail/:tutorClassDetailId",
         name: "tcTutorClassDetail",
       },
+      STUDENT_ATTENDANCE : {
+        path: "student-attendance/:lectureId",
+        name: "tcStudentAttendance",
+      }
     },
   },
   SUPER_ADMIN: {
