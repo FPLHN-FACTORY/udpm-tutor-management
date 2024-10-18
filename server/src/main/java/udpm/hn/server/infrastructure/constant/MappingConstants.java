@@ -60,6 +60,8 @@ public final class MappingConstants {
     // Teacher API Endpoints
     public static final String API_TEACHER_TUTOR_CLASS = API_TEACHER_PREFIX + "/tutor-class";
 
+    public static final String API_TEACHER_STUDENT_ATTENDANCE = API_TEACHER_PREFIX + "/student-attendance";
+
     // Authentication
     public static final String API_AUTH_PREFIX = API_VERSION_PREFIX + "/auth";
     public static final String PATH_OAUTH2 = "/oauth2";
