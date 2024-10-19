@@ -98,9 +98,11 @@ const handleSyncHeadSubjectAttach = async () => {
       isSyncing.value = false;
       toast.success("Đồng bộ dữ liệu thành công");
     },
-    onError: () => {
+    onError: (error: any) => {
       isSyncing.value = false;
-      toast.error(ERROR_MESSAGE.SOMETHING_WENT_WRONG);
+      toast.error(
+        error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+      );
     },
   });
   isSyncing.value = false;
@@ -119,6 +121,7 @@ const columnsSubject: ColumnType[] = [
     dataIndex: "staffName",
     key: "staffName",
     ellipsis: true,
+    width: "250px",
   },
   {
     title: "Email FPT",
@@ -143,11 +146,12 @@ const columnsSubject: ColumnType[] = [
     align: "center",
   },
   {
-    title: "Số lượng môn đang phụ trách",
+    title: "Môn đang phụ trách",
     dataIndex: "assignedCount",
     key: "assignedCount",
     ellipsis: true,
     align: "center",
+    width: "150px",
   },
   { title: "Hành động", key: "action", align: "center", width: "150px" },
 ];

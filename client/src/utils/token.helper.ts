@@ -31,8 +31,3 @@ export const getExpireTime = (token: string): number => {
   const decoded = jwtDecode<DecodedToken>(token);
   return decoded.exp;
 };
-
-export const isTokenExpired = (token: string): boolean => {
-  const expireTime = getExpireTime(token);
-  return Date.now() >= expireTime * 1000;
-};

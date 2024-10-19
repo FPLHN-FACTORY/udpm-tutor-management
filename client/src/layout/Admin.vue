@@ -9,12 +9,17 @@ import {
   MenuUnfoldOutlined,
   UserOutlined,
 } from "@ant-design/icons-vue";
+import { throttle } from "lodash";
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const auth = useAuthStore();
 
 const collapsed = ref<boolean>(false);
+
+const sidebarWidth = ref<number>(250);
+
+const resizing = ref<boolean>(false);
 
 const route = useRoute();
 
@@ -67,17 +72,45 @@ const handleLogout = () => {
   auth.logout();
   router.push("/login");
 };
+
+const startResizing = (event: MouseEvent) => {
+  event.preventDefault();
+  resizing.value = true;
+  document.addEventListener("mousemove", throttledResizeSidebar);
+  document.addEventListener("mouseup", stopResizing);
+};
+
+const throttledResizeSidebar = throttle((event: MouseEvent) => {
+  if (resizing.value) {
+    const newWidth = Math.min(Math.max(event.clientX, 200), 400);
+    sidebarWidth.value = newWidth;
+  }
+}, 50);
+
+const stopResizing = () => {
+  if (resizing.value) {
+    console.log("Stop Resizing");
+    resizing.value = false;
+    document.removeEventListener("mousemove", throttledResizeSidebar);
+    document.removeEventListener("mouseup", stopResizing);
+  }
+};
 </script>
 
 <template>
   <a-layout class="min-h-screen">
-    <a-layout-sider v-model:collapsed="collapsed" class="bg-white">
+    <a-layout-sider
+      v-model:collapsed="collapsed"
+      :width="collapsed ? 80 : sidebarWidth"
+      class="bg-white relative"
+    >
       <div class="logo">
         <a href="/" class="logo">
           <img
             src="/images/logo-udpm-dark.png"
             alt="logo-udpm"
             class="p-2 mt-3"
+            :width="collapsed ? 200 : 200"
           />
         </a>
       </div>
@@ -98,6 +131,7 @@ const handleLogout = () => {
           </router-link>
         </a-menu-item>
       </a-menu>
+      <div class="resizable-handle" @mousedown="startResizing"></div>
     </a-layout-sider>
     <a-layout class="gap-4">
       <a-layout-header class="bg-white pl-3 mt-1">
@@ -117,9 +151,7 @@ const handleLogout = () => {
               >
                 {{ userInfo?.fullName[0] }}
               </a-avatar>
-              <span class="ml-2 truncate">
-                {{ userInfo?.fullName }}
-              </span>
+              <span class="ml-2 truncate">{{ userInfo?.fullName }}</span>
             </div>
             <template #overlay>
               <a-menu>
@@ -140,3 +172,15 @@ const handleLogout = () => {
     </a-layout>
   </a-layout>
 </template>
+
+<style scoped>
+.resizable-handle {
+  width: 3px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #e0e0e0;
+  cursor: col-resize;
+}
+</style>
