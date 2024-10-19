@@ -108,7 +108,7 @@ const handleLogout = () => {
               class="text-xl"
             />
           </div>
-          <a-dropdown arrow placement="bottomCenter">
+          <a-dropdown arrow placement="bottomRight">
             <div class="flex items-center cursor-pointer h-8">
               <a-avatar
                 v-if="userInfo?.pictureUrl"

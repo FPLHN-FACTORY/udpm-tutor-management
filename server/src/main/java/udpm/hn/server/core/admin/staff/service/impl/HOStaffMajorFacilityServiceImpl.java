@@ -60,9 +60,10 @@ public class HOStaffMajorFacilityServiceImpl implements HOStaffMajorFacilityServ
     public ResponseObject<?> createStaffMajorFacility(@Valid HOStaffMajorFacilityRequest req) {
 
         List<DepartmentFacility> departmentFacility =
-                departmentFacilityRepository.findAllByDepartment_IdAndFacility_IdAndStatus(req.getIdDepartment(),
-                        req.getIdFacility(),
-                        EntityStatus.ACTIVE);
+                departmentFacilityRepository.findAllByDepartment_IdAndFacility_Id(
+                        req.getIdDepartment(),
+                        req.getIdFacility()
+                );
 
         if (departmentFacility.isEmpty()) {
             return new ResponseObject<>(null,
@@ -119,9 +120,10 @@ public class HOStaffMajorFacilityServiceImpl implements HOStaffMajorFacilityServ
         }
 
         List<DepartmentFacility> departmentFacility =
-                departmentFacilityRepository.findAllByDepartment_IdAndFacility_IdAndStatus(req.getIdDepartment(),
-                        req.getIdFacility(),
-                        EntityStatus.ACTIVE);
+                departmentFacilityRepository.findAllByDepartment_IdAndFacility_Id(
+                        req.getIdDepartment(),
+                        req.getIdFacility()
+                );
 
         if (departmentFacility.isEmpty()) {
             return new ResponseObject<>(null,

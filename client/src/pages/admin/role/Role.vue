@@ -18,16 +18,20 @@
 </template>
 
 <script lang="ts" setup>
+import RoleFilter from "@/pages/admin/role/RoleFilter.vue";
+import RoleTable from "@/pages/admin/role/RoleTable.vue";
 import { ParamsGetRoles } from "@/services/api/admin/role.api";
 import { useGetRoles } from "@/services/service/admin/role.action";
-import RoleTable from "@/pages/admin/role/RoleTable.vue";
-import RoleFilter from "@/pages/admin/role/RoleFilter.vue";
+import { useAuthStore } from "@/stores/auth";
 import { keepPreviousData } from "@tanstack/vue-query";
 import { computed, ref } from "vue";
+
+const { user } = useAuthStore();
 
 const params = ref<ParamsGetRoles>({
   page: 1,
   size: 10,
+  idFacility: user?.facilityId,
 });
 
 const {

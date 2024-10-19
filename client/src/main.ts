@@ -8,7 +8,7 @@ import { createApp } from "vue";
 import Vue3Toastify, { type ToastContainerOptions } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import App from "./App.vue";
-import "./index.css";
+import "./index.scss";
 import { router } from "@/routes/router";
 
 (window as any).global = window;

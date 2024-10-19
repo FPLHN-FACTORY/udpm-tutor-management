@@ -14,6 +14,7 @@
     "@tanstack/vue-query": "^5.52.0",
     "@tanstack/vue-query-devtools": "^5.53.1",
     "@types/lodash": "^4.17.7",
+    "@types/sockjs-client": "^1.5.4",
     "ant-design-vue": "^4.2.3",
     "axios": "^1.7.5",
     "dayjs": "^1.11.13",

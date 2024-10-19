@@ -1,44 +1,68 @@
-import { ref, onMounted, onBeforeUnmount } from "vue";
-import { Client } from "@stomp/stompjs";
+import { DATE_FORMAT, WEBSOCKET_TOPIC } from "@/constants/common";
+import { Client, StompSubscription } from "@stomp/stompjs";
+import dayjs from "dayjs";
 import SockJS from "sockjs-client";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
-export function useStomp(url: string, accessToken: string) {
+export function useStomp({
+  url,
+  accessToken,
+  domain,
+}: {
+  url: string;
+  accessToken: string;
+  domain: string;
+}) {
   const client = ref<Client | null>(null);
   const isConnected = ref(false);
   const messages = ref<any[]>([]);
+  const subscriptions = ref<StompSubscription[]>([]);
 
   const connect = () => {
-    client.value = new Client({
-      brokerURL: url,
-      connectHeaders: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      webSocketFactory: () => new SockJS(url),
-      debug: (str) => {
-        console.log(new Date(), str);
-      },
-      onConnect: () => {
-        isConnected.value = true;
-        console.log("STOMP connected");
-      },
-      onDisconnect: () => {
-        isConnected.value = false;
-        console.log("STOMP disconnected");
-      },
-      onStompError: (frame) => {
-        console.error("STOMP error:", frame);
-      },
-    });
+    return new Promise<void>((resolve, reject) => {
+      client.value = new Client({
+        brokerURL: `ws://${domain}/ws`,
+        connectHeaders: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        webSocketFactory: () => new SockJS(url),
+        debug: (str) => {
+          console.log(dayjs().format(DATE_FORMAT.DATE_TIME), str);
+        },
+        onWebSocketError: (event) => {
+          console.error("WebSocket error:", event);
+          reject(event);
+        },
+        onConnect: () => {
+          isConnected.value = true;
+          resolve();
+        },
+        onDisconnect: () => {
+          isConnected.value = false;
+        },
+        onStompError: (frame) => {
+          console.error("STOMP error:", frame);
+          reject(frame);
+        },
+      });
 
-    client.value.activate();
+      client.value.activate();
+    });
   };
 
   const subscribe = (destination: string, callback: (message: any) => void) => {
-    if (client.value) {
-      client.value.subscribe(destination, (message) => {
-        callback(JSON.parse(message.body));
-      });
+    if (!(client.value && isConnected.value)) {
+      console.warn("Client is not connected or not initialized");
+      return;
     }
+
+    const subscription = client.value.subscribe(destination, (message) => {
+      const parsedMessage = JSON.parse(message.body);
+      messages.value.push(parsedMessage);
+      callback(parsedMessage);
+    });
+
+    subscriptions.value.push(subscription);
   };
 
   const sendMessage = (destination: string, body: any) => {
@@ -47,17 +71,31 @@ export function useStomp(url: string, accessToken: string) {
         destination,
         body: JSON.stringify(body),
       });
+    } else {
+      console.warn("Client is not connected or not initialized");
     }
   };
 
   const disconnect = () => {
-    if (client.value) {
-      client.value.deactivate();
+    if (!client.value) {
+      return;
     }
+
+    subscriptions.value.forEach((subscription) => subscription.unsubscribe());
+    subscriptions.value = [];
+    client.value.deactivate();
   };
 
   onMounted(() => {
-    connect();
+    connect()
+      .then(() => {
+        subscribe(WEBSOCKET_TOPIC.NOTIFICATION, (message) => {
+          messages.value.push(message);
+        });
+      })
+      .catch((error) => {
+        console.error("Failed to connect:", error);
+      });
   });
 
   onBeforeUnmount(() => {

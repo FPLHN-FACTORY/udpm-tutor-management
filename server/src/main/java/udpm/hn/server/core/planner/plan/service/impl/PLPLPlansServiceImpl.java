@@ -30,13 +30,14 @@ import udpm.hn.server.entity.Plan;
 import udpm.hn.server.entity.Semester;
 import udpm.hn.server.entity.Staff;
 import udpm.hn.server.infrastructure.config.email.service.EmailService;
+import udpm.hn.server.infrastructure.config.googleform.service.GoogleFormService;
 import udpm.hn.server.infrastructure.config.websocket.model.NotifyModel;
 import udpm.hn.server.infrastructure.config.websocket.service.NotificationService;
-import udpm.hn.server.infrastructure.config.googleform.service.GoogleFormService;
 import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.infrastructure.constant.PlanStatus;
 import udpm.hn.server.infrastructure.constant.Role;
 import udpm.hn.server.utils.Helper;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -78,9 +79,15 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
                 "Lấy danh sách kế hoach thành công!"
         );
     }
+
     @Override
     public ResponseObject<?> createPlan(PLPLCreatePlanRequest request) {
-        Optional<DepartmentFacility> departmentFacilityOptional = plplDepartmentFacilitysRepository.findByDepartment_CodeAndFacilityCode(request.getDepartmentCode(), request.getFacilityCode());
+        Optional<DepartmentFacility> departmentFacilityOptional = plplDepartmentFacilitysRepository
+                .findByDepartment_CodeAndFacilityCode(
+                        request.getDepartmentCode(),
+                        request.getFacilityCode()
+                );
+
         PlanLogHistoryRequest planLogHistory = new PlanLogHistoryRequest();
         planLogHistory.setTypeFunction(FunctionLogType.CREATE_PLAN);
         planLogHistory.setAction("Tạo kế hoạch");
@@ -156,6 +163,7 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
         }
         return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi lưu kế hoạch");
     }
+
     @Override
     public ResponseObject<?> updatePlan(String planId, PLPLUpdatePlanRequest request) {
         Long canUpdate = plplPlansRepository.canUpdate(planId);
@@ -194,10 +202,29 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
             planLogHistory.setEndDate(request.getEndTime());
             planLogHistory.setPlanId(planSaveResult.getId());
             planLogHistory.setStatus(true);
+
+            List<Notification> listNotificationSave = new ArrayList<>();
+            for (String role : List.of(Role.TRUONG_MON.toString(), Role.CHU_NHIEM_BO_MON.toString())) {
+                Notification item = new Notification();
+                item.setPlan(planSaveResult);
+                item.setContent("Kế hoạch " + planSaveResult.getDescription() + " đã được chỉnh sửa.");
+                item.setStaff(planSaveResult.getPlanner());
+                item.setSentTo(role);
+                listNotificationSave.add(item);
+            }
+            notificationRepository.saveAll(listNotificationSave);
+
+            notificationService.sendNotification(
+                    NotifyModel.getRoles(
+                            Role.TRUONG_MON.name(),
+                            Role.CHU_NHIEM_BO_MON.name()
+                    )
+            );
+
             return new ResponseObject<>(null, HttpStatus.CREATED, "Sửa kế hoạch thành công");
         } catch (Exception e) {
             planLogHistory.setStatus(false);
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         } finally {
             try {
                 Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);

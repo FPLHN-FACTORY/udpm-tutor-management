@@ -16,17 +16,20 @@
     </div>
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
-          wrapperClassName="min-h-[410px]"
-          :columns="columnsDepartment"
-          :data-source="dataSource"
-          :loading="loading"
-          :pagination-params="paginationParams || {}"
-          :total-pages="totalPages || 0"
-          @update:pagination-params="$emit('update:paginationParams', $event)"
+        wrapperClassName="min-h-[410px]"
+        :columns="columnsDepartment"
+        :data-source="dataSource"
+        :loading="loading"
+        :pagination-params="paginationParams || {}"
+        :total-pages="totalPages || 0"
+        @update:pagination-params="$emit('update:paginationParams', $event)"
       >
         <template #bodyCell="{ column, record }">
           <div v-if="column.key === 'action'" class="space-x-2 text-center">
-            <a-tooltip title="Chi tiết chuyên ngành thuộc bộ môn" color="#FFC26E">
+            <a-tooltip
+              title="Chi tiết chuyên ngành thuộc bộ môn"
+              color="#FFC26E"
+            >
               <a-button
                 type="primary"
                 size="regular"
@@ -51,9 +54,16 @@
               />
             </a-tooltip>
           </div>
-          <div v-else-if="column.key === 'departmentStatus'" class="text-center">
-            <a-tag v-if="record.departmentStatus === 0" color="success">Hoạt động</a-tag>
-            <a-tag v-else-if="record.departmentStatus === 1" color="error">Không hoạt động</a-tag>
+          <div
+            v-else-if="column.key === 'departmentStatus'"
+            class="text-center"
+          >
+            <a-tag v-if="record.departmentStatus === 0" color="success"
+              >Hoạt động</a-tag
+            >
+            <a-tag v-else-if="record.departmentStatus === 1" color="error"
+              >Không hoạt động</a-tag
+            >
           </div>
         </template>
       </tutor-table>
@@ -64,13 +74,9 @@
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
 import { DepartmentResponse } from "@/services/api/admin/department.api";
-import {  useDepartmentSynchronize } from "@/services/service/admin/department.action";
 import { BookOutlined, EyeOutlined, GoldOutlined } from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
 import { h } from "vue";
-import { useMajorSynchronize } from "@/services/service/admin/major.action";
-import { toast } from "vue3-toastify";
-import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
 
 defineProps({
   dataSource: Array as () => DepartmentResponse[],
@@ -85,41 +91,8 @@ const emit = defineEmits([
   "handleOpenModalAdd",
   "handleOpenMajorListModal",
   "handleOpenDepartmentsFacilityListModal",
-  "syncSuccess"
+  "syncSuccess",
 ]);
-
-const { mutate: onSyncDepartment } = useDepartmentSynchronize();
-const { mutate: onSyncMajor } = useMajorSynchronize();
-const handleSync = async () => {
-  try {
-      onSyncDepartment(undefined, {
-        onSuccess: () => {
-        },
-        onError: (error: any) => {
-          toast.error(
-              error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-          )
-          return;
-        },
-      });
-
-      onSyncMajor(undefined, {
-        onSuccess: () => {
-          toast.success("Đồng bộ bộ môn, chuyên ngành  thành công");
-        },
-        onError: (error: any) => {
-          toast.error(
-              error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-          )
-        },
-      });
-
-    emit("syncSuccess")
-
-  } catch (error: any) {
-    console.log("Có lỗi xảy ra trong quá trình đồng bộ: " + error.message);
-  }
-};
 
 const columnsDepartment: ColumnType[] = [
   {
@@ -127,25 +100,22 @@ const columnsDepartment: ColumnType[] = [
     dataIndex: "orderNumber",
     key: "index",
     ellipsis: true,
+    width: "100px",
   },
   {
     title: "Mã bộ môn",
     dataIndex: "departmentCode",
     key: "departmentCode",
     ellipsis: true,
+    width: "200px",
   },
   {
     title: "Tên bộ môn",
     dataIndex: "departmentName",
     key: "departmentName",
     ellipsis: true,
+    width: "200px",
   },
-  // {
-  //   title: "Trạng thái",
-  //   dataIndex: "departmentStatus",
-  //   key: "departmentStatus",
-  //   ellipsis: true,
-  // },
   {
     title: "Hành động",
     key: "action",

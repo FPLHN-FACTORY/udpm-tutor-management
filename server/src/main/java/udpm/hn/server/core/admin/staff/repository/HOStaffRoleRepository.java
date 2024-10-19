@@ -17,13 +17,13 @@ import java.util.List;
 public interface HOStaffRoleRepository extends StaffRoleRepository {
 
     @Query(value = """
-            SELECT 
-                   ROW_NUMBER() OVER(
-            	            ORDER BY r.id DESC) AS orderNumber,
-                   r.name AS roleName,
-                   r.name AS roleCode,
-                   r.id AS roleId,
-                   f.name AS facilityName
+            SELECT
+               ROW_NUMBER() OVER(
+                        ORDER BY r.id DESC) AS orderNumber,
+               r.name AS roleName,
+               r.code AS roleCode,
+               r.id AS roleId,
+               f.name AS facilityName
             FROM staff_role sr
             LEFT JOIN role r ON sr.id_role = r.id
             LEFT JOIN facility f ON r.id_facility = f.id
@@ -46,13 +46,9 @@ public interface HOStaffRoleRepository extends StaffRoleRepository {
                    r.id AS idRole,
                    r.code AS roleCode,
                    f.name AS facilityName,
-                   CASE
-                   WHEN r.id IN (SELECT sr.id_role FROM staff_role sr 
+                   IF(r.id IN (SELECT sr.id_role FROM staff_role sr
                                                    WHERE sr.id_staff LIKE :#{#hoRoleRequest.staffId}
-                                                   AND sr.status = 0)
-                   THEN 'true'
-                   ELSE 'false'
-                   END as checked
+                                                   AND sr.status = 0), 'true', 'false') as checked
                   FROM role r
                   LEFT JOIN facility f ON r.id_facility = f.id
                   WHERE r.status = 0

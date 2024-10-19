@@ -2,6 +2,8 @@ export const { VITE_BASE_URL_SERVER } = import.meta.env || {};
 
 export const { VITE_BASE_URL_CLIENT } = import.meta.env || {};
 
+export const { VITE_BASE_URL_CLIENT_SOCKET } = import.meta.env || {};
+
 // API URL
 export const API_URL = `${VITE_BASE_URL_SERVER}/api/v1` as string;
 
@@ -33,9 +35,6 @@ export const PREFIX_API_FACILITY_CHILD_ADMIN =
 export const PREFIX_API_DEPARTMENT_ADMIN =
   `${API_URL}/admin/departments` as string;
 
-export const PREFIX_API_ADMIN_PLAN_HISTORY_LOG =
-  `${API_URL}/admin/plan-log-history` as string;
-
 export const PREFIX_API_DEPARTMENT_FACILITY_ADMIN =
   `${API_URL}/admin/departments-facility` as string;
 
@@ -49,6 +48,10 @@ export const PREFIX_API_ROLE_ADMIN = `${API_URL}/admin/roles` as string;
 export const PREFIX_API_SEMESTER_ADMIN = `${API_URL}/admin/semesters` as string;
 
 export const PREFIX_API_STAFF_ADMIN = `${API_URL}/admin/staffs` as string;
+
+// Plan Log History API
+
+export const PREFIX_API_PLAN_HISTORY_LOG = `${API_URL}/logs` as string;
 
 // Super Admin API
 

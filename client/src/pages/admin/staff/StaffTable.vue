@@ -6,39 +6,45 @@
         <span class="ml-2 text-2xl">Danh sách nhân viên</span>
       </h2>
       <a-button
-          type="primary"
-          size="large"
-          class="m-4"
-          @click="handleOpenModalAdd"
+        type="primary"
+        size="large"
+        class="m-4"
+        @click="handleOpenModalAdd"
       >
-        Thêm
+        Thêm nhân viên
       </a-button>
     </div>
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
-          wrapperClassName="min-h-[410px]"
-          :columns="columnsStaff"
-          :data-source="dataSource"
-          :loading="loading"
-          :pagination-params="paginationParams || {}"
-          :total-pages="totalPages || 0"
-          @update:pagination-params="$emit('update:paginationParams', $event)"
+        wrapperClassName="min-h-[410px]"
+        :columns="columnsStaff"
+        :data-source="dataSource"
+        :loading="loading"
+        :pagination-params="paginationParams || {}"
+        :total-pages="totalPages || 0"
+        @update:pagination-params="$emit('update:paginationParams', $event)"
       >
         <template #bodyCell="{ column, record }">
-          <div v-if="column.key === 'action'" class="space-x-2 text-center flex items-center justify-center">
+          <div
+            v-if="column.key === 'action'"
+            class="space-x-2 text-center flex items-center justify-center"
+          >
             <a-tooltip title="Chi tiết nhân viên" color="#FFC26E">
               <a-button
-                  class="flex items-center justify-center"
-                  type="primary"
-                  size="large"
-                  :icon="h(EyeOutlined)"
-                  @click="goToDetail(record.id)"
+                class="flex items-center justify-center"
+                type="primary"
+                size="large"
+                :icon="h(EyeOutlined)"
+                @click="goToDetail(record.id)"
               />
             </a-tooltip>
           </div>
         </template>
       </tutor-table>
-      <create-staff-modal :open="open" @handle-close-modal="handleCloseModalAdd" />
+      <create-staff-modal
+        :open="open"
+        @handle-close-modal="handleCloseModalAdd"
+      />
     </div>
     <router-view />
   </div>
@@ -46,25 +52,19 @@
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
-import {StaffResponse} from "@/services/api/admin/staff.api.ts";
-import {ColumnType} from "ant-design-vue/es/table";
-import {EyeOutlined} from "@ant-design/icons-vue";
-import {computed, h, ref} from "vue";
-import {useRouter} from "vue-router";
-import {useStaffSynchronize} from "@/services/service/admin/staff.action.ts";
-import {useAuthStore} from "@/stores/auth.ts";
-import {toast} from "vue3-toastify";
-import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
+import { StaffResponse } from "@/services/api/admin/staff.api.ts";
+import { EyeOutlined } from "@ant-design/icons-vue";
+import { ColumnType } from "ant-design-vue/es/table";
+import { h, ref } from "vue";
+import { useRouter } from "vue-router";
 import CreateStaffModal from "./CreateStaffModal.vue";
 
 const router = useRouter();
-// Khởi tạo Auth Store và lấy thông tin người dùng
-const auth = useAuthStore();
-const userInfo = computed(() => auth.user);
-const open = ref<boolean>(false)
+
+const open = ref<boolean>(false);
 
 function goToDetail(staffId: string) {
-  router.push({ name: 'detailStaff', params: { staffId } });
+  router.push({ name: "detailStaff", params: { staffId } });
 }
 
 defineProps({
@@ -74,36 +74,15 @@ defineProps({
   totalPages: Number,
 });
 
-defineEmits([
-  "update:paginationParams",
-]);
-
-const { mutate: onSync } = useStaffSynchronize();
-
-// Handle button click
-const handleSync = async () => {
-  try {
-    onSync(userInfo.value?.facilityCode, {
-      onSuccess: () => {
-        toast.success("Đồng bộ nhân viên thành công");
-      },
-      onError: (error: any) => {
-        toast.error(
-            error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-        )
-      },
-    })
-  }catch (error) {
-  }
-};
+defineEmits(["update:paginationParams"]);
 
 const handleOpenModalAdd = () => {
   open.value = true;
-}
+};
 
 const handleCloseModalAdd = () => {
   open.value = false;
-}
+};
 
 const columnsStaff: ColumnType[] = [
   {
