@@ -99,6 +99,10 @@ onMounted(() => {
   if (!authStore.isAuthenticated) {
     router.push({ name: ROUTES_CONSTANTS.LOGIN.name });
   }
+
+  if (filteredRoles.value.length === 1) {
+    router.push(filteredRoles.value[0].route);
+  }
 });
 </script>
 

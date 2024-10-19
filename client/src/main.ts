@@ -1,3 +1,4 @@
+import { router } from "@/routes/router";
 import { VueQueryPlugin } from "@tanstack/vue-query";
 import Antd from "ant-design-vue";
 import "ant-design-vue/dist/reset.css";
@@ -9,7 +10,6 @@ import Vue3Toastify, { type ToastContainerOptions } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import App from "./App.vue";
 import "./index.scss";
-import { router } from "@/routes/router";
 
 (window as any).global = window;
 

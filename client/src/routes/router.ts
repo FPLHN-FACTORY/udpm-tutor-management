@@ -7,7 +7,7 @@ export const routes: RouteRecordRaw[] = [
   // Root route
   {
     path: "/",
-    redirect: ROUTES_CONSTANTS.LOGIN.path,
+    component: () => import("./guard/Landing.vue"),
   },
   // Not Found route
   {
@@ -309,9 +309,7 @@ export const routes: RouteRecordRaw[] = [
         path: ROUTES_CONSTANTS.TEACHER.children.STUDENT_ATTENDANCE.path,
         name: ROUTES_CONSTANTS.TEACHER.children.STUDENT_ATTENDANCE.name,
         component: () =>
-            import(
-                "@/pages/teacher/student-attendance/StudentAttendance.vue"
-                ),
+          import("@/pages/teacher/student-attendance/StudentAttendance.vue"),
       },
     ],
   },
