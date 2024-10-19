@@ -46,13 +46,13 @@ public class PlanLogHistoryServiceImpl implements PlanLogHistoryService {
                     planLogHistory.setEmail(staff.getEmailFpt());
                 });
             }
-            if(request.getPlanId()!=null) {
+            if (request.getPlanId() != null) {
                 Optional<Plan> plan = planRepository.findById(request.getPlanId());
-                if(plan.isPresent()) {
+                if (plan.isPresent()) {
                     planLogHistory.setPlan(plan.get().getId());
                 }
             }
-            if(request.getStatus()) {
+            if (request.getStatus()) {
                 planLogHistory.setStatus(EntityStatus.ACTIVE);
             } else {
                 planLogHistory.setStatus(EntityStatus.INACTIVE);
@@ -75,7 +75,7 @@ public class PlanLogHistoryServiceImpl implements PlanLogHistoryService {
             planLogHistory.setRoleStaff(request.getRoleStaff());
             planLogHistoryRepository.save(planLogHistory);
             return true;
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
