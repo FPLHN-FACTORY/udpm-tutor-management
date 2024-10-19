@@ -14,10 +14,11 @@ public final class MappingConstants {
     public static final String PLANNER = "/planner";
     public static final String SUPER_ADMIN = "/super-admin";
 
-    // API Prefixes
+    // Common Endpoint API Prefixes
     public static final String API_VERSION_PREFIX = "/api/v1";
     public static final String API_COMMON = API_VERSION_PREFIX + "/common";
     public static final String API_NOTIFICATION = API_VERSION_PREFIX + "/notification";
+    public static final String API_LOG = API_VERSION_PREFIX + "/logs";
 
     // API By Role Prefixes
     public static final String API_HEAD_SUBJECT_PREFIX = API_VERSION_PREFIX + HEAD_SUBJECT;
@@ -38,8 +39,9 @@ public final class MappingConstants {
     public static final String API_ADMIN_DEPARTMENT_FACILITY = API_ADMIN_PREFIX + "/departments-facility";
     public static final String API_ADMIN_STAFF = API_ADMIN_PREFIX + "/staffs";
     public static final String API_ADMIN_ROLE = API_ADMIN_PREFIX + "/roles";
-    public static final String API_ADMIN_PLAN_LOG_HISTORY = API_ADMIN_PREFIX + "/plan-log-history";
 
+    // Log History API Endpoints
+    public static final String API_PLAN_LOG_HISTORY = API_LOG;
 
     // Super Admin API Endpoints
     public static final String API_SUPER_ADMIN_FACILITY = API_SUPER_ADMIN_PREFIX + "/facilities";

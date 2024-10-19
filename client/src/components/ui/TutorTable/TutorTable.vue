@@ -40,17 +40,22 @@
     class="mt-3 flex w-full justify-end"
   >
     <a-pagination
-      :current="paginationParams.page"
+      :current="paginationParams?.page"
       :total="
-        isNaN(totalPages * paginationParams.size)
+        totalPages &&
+        (isNaN(totalPages * paginationParams?.size)
           ? 0
-          : totalPages * paginationParams.size
+          : totalPages * paginationParams?.size)
       "
-      :show-size-changer="!isNaN(totalPages * paginationParams.size)"
+      :show-size-changer="
+        totalPages && !isNaN(totalPages * paginationParams?.size)
+      "
       :page-size-options="
-        isNaN(totalPages * paginationParams.size) ? [] : ['10', '15', '20']
+        totalPages && isNaN(totalPages * paginationParams?.size)
+          ? []
+          : ['10', '15', '20']
       "
-      :default-page-size="paginationParams.size"
+      :default-page-size="paginationParams?.size"
       :show-quick-jumper="showSizeChanger"
       :locale="{
         jump_to: 'Đến',
@@ -82,11 +87,11 @@ const props = defineProps({
   },
   paginationParams: {
     type: Object,
-    required: true,
+    required: false,
   },
   totalPages: {
     type: Number,
-    required: true,
+    required: false,
   },
   tableLayout: {
     type: String,

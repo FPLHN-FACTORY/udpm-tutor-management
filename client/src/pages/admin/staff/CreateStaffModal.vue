@@ -1,12 +1,26 @@
 <template>
   <div>
-    <a-modal :open="open" title="Thêm nhân viên" @cancel="handleClose" @ok="handleAddStaff" destroyOnClose centered
-      ok-text="Thêm nhân viên">
+    <a-modal
+      :open="open"
+      title="Thêm nhân viên"
+      @cancel="handleClose"
+      @ok="handleAddStaff"
+      destroyOnClose
+      centered
+      ok-text="Thêm nhân viên"
+    >
       <div>
         <a-form layout="vertical">
           <template v-for="field in formFields">
-            <a-form-item :label="field.label" :name="field.name" v-bind="validateInfos[field.name]">
-              <component :is="field.component" v-model:value="modelRef[field.name]"></component>
+            <a-form-item
+              :label="field.label"
+              :name="field.name"
+              v-bind="validateInfos[field.name]"
+            >
+              <component
+                :is="field.component"
+                v-model:value="modelRef[field.name]"
+              ></component>
             </a-form-item>
           </template>
         </a-form>
@@ -46,20 +60,30 @@ const modelRef = reactive<StaffForm>({
 });
 
 const rulesRef = reactive({
-  name: [
-    { required: true, message: "Vui lòng nhập tên", trigger: "blur" },
-  ],
+  name: [{ required: true, message: "Vui lòng nhập tên", trigger: "blur" }],
   staffCode: [
     { required: true, message: "Vui lòng nhập mã nhân viên", trigger: "blur" },
-    { message: "Vui lòng nhập lại, mã nhân không hợp lệ", trigger: "blur", pattern: '^[^\s]+$' },
+    {
+      message: "Vui lòng nhập lại, mã nhân không hợp lệ",
+      trigger: "blur",
+      pattern: "^[^\s]+$",
+    },
   ],
   emailFe: [
     { required: true, message: "Vui lòng nhập email FE", trigger: "blur" },
-    { message: "Vui lòng nhập lại, email FE không hợp lệ", trigger: "blur", pattern: '^[A-Za-z0-9._%+-]+@fe\.edu\.vn$' },
+    {
+      message: "Vui lòng nhập lại, email FE không hợp lệ",
+      trigger: "blur",
+      pattern: "^[A-Za-z0-9._%+-]+@fe\.edu\.vn$",
+    },
   ],
   emailFpt: [
     { required: true, message: "Vui lòng nhập email FPT", trigger: "blur" },
-    { message: "Vui lòng nhập lại, email FPT không hợp lệ", trigger: "blur", pattern: '^[A-Za-z0-9._%+-]+@fpt\.edu\.vn$' },
+    {
+      message: "Vui lòng nhập lại, email FPT không hợp lệ",
+      trigger: "blur",
+      pattern: "^[A-Za-z0-9._%+-]+@fpt\.edu\.vn$",
+    },
   ],
 });
 
@@ -93,7 +117,7 @@ const formFields = computed(() => [
 
 const handleAddStaff = () => {
   Modal.confirm({
-    content: 'Bạn chắc chắn muốn thêm chứ',
+    content: "Bạn chắc chắn muốn thêm chứ",
     icon: createVNode(ExclamationCircleOutlined),
     centered: true,
     async onOk() {
@@ -107,11 +131,11 @@ const handleAddStaff = () => {
           },
           onError: (error: any) => {
             toast.error(
-              error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-            )
+              error?.response?.data?.message ||
+                ERROR_MESSAGE.SOMETHING_WENT_WRONG
+            );
           },
-        })
-
+        });
       } catch (error: any) {
         console.error("🚀 ~ handleAdd ~ error:", error);
         toast.error(
@@ -119,18 +143,16 @@ const handleAddStaff = () => {
         );
       }
     },
-    cancelText: 'Huỷ',
+    cancelText: "Huỷ",
     onCancel() {
       Modal.destroyAll();
       resetFields();
     },
   });
-}
+};
 
 const handleClose = () => {
   emit("handleCloseModal");
   resetFields();
 };
-
-
 </script>

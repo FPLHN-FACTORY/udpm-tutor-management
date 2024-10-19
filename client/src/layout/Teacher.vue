@@ -73,7 +73,7 @@ const handleLogout = () => {
             />
           </div>
           <div class="flex gap-x-2 items-center">
-            <a-dropdown placement="bottomCenter" arrow>
+            <a-dropdown placement="bottomRight" arrow>
               <div class="flex items-center cursor-pointer h-8">
                 <a-avatar
                   v-if="userInfo?.pictureUrl"
@@ -94,7 +94,7 @@ const handleLogout = () => {
                 </a-menu>
               </template>
             </a-dropdown>
-            <tutor-notification :keyWord="'GIANG_VIEN'" />
+            <tutor-notification :role="'GIANG_VIEN'" />
           </div>
         </div>
       </a-layout-header>

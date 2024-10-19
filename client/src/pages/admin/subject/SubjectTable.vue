@@ -11,11 +11,11 @@
         size="large"
         class="m-4"
       >
-        Tạo môn học
+        Thêm môn học
       </a-button>
     </div>
-      <div class="flex h-0 flex-1 flex-col">
-        <tutor-table
+    <div class="flex h-0 flex-1 flex-col">
+      <tutor-table
         wrapperClassName="min-h-[410px]"
         :columns="columnsSubject"
         :data-source="dataSource"
@@ -25,13 +25,16 @@
         @update:pagination-params="$emit('update:paginationParams', $event)"
       >
         <template #bodyCell="{ column, record }">
-          <div v-if="column.key === 'action'" class="space-x-2 flex items-center justify-center">
+          <div
+            v-if="column.key === 'action'"
+            class="space-x-2 flex items-center justify-center"
+          >
             <a-tooltip title="Chỉnh sửa môn học" color="#FFC26E">
               <a-button
-                 class="flex items-center justify-center"
+                class="flex items-center justify-center"
                 type="primary"
                 size="large"
-                 @click="$emit('handleOpenModalUpdate', record)"
+                @click="$emit('handleOpenModalUpdate', record)"
                 :icon="h(EditOutlined)"
               />
             </a-tooltip>
@@ -43,8 +46,8 @@
             {{ getDateFormat(record.createdDate, false) }}
           </div>
         </template>
-       </tutor-table>
-      </div>
+      </tutor-table>
+    </div>
   </div>
 </template>
 

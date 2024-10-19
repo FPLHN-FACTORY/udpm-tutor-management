@@ -1,11 +1,9 @@
 package udpm.hn.server.core.admin.staff.repository;
 
-import org.aspectj.apache.bcel.classfile.Module;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import udpm.hn.server.core.admin.staff.model.response.HOStaffDepartmentFacilityResponse;
 import udpm.hn.server.entity.DepartmentFacility;
-import udpm.hn.server.infrastructure.constant.EntityStatus;
 import udpm.hn.server.repository.DepartmentFacilityRepository;
 
 import java.util.List;
@@ -34,7 +32,10 @@ public interface HOStaffDepartmentFacilityRepository extends DepartmentFacilityR
             """, nativeQuery = true)
     Optional<HOStaffDepartmentFacilityResponse> getDepartmentFacilities(String departmentCode, String facilityCode);
 
-    List<DepartmentFacility> findAllByDepartment_IdAndFacility_IdAndStatus(String departmentId, String facilityId, EntityStatus status);
+    List<DepartmentFacility> findAllByDepartment_IdAndFacility_Id(
+            String departmentId,
+            String facilityId
+    );
 
 
 }

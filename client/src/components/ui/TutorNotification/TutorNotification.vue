@@ -59,8 +59,10 @@
 </template>
 <script lang="ts" setup>
 import { useStomp } from "@/composable/useStomp";
-import { WEBSOCKET_TOPIC } from "@/constants/common";
-import { VITE_BASE_URL_SERVER } from "@/constants/url";
+import {
+  VITE_BASE_URL_CLIENT_SOCKET,
+  VITE_BASE_URL_SERVER,
+} from "@/constants/url";
 import {
   NotificationResponse,
   ParamsGetNotification,
@@ -75,25 +77,26 @@ import { useAuthStore } from "@/stores/auth";
 import { getDateFormat } from "@/utils/common.helper";
 import { BellOutlined } from "@ant-design/icons-vue";
 import { keepPreviousData } from "@tanstack/vue-query";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 
-const { keyWord } = defineProps({
-  keyWord: String,
+const { role } = defineProps({
+  role: String,
 });
 
 const { user, accessToken } = useAuthStore();
 
-const { messages, subscribe } = useStomp(
-  `${VITE_BASE_URL_SERVER}/ws`,
-  accessToken as string
-);
+const { messages } = useStomp({
+  url: `${VITE_BASE_URL_SERVER}/ws`,
+  accessToken: accessToken as string,
+  domain: VITE_BASE_URL_CLIENT_SOCKET,
+});
 
 const visible = ref(false);
 
 const params = ref<ParamsGetNotification>({
   page: 1,
   size: 5,
-  keyWord: keyWord || "",
+  keyWord: role || "",
   facilityCode: user?.facilityCode || "",
   departmentCode: user?.departmentCode || "",
   userId: user?.userId || "",
@@ -140,16 +143,19 @@ const notificationData = computed(
 
 const totalNotify = computed(() => totalNotificationData.value?.data || null);
 
-subscribe(WEBSOCKET_TOPIC.NOTIFICATION, (message) => {
-  if (message.roles.includes(keyWord)) {
-    refetchNotificationData();
-    refetchCountNotification();
-  }
-  messages.value.push(message);
-});
+watch(
+  messages,
+  (newMessages) => {
+    if (newMessages[Number(newMessages.length) - 1].includes(role)) {
+      refetchNotificationData();
+      refetchCountNotification();
+    }
+  },
+  { deep: true }
+);
 
 onMounted(() => {
-  if (keyWord === "GIANG_VIEN") {
+  if (role === "GIANG_VIEN") {
     params.value = { ...params.value, keyWord: user?.userId || "" };
   }
 });

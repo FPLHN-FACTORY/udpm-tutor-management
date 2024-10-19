@@ -7,13 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import udpm.hn.server.core.planloghistory.model.request.PlanLogHistoryFilterRequest;
-import udpm.hn.server.core.planloghistory.model.request.PlanLogHistoryRequest;
 import udpm.hn.server.core.planloghistory.service.PlanLogHistoryService;
 import udpm.hn.server.infrastructure.constant.MappingConstants;
 import udpm.hn.server.utils.Helper;
 
 @Controller
-@RequestMapping(MappingConstants.API_ADMIN_PLAN_LOG_HISTORY)
+@RequestMapping(MappingConstants.API_PLAN_LOG_HISTORY)
 @RequiredArgsConstructor
 public class PlanLogHistoryController {
 

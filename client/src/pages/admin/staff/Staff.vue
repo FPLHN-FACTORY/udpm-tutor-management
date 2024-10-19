@@ -8,11 +8,11 @@
     </div>
     <StaffFilter @filter="handleFilter" />
     <staff-table
-        :data-source="staffData"
-        :loading="isLoading || isFetching"
-        :pagination-params="params"
-        :total-pages="totalPages"
-        @update:pagination-params="handlePaginationChange"
+      :data-source="staffData"
+      :loading="isLoading || isFetching"
+      :pagination-params="params"
+      :total-pages="totalPages"
+      @update:pagination-params="handlePaginationChange"
     />
   </div>
 </template>
@@ -20,11 +20,11 @@
 <script lang="ts" setup>
 import StaffTable from "@/pages/admin/staff/StaffTable.vue";
 import StaffFilter from "@/pages/admin/staff/StaffFilter.vue";
-import {computed, ref} from "vue";
-import {ParamsGetStaff} from "@/services/api/admin/staff.api.ts";
-import {useGetStaff} from "@/services/service/admin/staff.action.ts";
-import {keepPreviousData} from "@tanstack/vue-query";
-import {ParamsGetDepartment} from "@/services/api/admin/department.api.ts";
+import { computed, ref } from "vue";
+import { ParamsGetStaff } from "@/services/api/admin/staff.api.ts";
+import { useGetStaff } from "@/services/service/admin/staff.action.ts";
+import { keepPreviousData } from "@tanstack/vue-query";
+import { ParamsGetDepartment } from "@/services/api/admin/department.api.ts";
 
 const params = ref<ParamsGetStaff>({
   page: 1,
@@ -39,7 +39,6 @@ const { data, isLoading, isFetching } = useGetStaff(params, {
 const handlePaginationChange = (newParams: ParamsGetStaff) => {
   params.value = { ...params.value, ...newParams };
 };
-
 
 const handleFilter = (newParams: ParamsGetDepartment) => {
   params.value = { ...params.value, ...newParams };
