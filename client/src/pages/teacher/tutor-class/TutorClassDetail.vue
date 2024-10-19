@@ -9,15 +9,9 @@
         <div class="shadow-md p-3 rounded-md mx-3 my-15">
           <div class="p-5">
             <h2 class="text-center text-xl font-semibold mb-4">Thông tin chi tiết lớp tutor</h2>
-            <a-descriptions title="" class="p-4">
-              <a-descriptions-item label="Mã lớp">x</a-descriptions-item>
-              <a-descriptions-item label="Môn học"></a-descriptions-item>
-              <a-descriptions-item label="Trợ giảng"></a-descriptions-item>
-              <a-descriptions-item label="Hình thức"></a-descriptions-item>
-              <a-descriptions-item label="Sĩ số"></a-descriptions-item>
-              <a-descriptions-item label="Số SV nghỉ"></a-descriptions-item>
-              <a-descriptions-item label="Tiến trình"></a-descriptions-item>
-            </a-descriptions>
+            <TutorClassDetailInfor
+              :tutorClassDetailData="tutorClassDetailData"
+            />
           </div>
         </div>
         <tutor-class-detail-table
@@ -39,10 +33,11 @@
 
 <script lang="ts" setup>
 import TutorClassDetailTable from './TutorClassDetailTable.vue';
+import TutorClassDetailInfor from './TutorClassDetailInfor.vue';
 import { computed, ref } from 'vue';
 import {
   useGetEvidenceLectureDetail,
-  useGetLectureByTutorClassDetail,
+  useGetLectureByTutorClassDetail, useGetTutorClassDetail,
 } from '@/services/service/teacher/tutor-class.action';
 import { keepPreviousData } from '@tanstack/vue-query';
 import {useRoute} from "vue-router";
@@ -62,15 +57,20 @@ const handleOpenModalAdd = (record: LectureResponse) => {
   open.value = true;
 };
 
-const handleOpenModalUpdate = (record: LectureResponse) => {
+const handleOpenModalUpdate = () => {
   open.value = true;
 };
-
 
 const { data: lectureList, isLoading: isLoadingLectureList } = useGetLectureByTutorClassDetail(tutorClassDetailId, {
   refetchOnWindowFocus: false,
   placeholderData: keepPreviousData,
   enabled: !!tutorClassDetailId && open.value == false
+})
+
+const { data: tutorClassDetail } = useGetTutorClassDetail(tutorClassDetailId, {
+  refetchOnWindowFocus: false,
+  placeholderData: keepPreviousData,
+  enabled: !!tutorClassDetailId
 })
 
 const { data: evidenceLectureDetail, isLoading: isLoadingDetail } = useGetEvidenceLectureDetail(lectureId,
@@ -86,9 +86,9 @@ const handleClose = () => {
 };
 
 const lectureListData = computed(() => lectureList.value?.data || []);
+const tutorClassDetailData = computed(() => tutorClassDetail.value?.data || {});
 const evidenceDetail = computed(() =>
 lectureId.value ? {
     ...evidenceLectureDetail.value?.data,
   } : null)
-
 </script>

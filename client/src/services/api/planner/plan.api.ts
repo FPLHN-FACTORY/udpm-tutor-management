@@ -1,7 +1,7 @@
 import {DefaultResponse, PaginationParams, PaginationResponse, ResponseList} from "@/types/api.common.ts";
 import {Ref} from "vue";
 import {AxiosResponse} from "axios";
-import { PREFIX_API_PLANNER_PLAN } from "@/constants/url.ts";
+import {PREFIX_API_PLANNER_PLAN} from "@/constants/url.ts";
 import request from "@/services/request.ts";
 
 export interface ParamsGetPlans extends PaginationParams {
@@ -195,6 +195,25 @@ export const checkApprovePlan = async (planId: string) => {
   })) as AxiosResponse<
       DefaultResponse<boolean>
   >;
+
+  return res.data;
+};
+
+export const uploadFileStudent = async (file: File, planId: string) => {
+  const formData = new FormData();
+  console.log(file)
+  console.log(planId)
+  formData.append("file", file);
+  formData.append("planId", planId);
+
+  const res = await request({
+    url: `${PREFIX_API_PLANNER_PLAN}/file/upload`, // Đảm bảo rằng URL này chính xác
+    method: "POST",
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data', // Đặt header cho multipart
+    },
+  }) as AxiosResponse<DefaultResponse<null>>;
 
   return res.data;
 };

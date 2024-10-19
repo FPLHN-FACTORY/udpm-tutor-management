@@ -1,4 +1,4 @@
-import { PREFIX_API_TEACHER_TUTOR_CLASS } from "@/constants/url";
+import {PREFIX_API_TEACHER_TUTOR_CLASS} from "@/constants/url";
 import request from "@/services/request";
 import { DefaultResponse, PaginationResponse, ResponseList } from "@/types/api.common";
 import { AxiosResponse } from "axios";
@@ -8,7 +8,8 @@ import { PaginationParams } from "@/types/api.common";
 export interface ParamsGetTutorClass extends PaginationParams {
     subjectId?: string | null,
     classCode?: string | null,
-    teacherId?: string | null
+    teacherId?: string | null,
+    planId?: string | null
 }
 
 export type TutorClassResponse = ResponseList & {
@@ -130,23 +131,71 @@ export interface AddOrUpdateLectureEvidenceParams {
 }
 
 export const addOrUpdateLectureEvidence = async (params: AddOrUpdateLectureEvidenceParams) => {
-    const formData = new FormData();
- 
-    if (params.file) {
-       formData.append('file', params.file);
-    }
-    if (params.lectureId) formData.append('lectureId', params.lectureId as string);
-    if (params.evidenceLink) formData.append('evidenceLink', params.evidenceLink as string);
-    if (params.exerciseLink) formData.append('exerciseLink', params.exerciseLink as string);
-    if (params.recordLink) formData.append('recordLink', params.recordLink as string);
- 
-    const res = await request({
-       url: `${PREFIX_API_TEACHER_TUTOR_CLASS}/lecture-evidence`,
-       method: 'PUT',
-       data: formData,
-       headers: {
-          'Content-Type': 'multipart/form-data',
-       },
-    }) as AxiosResponse<DefaultResponse<null>>;
+  const formData = new FormData();
+
+  if (params.file) {
+      formData.append('file', params.file);
+  }
+  if (params.lectureId) formData.append('lectureId', params.lectureId as string);
+  if (params.evidenceLink) formData.append('evidenceLink', params.evidenceLink as string);
+  if (params.exerciseLink) formData.append('exerciseLink', params.exerciseLink as string);
+  if (params.recordLink) formData.append('recordLink', params.recordLink as string);
+
+  const res = await request({
+     url: `${PREFIX_API_TEACHER_TUTOR_CLASS}/lecture-evidence`,
+     method: 'PUT',
+     data: formData,
+     headers: {
+       'Content-Type': 'multipart/form-data',
+     },
+  }) as AxiosResponse<DefaultResponse<null>>;
+  return res.data;
+};
+
+export interface ParamsGetPlan {
+    departmentCode?: string | null;
+    facilityCode?: string | null;
+    blockId?: string | null;
+}
+
+export type PlanResponse = {
+    id: string;
+    name: string;
+    planStatus: string;
+    isCurrent: number
+};
+
+export const getPlan = async (
+    params: ParamsGetPlan,
+) => {
+    const res = (await request({
+        url: `${PREFIX_API_TEACHER_TUTOR_CLASS}/plan`,
+        method: "GET",
+        params: params,
+    })) as AxiosResponse<DefaultResponse<Array<PlanResponse>>>;
+
     return res.data;
- };
+};
+
+export type TutorClassDetailResponse = {
+    id: string;
+    classCode: string;
+    startTime: string;
+    endTime: number;
+    subjectName: string;
+    totalStudent: string;
+    student: string;
+    shift: string;
+    format: string;
+};
+
+export const getTutorClassDetail = async (tcdId: string | null) => {
+    const res = (await request({
+        url: `${PREFIX_API_TEACHER_TUTOR_CLASS}/infor/${tcdId}`,
+        method: "GET",
+    })) as AxiosResponse<
+        DefaultResponse<DefaultResponse<TutorClassDetailResponse>>
+    >;
+
+    return res.data;
+};

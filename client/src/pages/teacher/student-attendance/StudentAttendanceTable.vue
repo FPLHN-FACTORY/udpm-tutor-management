@@ -163,13 +163,6 @@ const columnsTutorClass: ColumnType[] = [
     width: "50px"
   },
   {
-    title: "Tên lớp",
-    dataIndex: "room",
-    key: "room",
-    ellipsis: true,
-    width: "140px"
-  },
-  {
     title: "Mã sinh viên",
     dataIndex: "studentCode",
     key: "studentCode",

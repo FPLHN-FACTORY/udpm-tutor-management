@@ -11,9 +11,8 @@ import udpm.hn.server.core.common.base.PageableRequest;
 public class TCTCTutorClassListRequest extends PageableRequest {
 
     private String classCode;
-
     private String subjectId;
-
     private String teacherId;
+    private String planId;
 
 }

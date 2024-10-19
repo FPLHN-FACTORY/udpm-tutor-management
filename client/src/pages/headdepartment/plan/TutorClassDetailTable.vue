@@ -79,7 +79,7 @@ defineProps({
   canUpdate: Boolean
 });
 
-const shiftOptions = Array.from({ length: 6 }, (_, index) => ({
+const shiftOptions = Array.from({ length: 10 }, (_, index) => ({
   value: `Ca ${index + 1}`,
   label: `Ca ${index + 1}`,
 }));

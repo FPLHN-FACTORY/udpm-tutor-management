@@ -68,6 +68,7 @@ export const queryKey = {
       staffRole: "staffRole",
       staffDepartmentMajor: "staffDepartmentMajor",
       staffDepartmentMajorDetail: "staffDepartmentMajorDetail",
+      staffDownloadTemplate: "staffDownloadTemplate",
     },
     operationLogs: {
       operationLogList: "operationLogListKey",
@@ -126,7 +127,9 @@ export const queryKey = {
   teacher: {
     tutorClass: {
       tutorClassDetailList: 'tCTutorClassDetailListKey',
-      lectureList: 'tCLectureListKey'
+      tutorClassDetail: 'tCTutorClassDetailKey',
+      lectureList: 'tCLectureListKey',
+      planList: "planListKey",
     },
     studentAttendance: {
       studentAttendanceList: 'tcStudentAttendanceListKey'

@@ -172,4 +172,13 @@ public class Helper {
         return EMAIL_PATTERN.matcher(email).matches();
     }
 
+    public static String convertShiftName(String caName) {
+        if (caName == null || caName.isEmpty()) {
+            return caName; // Trả về chuỗi gốc nếu null hoặc rỗng
+        }
+
+        // Chuyển đổi sang chữ thường và thay "ca" đầu tiên thành "Ca"
+        return caName.replace("CA", "Ca ");
+    }
+
 }
