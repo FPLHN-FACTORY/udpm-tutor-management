@@ -25,18 +25,21 @@ import udpm.hn.server.core.headsubject.plan.repository.HSPLSubjectRepository;
 import udpm.hn.server.core.headsubject.plan.repository.HSPLTutorClassDetailRepository;
 import udpm.hn.server.core.headsubject.plan.repository.HSPLTutorClassRepository;
 import udpm.hn.server.core.headsubject.plan.service.HSPLTutorClassService;
-import udpm.hn.server.core.superadmin.operation.model.request.OperationLogsRequest;
-import udpm.hn.server.core.superadmin.operation.service.OperationLogsService;
 import udpm.hn.server.core.planloghistory.model.request.PlanLogHistoryRequest;
 import udpm.hn.server.core.planloghistory.service.PlanLogHistoryService;
+import udpm.hn.server.core.superadmin.operation.model.request.OperationLogsRequest;
+import udpm.hn.server.core.superadmin.operation.service.OperationLogsService;
+import udpm.hn.server.entity.Block;
 import udpm.hn.server.entity.Notification;
 import udpm.hn.server.entity.Plan;
+import udpm.hn.server.entity.Semester;
 import udpm.hn.server.entity.Staff;
 import udpm.hn.server.entity.Subject;
 import udpm.hn.server.entity.TutorClass;
 import udpm.hn.server.entity.TutorClassDetail;
 import udpm.hn.server.infrastructure.config.websocket.model.NotifyModel;
 import udpm.hn.server.infrastructure.config.websocket.service.NotificationService;
+import udpm.hn.server.infrastructure.constant.BlockName;
 import udpm.hn.server.infrastructure.constant.Format;
 import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.infrastructure.constant.Role;
@@ -122,10 +125,15 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
             }
             //Thêm 2 thông báo đến NGUOI_LAP_KE_HOACH và CHU_NHIEM_BO_MON
             List<Notification> listNotificationSave = new ArrayList<>();
+            Semester semesterNotification = plan.getBlock().getSemester();
+            Block blockNotification = plan.getBlock();
             for (String role : List.of(Role.NGUOI_LAP_KE_HOACH.toString(), Role.CHU_NHIEM_BO_MON.toString())) {
                 Notification item = new Notification();
                 item.setPlan(plan);
-                item.setContent("Kế hoạch " + plan.getDescription() + " đã được trưởng môn thêm lớp tutor.");
+                item.setContent(
+                        "Kế hoạch  tại " + BlockName.toString(blockNotification.getName()) + " của kì " +
+                                semesterNotification.getSemesterName() + "-" + semesterNotification.getYear() +
+                                " đã được trưởng môn thêm lớp tutor môn " + subject.getName() + ".");
                 item.setStaff(plan.getPlanner());
                 item.setSentTo(role);
                 listNotificationSave.add(item);
@@ -263,12 +271,18 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
             planLogHistory.setPlanId(tutorClassDetailResult.getTutorClass().getPlan().getId());
             planLogHistory.setStatus(true);
 
-            //Thêm 2 thông báo đến GIANG_VIEN
+            //Thêm thông báo đến GIANG_VIEN
+            Plan planNotification = tutorClassDetailResult.getTutorClass().getPlan();
+            Semester semesterNotification = planNotification.getBlock().getSemester();
+            Block blockNotification = planNotification.getBlock();
             List<Notification> listNotificationSave = new ArrayList<>();
             for (String role : List.of(Role.GIANG_VIEN.toString())) {
                 Notification item = new Notification();
-                item.setPlan(tutorClassDetailResult.getTutorClass().getPlan());
-                item.setContent("Bạn đã được thêm vào lớp " + tutorClassDetailResult.getCode() + ".");
+                item.setPlan(planNotification);
+                item.setContent(
+                        "Bạn đã được thêm vào lớp " + tutorClassDetailResult.getCode() + " trong kế hoạch tại " +
+                                BlockName.toString(blockNotification.getName()) + " của kì " + semesterNotification.getSemesterName() +
+                                "-" + semesterNotification.getYear() + ".");
                 item.setStaff(staff);
                 item.setSentTo(role + ": " + staff.getId());
                 listNotificationSave.add(item);
