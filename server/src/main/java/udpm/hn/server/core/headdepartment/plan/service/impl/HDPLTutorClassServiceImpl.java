@@ -30,12 +30,12 @@ public class HDPLTutorClassServiceImpl implements HDPLTutorClassService {
         try {
             HDPLTutorClassResponse tutorClass = tutorClassRepository.getDetailTutorClass(id);
             if (tutorClass == null) {
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Không tồn tại");
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Lớp môn không tồn tại!");
             }
-            return new ResponseObject<>(tutorClass, HttpStatus.OK, "Lấy lớp tutor thành công1");
+            return new ResponseObject<>(tutorClass, HttpStatus.OK, "Lấy lớp môn thành công");
         } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy chi tiết: " + e.getMessage());
+            log.error("Lỗi khi lấy lớp môn : {}", e.getMessage());
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy chi tiết lớp môn!");
         }
     }
 

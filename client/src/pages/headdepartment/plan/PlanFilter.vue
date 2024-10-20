@@ -5,42 +5,42 @@
       <span class="ml-2 text-2xl">Bộ lọc</span>
     </h2>
     <a-form
-        layout="vertical"
-        class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 p-5"
+      layout="vertical"
+      class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 p-5"
     >
       <a-form-item
-          label="Học kỳ"
-          class="col-span-1 md:col-span-1 lg:col-span-1"
+        label="Học kỳ"
+        class="col-span-1 md:col-span-1 lg:col-span-1"
       >
         <a-select
-            :value="params.semesterId"
-            @change="onSelectChange('semesterId', $event)"
-            placeholder="Chọn học kỳ"
-            allowClear
+          :value="params.semesterId"
+          @change="onSelectChange('semesterId', $event)"
+          placeholder="Chọn học kỳ"
+          allowClear
         >
           <a-select-option
-              v-for="option in props.semesterOptions"
-              :key="option.value"
-              :value="option.value"
+            v-for="option in props.semesterOptions"
+            :key="option.value"
+            :value="option.value"
           >
             {{ option.label }}
           </a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item
-          label="Trạng thái"
-          class="col-span-1 md:col-span-1 lg:col-span-1"
+        label="Trạng thái"
+        class="col-span-1 md:col-span-1 lg:col-span-1"
       >
         <a-select
-            :value="params.planStatus"
-            @change="onSelectChange('planStatus', $event)"
-            placeholder="Chọn trạng thái"
-            allowClear
+          :value="params.planStatus"
+          @change="onSelectChange('planStatus', $event)"
+          placeholder="Chọn trạng thái"
+          allowClear
         >
           <a-select-option
-              v-for="option in PlanStatusOptions"
-              :key="option.value"
-              :value="option.value"
+            v-for="option in PlanStatusOptions"
+            :key="option.value"
+            :value="option.value"
           >
             {{ option.label }}
           </a-select-option>
@@ -68,8 +68,8 @@ const PlanStatusOptions = [
 ];
 
 type ParamsFilterSubjects = {
-  semesterId: string | null;
-  planStatus: string | null;
+  semesterId?: string | null;
+  planStatus?: string | null;
 };
 
 const params = ref<ParamsFilterSubjects>({
@@ -89,10 +89,10 @@ function onSelectChange(key: keyof ParamsFilterSubjects, value: string) {
 }
 
 watch(
-    params,
-    () => {
-      debouncedEmit();
-    },
-    { deep: true }
+  params,
+  () => {
+    debouncedEmit();
+  },
+  { deep: true }
 );
 </script>

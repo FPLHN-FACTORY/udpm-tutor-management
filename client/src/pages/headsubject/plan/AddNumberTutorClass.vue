@@ -1,17 +1,18 @@
 <template>
   <div>
     <a-modal
-        :open="props.open"
-        :title="modalTitle"
-        @cancel="handleClose"
-        @ok="handleAddOrUpdate"
-        :ok-text="okText"
-        destroyOnClose
-        centered
+      :open="props.open"
+      :title="modalTitle"
+      @cancel="handleClose"
+      @ok="handleAddOrUpdate"
+      :ok-text="okText"
+      cancel-text="Hủy"
+      destroyOnClose
+      centered
     >
       <div
-          v-if="props.isLoading"
-          class="flex justify-center items-center"
+        v-if="props.isLoading"
+        class="flex justify-center items-center"
       >
         <a-spin />
       </div>
@@ -19,19 +20,19 @@
         <a-form layout="vertical">
           <template v-for="field in formFields">
             <a-form-item
-                :label="field.label"
-                :name="field.name"
-                v-bind="validateInfos[field.name]"
+              :label="field.label"
+              :name="field.name"
+              v-bind="validateInfos[field.name]"
             >
               <component
-                  :is="field.component"
-                  v-bind="field.props"
-                  v-model:value="modelRef[field.name]"
+                :is="field.component"
+                v-bind="field.props"
+                v-model:value="modelRef[field.name]"
               >
                 <template
-                    v-if="field.options"
-                    v-for="option in field.options"
-                    :key="option.value"
+                  v-if="field.options"
+                  v-for="option in field.options"
+                  :key="option.value"
                 >
                   <a-select-option :value="option.value">
                     {{ option.label }}
@@ -56,28 +57,21 @@ import {
   useCreateTutorClass,
   useUpdateTutorClass
 } from "@/services/service/headsubject/tutor-class.action.ts";
-
-interface TutorClassForm {
-  numberOfClasses: number;
-  numberOfLectures: number;
-  format: string;
-  planId?: string;
-  subjectId?: string;
-}
+import {CreateTutorClassParams, DetailSubjectTutorResponse} from "@/services/api/headsubject/tutor-class.api.ts";
 
 const props = defineProps({
   open: Boolean,
   isLoading: Boolean,
   planId: String,
   subjectId: String,
-  tutorClass: Object as () => any | null,
+  tutorClass: Object as () => DetailSubjectTutorResponse | null,
 });
 
 const emit = defineEmits(["handleClose", "resetTable"]);
 const { mutate: createTutorClass } = useCreateTutorClass();
 const { mutate: updateTutorClass } = useUpdateTutorClass();
 
-const modelRef = reactive<TutorClassForm>({
+const modelRef = reactive<CreateTutorClassParams>({
   numberOfClasses: 1,
   numberOfLectures: 8,
   format: "ONLINE",
@@ -98,32 +92,32 @@ const rulesRef = reactive({
 });
 
 const { resetFields, validate, validateInfos } = Form.useForm(
-    modelRef,
-    rulesRef
+  modelRef,
+  rulesRef
 );
 
 const modalTitle = computed(() =>
-    props.tutorClass ? "Cập nhật lớp môn" : "Thêm lớp môn"
+  props.tutorClass ? "Cập nhật lớp môn" : "Thêm lớp môn"
 );
 
 const okText = computed(() =>
-    props.tutorClass ? "Cập nhật lớp môn thành công" : "Thêm lớp môn học thành công"
+  props.tutorClass ? "Cập nhật lớp môn" : "Thêm lớp môn"
 );
 
 watch(
-    () => props.tutorClass,
-    (newVal) => {
-      if (newVal) {
-        Object.assign(modelRef, {
-          numberOfClasses: newVal.numberClasses,
-          numberOfLectures: newVal.numberLectures,
-          format: newVal.format === 0 ? "ONLINE" : "OFFLINE",
-        });
-      } else {
-        resetFields();
-      }
-    },
-    { immediate: true }
+  () => props.tutorClass,
+  (newVal) => {
+    if (newVal) {
+      Object.assign(modelRef, {
+        numberOfClasses: newVal.numberClasses,
+        numberOfLectures: newVal.numberLectures,
+        format: newVal.format,
+      });
+    } else {
+      resetFields();
+    }
+  },
+  { immediate: true }
 );
 
 const formFields = computed(() => [
@@ -167,36 +161,44 @@ const handleAddOrUpdate = () => {
     centered: true,
     async onOk() {
       try {
-        await validate(); // Kiểm tra tính hợp lệ
+        await validate();
 
-        const payload = {
-          ...modelRef,
-          subjectId: props.subjectId
-        };
-
-        // Tạo biến để giữ thông tin về hành động (cập nhật hay tạo mới)
-        const actionParams = props.tutorClass
-            ? {
-              id: props.tutorClass.id,
-              params: payload,
+        if (props.tutorClass) {
+          const updateParams = {
+            id: props.tutorClass.id,
+            params: {
+              numberOfLectures: modelRef.numberOfLectures,
+              format: modelRef.format
             }
-            : payload;
+          };
 
-        // Gọi hàm phù hợp dựa vào tutorClass
-        const action = props.tutorClass ? updateTutorClass : createTutorClass;
-        const message = props.tutorClass ? "Cập nhật môn học thành công!" : "Tạo môn học thành công!";
+          updateTutorClass(updateParams, {
+            onSuccess: () => {
+              toast.success("Cập nhật lớp môn thành công!");
+              handleClose();
+            },
+            onError: (error: any) => {
+              toast.error(
+                  error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+              );
+            },
+          });
 
-        action(actionParams, {
-          onSuccess: () => {
-            toast.success(message);
-            handleClose();
-          },
-          onError: (error: any) => {
-            toast.error(
-                error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
-            )
-          },
-        })
+        } else {
+          const createParams = { ...modelRef, subjectId: props.subjectId };
+
+          createTutorClass(createParams, {
+            onSuccess: () => {
+              toast.success("Tạo lớp môn thành công!");
+              handleClose();
+            },
+            onError: (error: any) => {
+              toast.error(
+                  error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+              );
+            },
+          });
+        }
       } catch (error: any) {
         console.error("🚀 ~ handleAddOrUpdate ~ error:", error);
         toast.error(

@@ -54,7 +54,6 @@ import { useAssignSubjectForHeadSubject, useUnAssignSubjectForHeadSubject } from
 import { useAuthStore } from "@/stores/auth.ts";
 import { toast } from "vue3-toastify";
 
-// Nhận các props từ component cha
 const props = defineProps({
   open: Boolean,
   semesterId: String,
@@ -65,24 +64,18 @@ const props = defineProps({
   isLoadingSubject: Boolean
 });
 
-// Khởi tạo emit để phát sự kiện
 const emit = defineEmits(["handleClose", "update:paginationParams"]);
 
-// Lấy thông tin user từ store auth
 const auth = useAuthStore();
 const userInfo = computed(() => auth.user);
-
-// State loading cho việc assign/unassign
 const isAssigning = ref(false);
 
 // Đóng modal
 const handleClose = () => emit("handleClose");
 
-// Các hàm call API gán và bỏ gán môn học cho trưởng môn
 const { mutate: assignSubjectForHeadSubject } = useAssignSubjectForHeadSubject();
 const { mutate: unAssignSubjectForHeadSubject } = useUnAssignSubjectForHeadSubject();
 
-// Xử lý gán hoặc bỏ gán môn học cho trưởng môn
 const handleAssignSubject = async (subjectId: string, isChecked: boolean) => {
   const payload = {
     semesterId: props.semesterId,
@@ -115,7 +108,6 @@ const handleAssignSubject = async (subjectId: string, isChecked: boolean) => {
   }
 };
 
-// Hàm xác định màu cho loại môn học
 const subjectTypeColor = (type: string) => {
   switch (type) {
     case "BLEND":
@@ -129,10 +121,37 @@ const subjectTypeColor = (type: string) => {
 
 // Cấu hình cột cho bảng hiển thị môn học
 const columnsSubject: ColumnType[] = [
-  { title: "STT", dataIndex: "orderNumber", key: "index", ellipsis: true },
-  { title: "Mã môn học", dataIndex: "subjectCode", key: "facilityCode", ellipsis: true },
-  { title: "Tên môn học", dataIndex: "subjectName", key: "facilityName", ellipsis: true },
-  { title: "Loại môn học", dataIndex: "subjectType", key: "subjectType", ellipsis: true, width: "120px" },
-  { title: "Phân công", dataIndex: "isAssigned", key: "isAssigned", ellipsis: true, width: "120px" },
+  {
+    title: "STT",
+    dataIndex: "orderNumber",
+    key: "index",
+    ellipsis: true,
+    width: "50px",
+  },
+  {
+    title: "Mã môn học",
+    dataIndex: "subjectCode",
+    key: "facilityCode",
+    ellipsis: true
+  },
+  {
+    title: "Tên môn học",
+    dataIndex: "subjectName",
+    key: "facilityName",
+    ellipsis: true
+  },
+  {
+    title: "Loại môn học",
+    dataIndex: "subjectType",
+    key: "subjectType", ellipsis: true,
+    width: "120px"
+  },
+  {
+    title: "Phân công",
+    dataIndex: "isAssigned",
+    key: "isAssigned",
+    ellipsis: true,
+    width: "120px"
+  },
 ];
 </script>

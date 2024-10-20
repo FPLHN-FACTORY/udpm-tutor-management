@@ -5,7 +5,8 @@
         title="Thêm sinh viên"
         @cancel="handleClose"
         @ok="handleAddStudent"
-        ok-text="Thêm sinh viên thành công"
+        ok-text="Thêm"
+        cancel-text="Hủy"
         destroyOnClose
         centered
     >

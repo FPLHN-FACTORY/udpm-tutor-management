@@ -32,7 +32,23 @@ public interface TCTCTutorClassExtendRepository extends TutorClassRepository {
                     AND (:#{#request.subjectId} IS NULL OR s.id LIKE CONCAT('%',:#{#request.subjectId},'%'))
                     AND (tcd.teacher_conduct_id = :#{#request.teacherId})
                 GROUP BY tcd.id, tcd.code, st.student_name, s.name, tcd.created_date
+                ORDER BY
+                    tcd.created_date DESC
                 """,
+            countQuery = """
+                    SELECT
+                        COUNT(DISTINCT tcd.id)
+                    FROM tutor_class_detail tcd LEFT JOIN tutor_class tc on tc.id = tcd.tutor_class_id
+                                            LEFT JOIN student_tutor st on tcd.student_conduct_id = st.id
+                                            LEFT JOIN subject s on s.id = tc.subject_id
+                                            LEFT JOIN class_student_joined csj on tc.id = csj.tutor_class_detail_id
+                WHERE (:#{#request.classCode} IS NULL OR tcd.code LIKE CONCAT('%',:#{#request.classCode},'%'))
+                    AND (:#{#request.subjectId} IS NULL OR s.id LIKE CONCAT('%',:#{#request.subjectId},'%'))
+                    AND (tcd.teacher_conduct_id = :#{#request.teacherId})
+                GROUP BY tcd.id, tcd.code, st.student_name, s.name, tcd.created_date
+                ORDER BY
+                    tcd.created_date DESC
+                    """,
             nativeQuery = true
     )
     Page<TCTCTutorClassResponse> getTutorClassByTeacher(Pageable pageable, TCTCTutorClassListRequest request);

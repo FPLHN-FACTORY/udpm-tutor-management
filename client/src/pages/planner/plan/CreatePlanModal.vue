@@ -6,6 +6,7 @@
         @cancel="handleClose"
         @ok="handleAddOrUpdate"
         :ok-text="okText"
+        cancel-text="Hủy"
         destroyOnClose
         centered
     >
@@ -96,7 +97,7 @@ const rulesRef = reactive({
 const { resetFields, validate, validateInfos } = Form.useForm(modelRef, rulesRef);
 
 const modalTitle = computed(() => (props.planDetail ? "Cập nhật kế hoạch" : "Thêm kế hoạch"));
-const okText = computed(() => (props.planDetail ? "Cập nhật kế hoạch" : "Thêm kế hoạch"));
+const okText = computed(() => (props.planDetail ? "Cập nhật" : "Thêm"));
 
 // Block options
 const blockOptions = ref([{ value: "", label: "-- Chọn Block --" }]);

@@ -80,10 +80,10 @@ function onSelectChange(key: keyof ParamsFilterSubjects, value: string) {
 }
 
 watch(
-    params,
-    () => {
-      debouncedEmit();
-    },
+  params,
+  () => {
+    debouncedEmit();
+  },
     { deep: true }
 );
 </script>

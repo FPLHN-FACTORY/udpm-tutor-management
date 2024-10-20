@@ -1,6 +1,7 @@
 package udpm.hn.server.core.superadmin.activity.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -16,17 +17,15 @@ import udpm.hn.server.core.superadmin.activity.repository.OLUserActivityLogRepos
 import udpm.hn.server.core.superadmin.activity.service.UserActivityLogService;
 import udpm.hn.server.entity.UserActivityLog;
 import udpm.hn.server.infrastructure.constant.StatusUserActivity;
-import udpm.hn.server.repository.StaffRepository;
 import udpm.hn.server.utils.Helper;
 
 @Service
 @Validated
 @RequiredArgsConstructor
+@Slf4j
 public class UserActivityLogServiceImpl implements UserActivityLogService {
 
     private final OLUserActivityLogRepository userActivityLogRepository;
-
-    private final StaffRepository staffRepository;
 
     @Override
     public ResponseObject<?> getAllUserActivityLog(UserActivityLogFilterRequest request) {
@@ -68,7 +67,7 @@ public class UserActivityLogServiceImpl implements UserActivityLogService {
              userActivityLog.setStatus(userActivityLogRequest.getStatus());
              userActivityLogRepository.save(userActivityLog);
         }catch (Exception e) {
-            e.printStackTrace();
+            log.error("Lỗi khi lưu log : {}", e.getMessage());
             throw new RuntimeException("Có lỗi sảy ra khi lưu log");
         }
     }

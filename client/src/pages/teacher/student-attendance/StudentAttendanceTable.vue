@@ -136,7 +136,7 @@ const handleSaveAttendance = async () => {
         lectureId: props.lectureId || ''
       }));
 
-      await createAttendance(selectedRecords.value, {
+      createAttendance(selectedRecords.value, {
         onSuccess: () => {
           toast.success("Cập nhật điểm danh thành công.");
         },
@@ -209,13 +209,13 @@ const columnsTutorClass: ColumnType[] = [
     title: "Điểm danh",
     key: "checked",
     align: "center",
-    width: "140px" 
+    width: "120px"
   },
   {
     title: "Ghi chú",
     key: "note",
     align: "center",
-    width: "200px"
+    width: "180px"
   }
 ];
 </script>

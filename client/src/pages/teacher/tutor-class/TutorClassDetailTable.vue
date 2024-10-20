@@ -11,72 +11,72 @@
     </div>
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
-          wrapperClassName="min-h-[410px]"
-          :columns="columnsTutorClass"
-          :data-source="tempDataSource"
-          :row-selection="rowSelection"
-          :loading="props.loading"
-          :is-pagination="false"
-           pagination-params=""
+        wrapperClassName="min-h-[410px]"
+        :columns="columnsTutorClass"
+        :data-source="tempDataSource"
+        :row-selection="rowSelection"
+        :loading="props.loading"
+        :is-pagination="false"
+        pagination-params=""
       >
         <template #bodyCell="{ column, record }">
           <div v-if="column.key === 'action'" class="space-x-2 flex items-center justify-center">
             <a-tooltip title="Điểm danh" color="#FFC26E">
               <a-button
-                  type="primary"
-                  size="large"
-                  class="flex items-center justify-center"
-                  :icon="h(EyeOutlined)"
-                  @click="goToDetail(record.id)"
+                type="primary"
+                size="large"
+                class="flex items-center justify-center"
+                :icon="h(EyeOutlined)"
+                @click="goToDetail(record.id)"
               />
             </a-tooltip>
             <a-tooltip title="Thông tin tài liệu buổi học" color="#FFC26E">
               <a-button
-                  type="primary"
-                  size="large"
-                  class="flex items-center justify-center"
-                  @click="$emit('handleOpenModalAdd', record)"
-                  :icon="h(PlusSquareOutlined)"
+                type="primary"
+                size="large"
+                class="flex items-center justify-center"
+                @click="$emit('handleOpenModalAdd', record)"
+                :icon="h(PlusSquareOutlined)"
               />
             </a-tooltip>
           </div>
           <div v-else-if="column.key === 'shift'">
             <a-select
-                v-model:value="record.shift"
-                show-search
-                placeholder="Chọn ca"
-                :options="shiftOptions"
-                :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
-                style="width: 100%"
-                :bordered="false"
+              v-model:value="record.shift"
+              show-search
+              placeholder="Chọn ca"
+              :options="shiftOptions"
+              :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
+              style="width: 100%"
+              :bordered="false"
             />
           </div>
           <div v-else-if="column.key === 'startTime'">
             <a-date-picker
-                :value="record.startTime ? dayjs(record.startTime) : null"
-                placeholder="Chọn ngày"
-                :bordered="false"
-                :format="'DD/MM/YYYY'"
-                @change="(date) => record.startTime = date ? date.valueOf() : null"
+              :value="record.startTime ? dayjs(record.startTime) : null"
+              placeholder="Chọn ngày"
+              :bordered="false"
+              :format="'DD/MM/YYYY'"
+              @change="(date) => record.startTime = date ? date.valueOf() : null"
             />
           </div>
           <div v-else-if="column.key === 'format'" class="text-center">
             <a-select
-                v-model:value="record.format"
-                show-search
-                :options="formatOptions"
-                :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
-                style="width: 100%"
-                :bordered="false"
+              v-model:value="record.format"
+              show-search
+              :options="formatOptions"
+              :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
+              style="width: 100%"
+              :bordered="false"
             />
           </div>
           <div v-else-if="column.key === 'evidenceLink'" >
             <div v-if="record.evidenceLink || record.recordLink" class="text-center">
               <a
-                  v-if="record.evidenceLink"
-                  :href="record.evidenceLink"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                v-if="record.evidenceLink"
+                :href="record.evidenceLink"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 Tại đây
               </a>
@@ -121,7 +121,6 @@ defineEmits([
   "handleOpenModalUpdate",
   "handleOpenModalAdd",
 ]);
-
 
 const props = defineProps({
   dataSource: {

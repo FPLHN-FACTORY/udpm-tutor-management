@@ -5,6 +5,7 @@ import udpm.hn.server.core.planloghistory.model.request.PlanLogHistoryFilterRequ
 import udpm.hn.server.core.planloghistory.model.request.PlanLogHistoryRequest;
 
 public interface PlanLogHistoryService {
+
     Boolean createPlanLogHistory(PlanLogHistoryRequest request);
 
     ResponseObject<?> getAllPlanLogHistory(PlanLogHistoryFilterRequest request);

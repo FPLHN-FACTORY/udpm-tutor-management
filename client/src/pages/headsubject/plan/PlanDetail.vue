@@ -32,8 +32,8 @@
           <p>Chế độ xem</p>
           <a-switch
               v-model:checked="canUpdate"
-              :checked-children="'All'"
-              :un-checked-children="'Only Me'"
+              :checked-children="'Tất cả'"
+              :un-checked-children="'Chỉ tôi  '"
           />
         </div>
         <a-tabs v-model:activeKey="activeKey">
@@ -50,10 +50,6 @@
             />
           </a-tab-pane>
           <a-tab-pane key="2" tab="Danh sách lớp tutor">
-            <head-subject-detail-filter
-                @filter="handleFilter"
-                :teacherOption="teacherOption"
-            />
             <tutor-class-detail-table
                 :data-source="tutorClassDetail"
                 :loading="isLoadingTutorClassDetailData"
@@ -167,10 +163,6 @@ const handlePaginationTutorClassDetailChange = (newParams: ParamsGetPlans) => {
   paramsTutorClassDetail.value = { ...paramsTutorClassDetail.value, ...newParams };
 };
 
-const handleFilter = (newParams: ParamsGetPlans) => {
-  paramsTutorClassDetail.value = { ...paramsTutorClassDetail.value, ...newParams };
-};
-
 const { data: planInfo } = useGetPlanInfoById(planId.value, {
   refetchOnWindowFocus: false,
   enabled: () => !!planId.value,
@@ -190,11 +182,11 @@ const handleClose = () => {
 
 watch(canUpdate, (newValue) => {
   if (newValue) {
-    paramsTutorClass.value.userId = null; // Set userId to null
-    paramsTutorClassDetail.value.userId = null; // Set userId to null
+    paramsTutorClass.value.userId = null;
+    paramsTutorClassDetail.value.userId = null;
   } else {
-    paramsTutorClass.value.userId = userInfo.value?.userId; // Reset to original userId
-    paramsTutorClassDetail.value.userId = userInfo.value?.userId; // Reset to original userId
+    paramsTutorClass.value.userId = userInfo.value?.userId;
+    paramsTutorClassDetail.value.userId = userInfo.value?.userId;
   }
 });
 
@@ -202,15 +194,15 @@ const plan = computed(() => planInfo.value?.data || null);
 const tutorClass = computed(() => tutorClassData?.value?.data?.data || []);
 const tutorClassDetail = computed(() => tutorClassDetailData?.value?.data?.data || []);
 const detailTutorClass = computed(() => detailTutorClassData?.value?.data || null);
-const teacherOption = computed(() => teacherOptionData?.value?.data.map(teacher => ({
-  value: teacher.id,
-  label: teacher.name
-})) || []);
 const totalPagesTutorClass = computed(() => tutorClassData?.value?.data?.totalPages || 0);
 const totalPagesTutorClassDetail = computed(() => tutorClassDetailData?.value?.data?.totalPages || 0);
 const canPerformUpdate = computed(() => {
   return (plan.value?.status != 'PLANNING') || (plan.value?.status === 'PLANNING' && canUpdate.value);
 });
+const teacherOption = computed(() => teacherOptionData?.value?.data.map(teacher => ({
+  value: teacher.id,
+  label: teacher.name
+})) || []);
 const studentOption = computed(() => studentOptionData?.value?.data.map(teacher => ({
   value: teacher.id,
   label: teacher.name

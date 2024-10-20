@@ -93,7 +93,7 @@ export const useAssignSubjectForHeadSubject = () => {
                          headSubjectId,
                      }: {
             params: ParamsAssignOrUnAssignSubject;
-            headSubjectId: string;
+            headSubjectId: string | null;
         })  => assignSubjectForHeadSubject(params, headSubjectId),
         onSuccess: (data) => {
             if (data.success) {
@@ -118,7 +118,7 @@ export const useUnAssignSubjectForHeadSubject = () => {
                          headSubjectId,
                      }: {
             params: ParamsAssignOrUnAssignSubject;
-            headSubjectId: string;
+            headSubjectId: string | null;
         }) => unAssignSubjectForHeadSubject(params, headSubjectId),
         onSuccess: (data) => {
             if (data.success) {

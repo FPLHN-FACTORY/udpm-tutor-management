@@ -110,10 +110,10 @@ public class TCTCTutorClassServiceImpl implements TCTCTutorClassService {
                 });
             });
 
-            return new ResponseObject<>(true, HttpStatus.OK, "Cập nhật thành công");
+            return new ResponseObject<>(true, HttpStatus.OK, "Cập nhật lớp tutor thành công");
         } catch (Exception e) {
-            // Xử lý lỗi
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Cập nhật thất bại: " + e.getMessage());
+            log.error("Lỗi khi cập nhật lớp tutor : {}", e.getMessage());
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Cập nhật lớp tutor thất bại!");
         }
     }
 
@@ -144,10 +144,10 @@ public class TCTCTutorClassServiceImpl implements TCTCTutorClassService {
                 });
             });
 
-            return new ResponseObject<>(true, HttpStatus.OK, "Cập nhật thành công");
+            return new ResponseObject<>(true, HttpStatus.OK, "Cập nhật buổi học thành công");
         } catch (Exception e) {
-            // Xử lý lỗi
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Cập nhật thất bại: " + e.getMessage());
+            log.error("Lỗi khi cập nhật buổi học : {}", e.getMessage());
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Cập nhật buổi học thất bại!");
         }
     }
 
@@ -200,7 +200,7 @@ public class TCTCTutorClassServiceImpl implements TCTCTutorClassService {
     }
 
     private void createLectures(TutorClassDetail tutorClassDetail, Shift shift) {
-        IntStream.range(0, tutorClassDetail.getNumberOfLectures()).forEach(j -> {
+        IntStream.range(0, tutorClassDetail.getTutorClass().getNumberOfLectures()).forEach(j -> {
             Lecture lecture = new Lecture();
             lecture.setTutorClassDetail(tutorClassDetail);
             lecture.setShift(shift);

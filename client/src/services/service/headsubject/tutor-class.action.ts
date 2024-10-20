@@ -1,13 +1,17 @@
 import { queryKey } from "@/constants/queryKey";
 import {
   addTutorClassDetail,
-  createTutorClass, createTutorClassParams, deleteTutorClassDetail,
+  createTutorClass, CreateTutorClassParams,
+  deleteTutorClassDetail,
   getDetailTutorClass,
   getListTutorClassDetail,
   getTutorClass,
   ParamsGetTutorClass,
   ParamsGetTutorClassDetail,
-  updateTutorClass, updateTutorClassDetail, updateTutorClassDetailParams, updateTutorClassParams,
+  updateTutorClass,
+  updateTutorClassDetail,
+  updateTutorClassDetailParams,
+  UpdateTutorClassParams,
 } from "@/services/api/headsubject/tutor-class.api.ts";
 import { useMutation, useQuery, useQueryClient, UseQueryReturnType } from "@tanstack/vue-query";
 import { Ref} from "vue";
@@ -16,7 +20,7 @@ export const useCreateTutorClass = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (params: createTutorClassParams) => createTutorClass(params),
+    mutationFn: (params: CreateTutorClassParams) => createTutorClass(params),
     onSuccess: () => {
       queryClient.invalidateQueries({
         predicate: (query) => {
@@ -39,7 +43,7 @@ export const useUpdateTutorClass = () => {
   return useMutation({
     mutationFn: ({id, params}: {
       id: string;
-      params: updateTutorClassParams;
+      params: UpdateTutorClassParams;
     }) => updateTutorClass(id, params),
     onSuccess: () => {
       queryClient.invalidateQueries({

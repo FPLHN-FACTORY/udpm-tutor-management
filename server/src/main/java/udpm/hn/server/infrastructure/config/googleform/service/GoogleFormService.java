@@ -1,6 +1,7 @@
 package udpm.hn.server.infrastructure.config.googleform.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -16,19 +17,19 @@ import udpm.hn.server.infrastructure.config.googleform.repository.GFPLStaffsRepo
 import udpm.hn.server.infrastructure.config.googleform.repository.GFPLTutorClassDetailRepository;
 import udpm.hn.server.infrastructure.constant.PlanStatus;
 import udpm.hn.server.utils.UserContextHelper;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GoogleFormService {
 
     @Value("${google.app-script}")
@@ -40,7 +41,7 @@ public class GoogleFormService {
     public ResponseObject<?> createForm(Plan plan) {
         // Lấy danh sách mã giảng viên
         List<String> staffs = pLPLStaffsRepository.getStaffCodesByRole(
-                Arrays.asList("GIANG_VIEN"),
+                List.of("GIANG_VIEN"),
                 plan.getDepartmentFacility().getDepartment().getCode(),
                 plan.getDepartmentFacility().getFacility().getCode()
         );
@@ -55,8 +56,7 @@ public class GoogleFormService {
         data.put("instructors", staffs);
         data.put("formName", formName);
         Staff staffEdit = pLPLStaffsRepository.findById(UserContextHelper.getCurrentUserId()).orElse(null);
-        data.put("editorEmail", staffEdit.getEmailFpt());
-        // Tạo danh sách lớp học và link
+        data.put("editorEmail", staffEdit != null? staffEdit.getEmailFpt(): null);
         Map<String, String> classMap = new HashMap<>();
         tcdList.forEach(tcd -> {
             classMap.put(tcd.getTutorClassCode(), tcd.getLink());
@@ -75,7 +75,7 @@ public class GoogleFormService {
 
             // Gửi dữ liệu
             try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = jsonInputString.getBytes("utf-8");
+                byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
             }
 
@@ -83,7 +83,7 @@ public class GoogleFormService {
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 StringBuilder response = new StringBuilder();
-                try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
                     String responseLine;
                     while ((responseLine = br.readLine()) != null) {
                         response.append(responseLine.trim());
@@ -101,17 +101,17 @@ public class GoogleFormService {
             } else {
                 // Xử lý lỗi từ yêu cầu
                 StringBuilder errorResponse = new StringBuilder();
-                try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "utf-8"))) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8))) {
                     String errorLine;
                     while ((errorLine = br.readLine()) != null) {
                         errorResponse.append(errorLine.trim());
                     }
                 }
-                return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + errorResponse.toString());
+                return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Có lôi xảy ra khi tạo form!" + errorResponse.toString());
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Exception occurred: " + e.getMessage());
+            log.error("Lỗi khi tạo form : {}", e.getMessage());
+            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Có lôi xảy ra khi tạo form!");
         }
     }
 

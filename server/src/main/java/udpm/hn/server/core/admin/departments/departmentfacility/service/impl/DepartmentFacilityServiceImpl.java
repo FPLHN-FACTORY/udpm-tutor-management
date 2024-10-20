@@ -3,6 +3,7 @@ package udpm.hn.server.core.admin.departments.departmentfacility.service.impl;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,7 @@ import java.util.Optional;
 @Service
 @Validated
 @RequiredArgsConstructor
+@Slf4j
 public class DepartmentFacilityServiceImpl implements DepartmentFacilityService {
 
     private final DFDepartmentFacilityExtendRepository dfDepartmentFacilityExtendRepository;
@@ -129,10 +131,8 @@ public class DepartmentFacilityServiceImpl implements DepartmentFacilityService 
                 return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Không tìm thấy cơ sở trên");
             } else if (staffOptional.isEmpty()) {
                 return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Không tìm thấy nhân viên trên");
-            } else if (departmentOptional.isEmpty()) {
-                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Không tìm thấy bộ môn trên");
             } else {
-                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Sửa thất bại");
+                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Không tìm thấy bộ môn trên");
             }
         } else {
             return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Bộ môn theo cơ sở trên không tồn tại");
@@ -209,7 +209,7 @@ public class DepartmentFacilityServiceImpl implements DepartmentFacilityService 
         } catch (RuntimeException e) {
             return ResponseObject.errorForward(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Lỗi khi đồng bộ bộ môn theo cơ sở : {}", e.getMessage());
             return ResponseObject.errorForward("Đồng bộ bộ môn và cơ sở không thành công! Đã xảy ra lỗi.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

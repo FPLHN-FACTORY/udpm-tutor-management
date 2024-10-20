@@ -8,18 +8,13 @@
       :width="1000"
       class="h-96"
   >
-    <!-- Loading spinner khi đang tải dữ liệu chi tiết -->
     <div v-if="isLoadingSubject" class="flex justify-center items-center">
       <a-spin />
     </div>
-    <!-- Hiển thị bảng phân công nếu không có loading -->
     <div v-else>
-      <!-- Phần chọn trưởng môn mới và nút phân công lại -->
       <div v-if="subjects.length > 0" class="flex justify-between items-center min-h-16">
         <a-select
             v-model:value="newHeadSubject"
-            :value="newHeadSubject"
-            @change="onSelectChange"
             class="min-w-[250px]"
             :loading="staffSubjectOptionsLoading"
             placeholder="Chọn trưởng môn mới"
@@ -71,6 +66,7 @@ import { computed, ref, watch } from "vue";
 import { useGetStaffByHeadSubject, useReassignSubjectForAnotherHeadSubject } from "@/services/service/headdepartment/head-subject.action.ts";
 import { useAuthStore } from "@/stores/auth.ts";
 import { toast } from "vue3-toastify";
+import {ParamsGetStaffSubject} from "@/services/api/headdepartment/head-subject.api.ts";
 
 // Nhận các props từ component cha
 const props = defineProps({
@@ -90,8 +86,7 @@ const newHeadSubject = ref<string | null>(null);
 const auth = useAuthStore();
 const userInfo = computed(() => auth.user);
 
-// Params dùng cho việc lấy danh sách trưởng môn
-const params = ref({
+const params = ref<ParamsGetStaffSubject>({
   currentFacilityId: userInfo.value?.facilityId,
   currentDepartmentCode: userInfo.value?.departmentCode,
   currentUserId: userInfo.value?.userId,
@@ -132,17 +127,17 @@ const handleReassignSubject = async () => {
       newHeadSubjectId: newHeadSubject.value,
     }, );
     handleClose();
-  } catch (error) {
+  } catch (error: any) {
     toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
   }
 };
 
 // Danh sách lựa chọn trưởng môn khác
 const staffSubjectOptions = computed(() =>
-    staffSubjectOptionsData?.value?.data?.map(item => ({
-      value: item.code,
-      label: item.staffInfo,
-    })) || []
+  staffSubjectOptionsData?.value?.data?.map(item => ({
+    value: item.code,
+    label: item.staffInfo,
+  })) || []
 );
 
 // Xác định màu sắc của thẻ tag theo loại môn học
@@ -159,22 +154,44 @@ const getTagColor = (subjectType: string) => {
 
 // Cấu hình cột cho bảng hiển thị môn học
 const columnsSubject: ColumnType[] = [
-  { title: "STT", dataIndex: "orderNumber", key: "index", ellipsis: true },
-  { title: "Mã môn học", dataIndex: "subjectCode", key: "facilityCode", ellipsis: true },
-  { title: "Tên môn học", dataIndex: "subjectName", key: "facilityName", ellipsis: true },
-  { title: "Loại môn học", dataIndex: "subjectType", key: "subjectType", ellipsis: true, width: "120px" },
+  {
+    title: "STT",
+    dataIndex: "orderNumber",
+    key: "index",
+    ellipsis: true,
+    width: "50px",
+  },
+  {
+    title: "Mã môn học",
+    dataIndex: "subjectCode",
+    key: "facilityCode",
+    ellipsis: true
+  },
+  {
+    title: "Tên môn học",
+    dataIndex: "subjectName",
+    key: "facilityName",
+    ellipsis: true
+  },
+  {
+    title: "Loại môn học",
+    dataIndex: "subjectType",
+    key: "subjectType",
+    ellipsis: true,
+    width: "120px"
+  },
 ];
 
 // Theo dõi sự thay đổi của prop `open` để refetch dữ liệu khi mở modal
 watch(
-    () => props.open,
-    (open) => {
-      if (open) {
-        params.value.headSubjectId = props.headSubjectId;
-        params.value.currentSemesterId = props.semesterId;
-        refetch(); // Fetch dữ liệu lại khi mở modal
-      }
-    },
-    { immediate: true }
+  () => props.open,
+  (open) => {
+    if (open) {
+      params.value.headSubjectId = props.headSubjectId;
+      params.value.currentSemesterId = props.semesterId;
+      refetch(); 
+    }
+  },
+  { immediate: true }
 );
 </script>

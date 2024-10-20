@@ -80,17 +80,6 @@ public class HSPLPlansServiceImpl implements HSPLPlanService {
     }
 
     @Override
-    public ResponseObject<?> getTutorClasses(PLPLTutorListRequest request) {
-        Pageable pageable = Helper.createPageable(request, "createdDate");
-        return new ResponseObject<>(
-//                PageableObject.of(tutorClassRepository.getTutorClasses(pageable, request.getPlanId())),4
-                null,
-                HttpStatus.OK,
-                "Lấy danh sách lớp môn thành công!"
-        );
-    }
-
-    @Override
     public ResponseObject<?> getPlansDetail(String planId) {
         return plansRepository.getPlanById(planId)
                 .map(plan -> new ResponseObject<>(plan, HttpStatus.OK, "Lấy thông tin môn học thành công"))

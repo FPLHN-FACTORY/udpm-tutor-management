@@ -163,24 +163,28 @@ const columnsTutorClass: ColumnType[] = [
     dataIndex: "classCode",
     key: "classCode",
     ellipsis: true,
+    width: "140px"
   },
   {
     title: "Tên môn học",
     dataIndex: "subjectName",
     key: "subjectName",
     ellipsis: true,
+    width: "220px"
   },
   {
     title: "Trợ giảng",
     dataIndex: "studentName",
     key: "studentName",
     ellipsis: true,
+    width: "250px"
   },
   {
     title: "Sĩ số",
     dataIndex: "totalStudent",
     key: "totalStudent",
     ellipsis: true,
+    align: "center",
     width: "100px"
   },
   {

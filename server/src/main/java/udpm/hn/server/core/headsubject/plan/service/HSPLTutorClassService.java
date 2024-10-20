@@ -1,6 +1,5 @@
 package udpm.hn.server.core.headsubject.plan.service;
 
-
 import udpm.hn.server.core.common.base.ResponseObject;
 import udpm.hn.server.core.headsubject.plan.model.request.HSPLCreateTutorClassRequest;
 import udpm.hn.server.core.headsubject.plan.model.request.HSPLSubjectListRequest;

@@ -2,17 +2,17 @@
     <div class="mt-4">
         <div class="flex justify-between items-center">
             <h2 class="p-4 flex items-center text-primary text-3xl font-semibold">
-                <v-icon name="hi-office-building" scale="2" />
-                <span class="m-2 text-3xl">Quản lý lớp tutor</span>
+              <v-icon name="hi-office-building" scale="2" />
+              <span class="m-2 text-3xl">Quản lý lớp tutor</span>
             </h2>
         </div>
         <tutor-class-filter @filter="handleFilter" />
         <tutor-class-table
-            :data-source="tutorClassData"
-            :loading="isLoading || isFetching"
-            :pagination-params="params"
-            :total-pages="totalPages"
-            @update:pagination-params="handleChangePagination"
+          :data-source="tutorClassData"
+          :loading="isLoading || isFetching"
+          :pagination-params="params"
+          :total-pages="totalPages"
+          @update:pagination-params="handleChangePagination"
         />
     </div>
 </template>

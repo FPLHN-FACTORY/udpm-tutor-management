@@ -71,5 +71,4 @@ const handleOpenModalUpdate = (record: SubjectResponse) => {
 const planData = computed(() => data?.value?.data?.data || []);
 const tutorClassDetailData = computed(() => tutorClassDetail?.value?.data || []);
 const totalPages = computed(() => data?.value?.data?.totalPages || 0);
-
 </script>

@@ -12,7 +12,7 @@
       >
         <template #bodyCell="{ column, record }">
           <div v-if="column.key === 'format'" class="text-center">
-            <a-tag :color="getTagFormat(record.format)"> {{record.format}}</a-tag>
+            <a-tag :color="getTagFormat(record.format)"> {{ record.format }}</a-tag>
           </div>
         </template>
       </tutor-table>
@@ -45,6 +45,7 @@ const columnsSubject: ColumnType[] = [
     dataIndex: "orderNumber",
     key: "index",
     ellipsis: true,
+    width: "50px",
   },
   {
     title: "Mã môn học",
@@ -63,6 +64,8 @@ const columnsSubject: ColumnType[] = [
     dataIndex: "numberClasses",
     key: "numberClasses",
     ellipsis: true,
+    width: "200px",
+    align: "center",
   },
   {
     title: "Số buổi",

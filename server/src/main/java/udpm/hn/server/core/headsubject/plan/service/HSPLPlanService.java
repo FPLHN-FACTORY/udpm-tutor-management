@@ -14,8 +14,6 @@ public interface HSPLPlanService {
 
     ResponseObject<?> getAllPlans(HSPLPlanListRequest request);
 
-    ResponseObject<?> getTutorClasses(PLPLTutorListRequest request);
-
     ResponseObject<?> getPlansDetail(String planId);
 
     ResponseObject<?> getPlansBySemester(HSPLPlanInfoRequest request);

@@ -6,20 +6,22 @@ import { DefaultResponse, PaginationParams, PaginationResponse, ResponseList } f
 import { AxiosResponse } from "axios";
 import { Ref } from "vue";
 
-export interface createTutorClassParams {
-  planeId: string;
-  subjectId: string;
-  numberOfClasses: number;
-  numberOfLectures: number;
-  format: string;
+export interface CreateTutorClassParams {
+  planId?: string;
+  subjectId?: string;
+  numberOfClasses?: number;
+  numberOfLectures?: number;
+  format?: string;
 }
 
-export interface updateTutorClassParams {
-  numberOfLectures: number;
-  format: string;
+export interface UpdateTutorClassParams {
+  numberOfLectures?: number;
+  format?: string;
 }
 
 export type DetailSubjectTutorResponse = {
+  id: string;
+  format: string;
   numberClasses: number;
   numberLectures: number;
   tutorClassId: string;
@@ -39,7 +41,7 @@ export type TutorClassDetailResponse = ResponseList & {
 
 
 export const createTutorClass = async (
-  params: createTutorClassParams
+  params: CreateTutorClassParams
 ) => {
     const res = (await request({
       url: `${PREFIX_API_HEAD_SUBJECT_PLAN}/tutor`,
@@ -52,7 +54,7 @@ export const createTutorClass = async (
 
 export const updateTutorClass = async (
     id: string,
-    params: updateTutorClassParams) => {
+    params: UpdateTutorClassParams) => {
   const res = (await request({
     url: `${PREFIX_API_HEAD_SUBJECT_PLAN}/tutor/${id}`,
     method: "PUT",

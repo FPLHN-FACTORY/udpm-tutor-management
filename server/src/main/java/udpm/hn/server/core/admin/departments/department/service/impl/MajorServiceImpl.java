@@ -3,6 +3,7 @@ package udpm.hn.server.core.admin.departments.department.service.impl;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ import java.util.Optional;
 @Service
 @Validated
 @RequiredArgsConstructor
+@Slf4j
 public class MajorServiceImpl implements MajorService {
 
     private final MajorExtendRepository majorExtendRepository;
@@ -151,7 +153,7 @@ public class MajorServiceImpl implements MajorService {
         } catch (RuntimeException e) {
             return ResponseObject.errorForward(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Lỗi khi đồng bộ chuyên ngành: {}", e.getMessage());
             return ResponseObject.errorForward("Đồng bộ chuyên ngành không thành công! Đã xảy ra lỗi.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
