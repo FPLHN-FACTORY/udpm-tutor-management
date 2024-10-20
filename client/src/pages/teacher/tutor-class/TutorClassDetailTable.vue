@@ -30,11 +30,12 @@
                   @click="goToDetail(record.id)"
               />
             </a-tooltip>
-            <a-tooltip title="Thêm evidence" color="#FFC26E">
+            <a-tooltip title="Thông tin tài liệu buổi học" color="#FFC26E">
               <a-button
                   type="primary"
                   size="large"
                   class="flex items-center justify-center"
+                  @click="$emit('handleOpenModalAdd', record)"
                   :icon="h(PlusSquareOutlined)"
               />
             </a-tooltip>
@@ -115,6 +116,11 @@ const router = useRouter();
 function goToDetail(lectureId: string) {
   router.push({ name: 'tcStudentAttendance', params: { lectureId } });
 }
+
+defineEmits([
+  "handleOpenModalUpdate",
+  "handleOpenModalAdd",
+]);
 
 
 const props = defineProps({

@@ -12,7 +12,7 @@
 
         </div>
        <student-attendance-table 
-        :data-source="lstudentAttendanceListData"
+        :data-source="attendanceListData"
         :loading="isLoadingStudentAttendanceList"
         :lectureId="lectureId"
         
@@ -40,7 +40,7 @@ const { data: studentAttendanceList, isLoading: isLoadingStudentAttendanceList, 
   enabled: !!lectureId
 })
 
-const lstudentAttendanceListData = computed(() => studentAttendanceList.value?.data || []);
+const attendanceListData = computed(() => studentAttendanceList.value?.data || []);
 
 const goBack = () => {
   routerBack.back();

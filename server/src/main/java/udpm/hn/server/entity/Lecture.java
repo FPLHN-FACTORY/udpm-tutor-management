@@ -57,6 +57,12 @@ public class Lecture extends PrimaryEntity implements Serializable {
     @Column(name = "evidence_link", length = EntityProperties.LENGTH_URL)
     private String evidenceLink;
 
+    @Column(name = "drive_link", length = EntityProperties.LENGTH_URL)
+    private String driveLink;
+
+    @Column(name = "id_drive_link")
+    private String idDriveLink;
+
     @Column(name = "format")
     @Enumerated(EnumType.STRING)
     private Format format;
