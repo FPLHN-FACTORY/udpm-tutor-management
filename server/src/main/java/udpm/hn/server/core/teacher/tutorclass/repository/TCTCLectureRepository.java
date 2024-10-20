@@ -2,12 +2,14 @@ package udpm.hn.server.core.teacher.tutorclass.repository;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import udpm.hn.server.core.teacher.tutorclass.model.response.TCTCEvidenceLectureDetailResponse;
 import udpm.hn.server.core.teacher.tutorclass.model.response.TCTCLectureResponse;
 import udpm.hn.server.entity.Lecture;
 import udpm.hn.server.entity.TutorClassDetail;
 import udpm.hn.server.repository.LectureRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TCTCLectureRepository extends LectureRepository {
@@ -49,5 +51,23 @@ public interface TCTCLectureRepository extends LectureRepository {
             nativeQuery = true
     )
     List<TCTCLectureResponse> getLectures(String id);
+
+    @Query("""
+    select l.id as lectureId, l.evidenceLink as evidenceLink,
+           l.exerciseLink as exerciseLink, l.recordLink as recordLink, l.driveLink as driveLink
+    from Lecture l
+    where l.id = :lectureId
+      and (l.evidenceLink is not null or l.exerciseLink is not null 
+           or l.recordLink is not null or l.driveLink is not null)
+    """)
+    TCTCEvidenceLectureDetailResponse getEvidenceLectureDetail(String lectureId);
+
+
+    @Query("""
+    select l.idDriveLink 
+    from Lecture l 
+    where l.id = :lectureId
+    """)
+    String getDriveLinkIdByLectureId(String lectureId);
 
 }

@@ -1,5 +1,8 @@
 import { queryKey } from "@/constants/queryKey"
 import {
+    addOrUpdateLectureEvidence,
+    AddOrUpdateLectureEvidenceParams,
+    getEvidenceLectureDetail,
     getLectures,
     getTutorClasses,
     ParamsGetTutorClass, updateLecture, UpdateLectureParams, updateTutorClassDetail,
@@ -30,6 +33,17 @@ export const useGetLectureByTutorClassDetail = (
     })
 }
 
+export const useGetEvidenceLectureDetail = (
+    lectureId: Ref<string | null>,
+    options?: any
+): UseQueryReturnType<Awaited<ReturnType<typeof getEvidenceLectureDetail>>, Error> => {
+    return useQuery({
+        queryKey: [queryKey.teacher.tutorClass.lectureList, lectureId],
+        queryFn: () => getEvidenceLectureDetail(lectureId.value),
+        ...options
+    })
+}
+
 export const useUpdateTutorClassDetail = () => {
     const queryClient = useQueryClient();
 
@@ -54,6 +68,23 @@ export const useUpdateLecture = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: [queryKey.teacher.tutorClass.lectureList],
+            });
+        },
+        onError: (error: any) => {
+            console.log("🚀 ~ useCreatePlan ~ error:", error);
+        },
+    });
+};
+
+
+export const useAddOrUpdateLectureEvidence = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (params: AddOrUpdateLectureEvidenceParams) => addOrUpdateLectureEvidence(params),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [queryKey.teacher.tutorClass.tutorClassDetailList],
             });
         },
         onError: (error: any) => {

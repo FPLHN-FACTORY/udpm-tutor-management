@@ -21,6 +21,14 @@ export type TutorClassResponse = ResponseList & {
     endTime: number,
 }
 
+export type EvidenceLectureDetail = ResponseList & {
+    lectureId: number,
+    evidenceLink: string,
+    exerciseLink: string,
+    rerecordLink: string,
+    driveLink: string
+}
+
 export type LectureResponse = ResponseList & {
     lectureContent: string,
     shift: string,
@@ -86,6 +94,20 @@ export const updateTutorClassDetail = async (params: Array<UpdateTutorClassDetai
     return res.data;
 };
 
+export const getEvidenceLectureDetail = async (
+    lectureId: string | null
+) => {
+    const res = (await request({
+        url: `${PREFIX_API_TEACHER_TUTOR_CLASS}/lecture/${lectureId}`,
+        method: "GET",
+    })) as AxiosResponse<
+        DefaultResponse<Array<EvidenceLectureDetail>>
+    >;
+
+    return res.data;
+};
+
+
 export const updateLecture = async (params: Array<UpdateLectureParams>) => {
     const res = (await request({
         url: `${PREFIX_API_TEACHER_TUTOR_CLASS}/lecture`,
@@ -97,3 +119,34 @@ export const updateLecture = async (params: Array<UpdateLectureParams>) => {
 
     return res.data;
 };
+
+export interface AddOrUpdateLectureEvidenceParams {
+    file: File | null;
+    lectureId: String | null;
+    evidenceLink: String | null;
+    exerciseLink: String | null ;
+    recordLink: String | null;
+    driveLink: String | null;
+}
+
+export const addOrUpdateLectureEvidence = async (params: AddOrUpdateLectureEvidenceParams) => {
+    const formData = new FormData();
+ 
+    if (params.file) {
+       formData.append('file', params.file);
+    }
+    if (params.lectureId) formData.append('lectureId', params.lectureId as string);
+    if (params.evidenceLink) formData.append('evidenceLink', params.evidenceLink as string);
+    if (params.exerciseLink) formData.append('exerciseLink', params.exerciseLink as string);
+    if (params.recordLink) formData.append('recordLink', params.recordLink as string);
+ 
+    const res = await request({
+       url: `${PREFIX_API_TEACHER_TUTOR_CLASS}/lecture-evidence`,
+       method: 'PUT',
+       data: formData,
+       headers: {
+          'Content-Type': 'multipart/form-data',
+       },
+    }) as AxiosResponse<DefaultResponse<null>>;
+    return res.data;
+ };

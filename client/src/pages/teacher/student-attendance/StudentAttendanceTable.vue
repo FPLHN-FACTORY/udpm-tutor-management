@@ -93,7 +93,6 @@ const props = defineProps({
   lectureId: String
 });
 
-// Hàm để chuyển đổi dữ liệu
 const transformDataSource = (newData: StudentAttendanceResponse[]) => {
   return newData.map((record, index) => ({
     key: `${lectureId.value}-${index}`,
