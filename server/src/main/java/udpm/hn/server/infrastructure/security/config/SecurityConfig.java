@@ -30,11 +30,10 @@ import udpm.hn.server.infrastructure.security.oauth2.CustomOAuth2UserService;
 import udpm.hn.server.infrastructure.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import udpm.hn.server.infrastructure.security.oauth2.OAuth2AuthenticationFailureHandler;
 import udpm.hn.server.infrastructure.security.oauth2.OAuth2AuthenticationSuccessHandler;
+import udpm.hn.server.utils.Helper;
 
 import java.util.Collections;
 import java.util.List;
-
-import static udpm.hn.server.utils.Helper.appendWildcard;
 
 @Configuration
 @EnableWebSecurity
@@ -113,17 +112,16 @@ public class SecurityConfig {
         // Public APIs
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
-                                appendWildcard(MappingConstants.API_AUTH_PREFIX),
-                                appendWildcard(MappingConstants.PATH_OAUTH2),
-                                appendWildcard(MappingConstants.VERSION)
+                                Helper.appendWildcard(MappingConstants.API_AUTH_PREFIX),
+                                Helper.appendWildcard(MappingConstants.PATH_OAUTH2),
+                                Helper.appendWildcard(MappingConstants.VERSION)
                         )
                         .permitAll()
         );
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
-                                appendWildcard(MappingConstants.API_COMMON),
-                                appendWildcard(MappingConstants.API_NOTIFICATION),
-                                appendWildcard(MappingConstants.API_LOG)
+                                Helper.appendWildcard(MappingConstants.API_COMMON),
+                                Helper.appendWildcard(MappingConstants.API_NOTIFICATION)
                         )
                         .hasAnyAuthority(
                                 Role.ADMIN.name(),
@@ -138,68 +136,68 @@ public class SecurityConfig {
         // Admin APIs
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
-                                appendWildcard(MappingConstants.API_ADMIN_DEPARTMENT),
-                                appendWildcard(MappingConstants.API_ADMIN_SUBJECT),
-                                appendWildcard(MappingConstants.API_ADMIN_MAJOR),
-                                appendWildcard(MappingConstants.API_ADMIN_SEMESTER),
-                                appendWildcard(MappingConstants.API_ADMIN_BLOCK),
-                                appendWildcard(MappingConstants.API_ADMIN_MAJOR_FACILITY),
-                                appendWildcard(MappingConstants.API_ADMIN_DEPARTMENT_FACILITY),
-                                appendWildcard(MappingConstants.API_ADMIN_STAFF),
-                                appendWildcard(MappingConstants.API_ADMIN_ROLE),
-                                appendWildcard(MappingConstants.API_SUPER_ADMIN_FACILITY)
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_DEPARTMENT),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_SUBJECT),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_MAJOR),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_SEMESTER),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_BLOCK),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_MAJOR_FACILITY),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_DEPARTMENT_FACILITY),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_STAFF),
+                                Helper.appendWildcard(MappingConstants.API_ADMIN_ROLE),
+                                Helper.appendWildcard(MappingConstants.API_SUPER_ADMIN_FACILITY)
                         )
                         .hasAnyAuthority(Role.ADMIN.name())
         );
         // Head of Department APIs
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
-                                appendWildcard(MappingConstants.API_HEAD_DEPARTMENT_HEAD_PLAN),
-                                appendWildcard(MappingConstants.API_HEAD_DEPARTMENT_HEAD_SUBJECT),
-                                appendWildcard(MappingConstants.API_PLAN_LOG_HISTORY)
+                                Helper.appendWildcard(MappingConstants.API_HEAD_DEPARTMENT_HEAD_PLAN),
+                                Helper.appendWildcard(MappingConstants.API_HEAD_DEPARTMENT_HEAD_SUBJECT),
+                                Helper.appendWildcard(MappingConstants.API_PLAN_LOG_HISTORY)
                         )
                         .hasAnyAuthority(Role.CHU_NHIEM_BO_MON.name())
         );
         // Teacher APIs
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
-                                appendWildcard(MappingConstants.API_TEACHER_TUTOR_CLASS),
-                                appendWildcard(MappingConstants.API_TEACHER_STUDENT_ATTENDANCE)
+                                Helper.appendWildcard(MappingConstants.API_TEACHER_TUTOR_CLASS),
+                                Helper.appendWildcard(MappingConstants.API_TEACHER_STUDENT_ATTENDANCE)
                         )
                         .hasAnyAuthority(Role.GIANG_VIEN.name())
         );
         // Head of Subject APIs
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
-                                appendWildcard(MappingConstants.API_HEAD_SUBJECT_PLAN),
-                                appendWildcard(MappingConstants.API_HEAD_SUBJECT_TUTOR_DETAIL),
-                                appendWildcard(MappingConstants.API_PLAN_LOG_HISTORY)
+                                Helper.appendWildcard(MappingConstants.API_HEAD_SUBJECT_PLAN),
+                                Helper.appendWildcard(MappingConstants.API_HEAD_SUBJECT_TUTOR_DETAIL),
+                                Helper.appendWildcard(MappingConstants.API_PLAN_LOG_HISTORY)
                         )
                         .hasAnyAuthority(Role.TRUONG_MON.name())
         );
         // Planner APIs
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
-                                appendWildcard(MappingConstants.API_PLANNER_PLAN),
-                                appendWildcard(MappingConstants.API_PLAN_LOG_HISTORY)
+                                Helper.appendWildcard(MappingConstants.API_PLANNER_PLAN),
+                                Helper.appendWildcard(MappingConstants.API_PLAN_LOG_HISTORY)
                         )
                         .hasAnyAuthority(Role.NGUOI_LAP_KE_HOACH.name())
         );
         // Super Admin APIs
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
-                                appendWildcard(MappingConstants.API_SUPER_ADMIN_OPERATION_LOG),
-                                appendWildcard(MappingConstants.API_PLAN_LOG_HISTORY),
-                                appendWildcard(MappingConstants.API_SUPER_ADMIN_USER_ACTIVITY)
+                                Helper.appendWildcard(MappingConstants.API_SUPER_ADMIN_OPERATION_LOG),
+                                Helper.appendWildcard(MappingConstants.API_PLAN_LOG_HISTORY),
+                                Helper.appendWildcard(MappingConstants.API_SUPER_ADMIN_USER_ACTIVITY)
                         )
                         .hasAnyAuthority(Role.SUPER_ADMIN.name())
         );
         // WebSocket
         http.authorizeHttpRequests(
                 auth -> auth.requestMatchers(
-                                appendWildcard(WEB_SOCKET_ENDPOINT),
-                                appendWildcard(WEB_SOCKET_APP_PREFIX),
-                                appendWildcard(WEB_SOCKET_TOPIC_PREFIX)
+                                Helper.appendWildcard(WEB_SOCKET_ENDPOINT),
+                                Helper.appendWildcard(WEB_SOCKET_APP_PREFIX),
+                                Helper.appendWildcard(WEB_SOCKET_TOPIC_PREFIX)
                         )
                         .permitAll()
         );
@@ -209,7 +207,7 @@ public class SecurityConfig {
                         a -> a.baseUri(MappingConstants.PATH_OAUTH2 + "/authorize")
                 )
                 .redirectionEndpoint(
-                        r -> r.baseUri(appendWildcard(MappingConstants.PATH_OAUTH2 + "/callback"))
+                        r -> r.baseUri(Helper.appendWildcard(MappingConstants.PATH_OAUTH2 + "/callback"))
                 )
                 .userInfoEndpoint(u -> u.userService(customOAuth2UserService))
                 .authorizationEndpoint(a -> a.authorizationRequestRepository(cookieAuthorizationRequestRepository()))
