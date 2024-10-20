@@ -33,6 +33,7 @@ import udpm.hn.server.infrastructure.config.email.service.EmailService;
 import udpm.hn.server.infrastructure.config.googleform.service.GoogleFormService;
 import udpm.hn.server.infrastructure.config.websocket.model.NotifyModel;
 import udpm.hn.server.infrastructure.config.websocket.service.NotificationService;
+import udpm.hn.server.infrastructure.constant.BlockName;
 import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.infrastructure.constant.PlanStatus;
 import udpm.hn.server.infrastructure.constant.Role;
@@ -124,11 +125,17 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
             plan.setEndDate(request.getEndTime());
             Plan planSaveResult = plplPlansRepository.save(plan);
 
+            //Gửi thông báo đến TRUONG_MON và CHU_NHIEM_BO_MON
+            Semester semesterNotification = planSaveResult.getBlock().getSemester();
+            Block blockNotification = planSaveResult.getBlock();
             List<Notification> listNotificationSave = new ArrayList<>();
             for (String role : List.of(Role.TRUONG_MON.toString(), Role.CHU_NHIEM_BO_MON.toString())) {
                 Notification item = new Notification();
                 item.setPlan(planSaveResult);
-                item.setContent("Kế hoạch " + planSaveResult.getDescription() + " đã được tạo.");
+                item.setContent(
+                        "Kế hoạch tại " + BlockName.toString(blockNotification.getName()) + " của kì " +
+                                semesterNotification.getSemesterName() + "-" + semesterNotification.getYear() +
+                                " đã được tạo bởi người lập kế hoạch(" + staffOptional.get().getName() + ").");
                 item.setStaff(staffOptional.get());
                 item.setSentTo(role);
                 listNotificationSave.add(item);
@@ -204,10 +211,12 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
             planLogHistory.setStatus(true);
 
             List<Notification> listNotificationSave = new ArrayList<>();
+            Semester semesterNotification = planOptional.get().getBlock().getSemester();
+            Block blockNotification = planOptional.get().getBlock();
             for (String role : List.of(Role.TRUONG_MON.toString(), Role.CHU_NHIEM_BO_MON.toString())) {
                 Notification item = new Notification();
                 item.setPlan(planSaveResult);
-                item.setContent("Kế hoạch " + planSaveResult.getDescription() + " đã được chỉnh sửa.");
+                item.setContent("Kế hoạch tại " + BlockName.toString(blockNotification.getName()) + " của kì " + semesterNotification.getSemesterName() + "-" + semesterNotification.getYear() + " đã được chỉnh sửa.");
                 item.setStaff(planSaveResult.getPlanner());
                 item.setSentTo(role);
                 listNotificationSave.add(item);
@@ -288,13 +297,18 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
                 return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch này chưa có môn tutor!");
             }
 
-            //Thêm 2 thông báo đến TRUONG_MON và CHU_NHIEM_BO_MON
             List<Notification> listNotificationSave = new ArrayList<>();
+            Semester semesterNotification = planOptional.get().getBlock().getSemester();
+            Block blockNotification = planOptional.get().getBlock();
+            Staff staffNotification = planOptional.get().getPlanner();
             for (String role : List.of(Role.TRUONG_MON.toString(), Role.CHU_NHIEM_BO_MON.toString())) {
                 Notification item = new Notification();
                 item.setPlan(planOptional.get());
-                item.setContent("Kế hoạch " + planOptional.get().getDescription() + " đã được người lập kế hoạch phê duyệt.");
-                item.setStaff(planOptional.get().getPlanner());
+                item.setContent(
+                        "Kế hoạch tại " + BlockName.toString(blockNotification.getName()) + " của kì " +
+                                semesterNotification.getSemesterName() + "-" + semesterNotification.getYear() +
+                                " đã được phê duyệt bởi người lập kế hoạch(" + staffNotification.getName() + ").");
+                item.setStaff(staffNotification);
                 item.setSentTo(role);
                 listNotificationSave.add(item);
             }

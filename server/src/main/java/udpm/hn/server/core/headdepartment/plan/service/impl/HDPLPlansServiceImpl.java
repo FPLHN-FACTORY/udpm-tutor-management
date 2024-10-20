@@ -16,10 +16,13 @@ import udpm.hn.server.core.headdepartment.plan.repository.HDPLPlanExtendReposito
 import udpm.hn.server.core.headdepartment.plan.service.HDPLPlansService;
 import udpm.hn.server.core.planloghistory.model.request.PlanLogHistoryRequest;
 import udpm.hn.server.core.planloghistory.service.PlanLogHistoryService;
+import udpm.hn.server.entity.Block;
 import udpm.hn.server.entity.Notification;
 import udpm.hn.server.entity.Plan;
+import udpm.hn.server.entity.Semester;
 import udpm.hn.server.infrastructure.config.websocket.model.NotifyModel;
 import udpm.hn.server.infrastructure.config.websocket.service.NotificationService;
+import udpm.hn.server.infrastructure.constant.BlockName;
 import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.infrastructure.constant.PlanStatus;
 import udpm.hn.server.infrastructure.constant.Role;
@@ -79,10 +82,15 @@ public class HDPLPlansServiceImpl implements HDPLPlansService {
             }
             //Thêm 2 thông báo đến NGUOI_LAP_KE_HOACH và TRUONG_MON
             List<Notification> listNotificationSave = new ArrayList<>();
+            Semester semesterNotification = planOptional.get().getBlock().getSemester();
+            Block blockNotification = planOptional.get().getBlock();
             for (String role : List.of(Role.NGUOI_LAP_KE_HOACH.toString(), Role.TRUONG_MON.toString())) {
                 Notification item = new Notification();
                 item.setPlan(planOptional.get());
-                item.setContent("Kế hoạch " + planOptional.get().getDescription() + " đã được chủ nhiệm bộ môn phê duyệt.");
+//                item.setContent("Kế hoạch của người lập kế hoạch(" + planOptional.get().getPlanner().getName() + ") đã được chủ nhiệm bộ môn phê duyệt.");
+                item.setContent(
+                        "Kế hoạch tại " + BlockName.toString(blockNotification.getName()) + " của kì " +
+                                semesterNotification.getSemesterName() + " đã được chủ nhiệm bộ môn phê duyệt.");
                 item.setStaff(planOptional.get().getPlanner());
                 item.setSentTo(role);
                 listNotificationSave.add(item);
