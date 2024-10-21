@@ -59,23 +59,30 @@ public interface CMStaffExtendRepository extends StaffRepository {
 
     @Query(
             value = """
-                    SELECT
-                        s.id as id,
-                        CONCAT(s.staff_code, ' - ', s.name) as name
+                     SELECT DISTINCT
+                    	s.id as id,
+                    	CONCAT(s.staff_code, ' - ', s.name) as name
                     FROM
-                        staff s
-                    LEFT JOIN staff_major_facility smf ON s.id = smf.id_staff
-                    LEFT JOIN major_facility mf ON mf.id = smf.id_major_facility
-                    LEFT JOIN department_facility df ON mf.id_department_facility = df.id
-                    LEFT JOIN facility f ON f.id = df.id_facility
-                    LEFT JOIN department d ON d.id = df.id_department
-                    LEFT JOIN staff_role sr ON sr.id_staff = s.id
-                    LEFT JOIN role r ON r.id = sr.id_role
-                    WHERE
-                        r.code LIKE CONCAT('%', :#{#request.roleCode}, '%')
-                        AND d.code LIKE CONCAT('%', :#{#request.departmentCode}, '%')
-                        AND f.code LIKE CONCAT('%', :#{#request.facilityCode}, '%')
-                    """,
+                    	staff s
+                    LEFT JOIN staff_major_facility smf ON
+                    	s.id = smf.id_staff
+                    LEFT JOIN major_facility mf ON
+                    	mf.id = smf.id_major_facility
+                    LEFT JOIN department_facility df ON
+                    	mf.id_department_facility = df.id
+                    LEFT JOIN facility f ON
+                    	f.id = df.id_facility
+                    LEFT JOIN department d ON
+                    	d.id = df.id_department
+                    LEFT JOIN staff_role sr ON
+                    	sr.id_staff = s.id
+                    LEFT JOIN role r ON
+                    	r.id = sr.id_role
+                     WHERE
+                         :#{#request.roleCode} IS NULL OR r.code LIKE CONCAT('%', :#{#request.roleCode}, '%')
+                         AND :#{#request.departmentCode} IS NULL OR d.code LIKE CONCAT('%', :#{#request.departmentCode}, '%')
+                         AND :#{#request.facilityCode} IS NULL OR f.code LIKE CONCAT('%', :#{#request.facilityCode}, '%')
+                     """,
             nativeQuery = true
     )
     List<CMStaffOptionsResponse> getStaffOptions(StaffSearchByRoleRequest request);

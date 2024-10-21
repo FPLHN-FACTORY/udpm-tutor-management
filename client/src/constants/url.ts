@@ -64,6 +64,18 @@ export const PREFIX_API_SUPER_ADMIN_OPERATION_LOG =
 export const PREFIX_API_FACILITY_SUPER_ADMIN =
   `${API_URL}/super-admin/facilities` as string;
 
+export const PREFIX_API_DEPARTMENT_SUPER_ADMIN =
+  `${API_URL}/super-admin/departments` as string;
+
+export const PREFIX_API_DEPARTMENT_FACILITY_SUPER_ADMIN =
+  `${API_URL}/super-admin/departments-facility` as string;
+
+export const PREFIX_API_MAJOR_SUPER_ADMIN =
+  `${API_URL}/super-admin/majors` as string;
+
+export const PREFIX_API_MAJOR_FACILITY_SUPER_ADMIN =
+  `${API_URL}/super-admin/majors-facility` as string;
+
 // HEAD DEPARTMENT API
 export const PREFIX_API_HEAD_DEPARTMENT_HEAD_SUBJECT =
   `${API_URL}/head-department/head-of-subjects` as string;

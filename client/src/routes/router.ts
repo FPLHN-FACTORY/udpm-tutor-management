@@ -103,7 +103,7 @@ export const routes: RouteRecordRaw[] = [
       },
     ],
   },
-  // System Log routes
+  // Super Admin routes
   {
     path: ROUTES_CONSTANTS.SUPER_ADMIN.path,
     redirect: `${ROUTES_CONSTANTS.SUPER_ADMIN.path}/${ROUTES_CONSTANTS.SUPER_ADMIN.children.OPERATION_LOG.path}`,
@@ -136,6 +136,16 @@ export const routes: RouteRecordRaw[] = [
         path: ROUTES_CONSTANTS.SUPER_ADMIN.children.FACILITY.path,
         name: ROUTES_CONSTANTS.SUPER_ADMIN.children.FACILITY.name,
         component: () => import("@/pages/superadmin/facility/Facility.vue"),
+        meta: {
+          requiresRole: ROLES.SUPER_ADMIN,
+          requiresAuth: true,
+        },
+      },
+      // Department route
+      {
+        path: ROUTES_CONSTANTS.SUPER_ADMIN.children.DEPARTMENT.path,
+        name: ROUTES_CONSTANTS.SUPER_ADMIN.children.DEPARTMENT.name,
+        component: () => import("@/pages/superadmin/department/Department.vue"),
         meta: {
           requiresRole: ROLES.SUPER_ADMIN,
           requiresAuth: true,
