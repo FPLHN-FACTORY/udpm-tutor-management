@@ -6,6 +6,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserSwitchOutlined,
+  UserOutlined,
 } from "@ant-design/icons-vue";
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -35,10 +36,17 @@ const itemsHeadDepartment = [
   },
   {
     key: "3",
+    icon: UserOutlined,
+    text: "Quản lý người lập kế hoạch",
+    path: "/head-department/planner",
+  },
+  {
+    key: "4",
     icon: HistoryOutlined,
     text: "Quản lý lịch sử kế hoạch kế hoạch",
     path: "/head-department/plan-log",
   },
+  
 ];
 
 const selectedKeys = computed(() => {

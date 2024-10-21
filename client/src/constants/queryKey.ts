@@ -97,6 +97,9 @@ export const queryKey = {
       tutorDetail: "hDPlTutorDetailKey",
       tutorList: "hDPlTutorListKey"
     },
+    planner: {
+      plannerList: "hDPlPlannerListKey",
+    },
   },
   planner: {
     plan: {
@@ -118,10 +121,7 @@ export const queryKey = {
       tutorClassList: "hSPlTutorClassListKey",
       tutorClassDetailList: "hSPlTutorClassDetailListKey",
       tutorDetail: "hSPlTutorDetailKey",
-    },
-    planner: {
-      plannerList: "hSPlPlannerListKey",
-    },
+    }
   },
   teacher: {
     tutorClass: {

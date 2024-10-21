@@ -1,11 +1,16 @@
-package udpm.hn.server.core.headsubject.plan.model.request;
+package udpm.hn.server.core.headdepartment.planner.model.request;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class AssignedPlannerRequest {
+
+public class HDPLNCreatePlannerRequest {
+    private String name;
+    private String staffCode;
+    private String emailFe;
+    private String emailFpt;
 
     private String currentSemesterId;
 
