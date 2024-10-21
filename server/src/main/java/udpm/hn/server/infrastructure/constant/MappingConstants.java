@@ -47,6 +47,10 @@ public final class MappingConstants {
     public static final String API_SUPER_ADMIN_FACILITY = API_SUPER_ADMIN_PREFIX + "/facilities";
     public static final String API_SUPER_ADMIN_OPERATION_LOG = API_SUPER_ADMIN_PREFIX + "/operation-log";
     public static final String API_SUPER_ADMIN_USER_ACTIVITY = API_SUPER_ADMIN_PREFIX + "/user-log";
+    public static final String API_SUPER_ADMIN_DEPARTMENT = API_SUPER_ADMIN_PREFIX + "/departments";
+    public static final String API_SUPER_ADMIN_MAJOR = API_SUPER_ADMIN_PREFIX + "/majors";
+    public static final String API_SUPER_ADMIN_DEPARTMENT_FACILITY = API_SUPER_ADMIN_PREFIX + "/departments-facility";
+    public static final String API_SUPER_ADMIN_MAJOR_FACILITY = API_SUPER_ADMIN_PREFIX + "/majors-facility";
 
     // Head Department API Endpoints
     public static final String API_HEAD_DEPARTMENT_HEAD_SUBJECT = API_HEAD_DEPARTMENT_PREFIX + "/head-of-subjects";

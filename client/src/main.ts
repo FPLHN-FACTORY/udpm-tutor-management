@@ -1,5 +1,5 @@
 import { router } from "@/routes/router";
-import { VueQueryPlugin } from "@tanstack/vue-query";
+import { VueQueryPlugin, VueQueryPluginOptions } from "@tanstack/vue-query";
 import Antd from "ant-design-vue";
 import "ant-design-vue/dist/reset.css";
 import { OhVueIcon, addIcons } from "oh-vue-icons";
@@ -18,12 +18,24 @@ addIcons(...AllIcon);
 
 const app = createApp(App);
 
+const vueQueryConfig: VueQueryPluginOptions = {
+  queryClientConfig: {
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false,
+        retry: 1,
+        staleTime: 1000 * 60 * 5, // 5 minutes
+      },
+    },
+  },
+};
+
 app.use(router);
 app.use(Antd);
 app.use(Vue3Toastify, {
   autoClose: 3000,
 } as ToastContainerOptions);
-app.use(VueQueryPlugin);
+app.use(VueQueryPlugin, vueQueryConfig);
 app.use(createPinia());
 app.component("v-icon", OhVueIcon);
 

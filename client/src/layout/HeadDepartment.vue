@@ -46,7 +46,6 @@ const itemsHeadDepartment = [
     text: "Quản lý lịch sử kế hoạch kế hoạch",
     path: "/head-department/plan-log",
   },
-  
 ];
 
 const selectedKeys = computed(() => {

@@ -23,22 +23,28 @@ const router = useRouter();
 
 const itemsSuperAdmin = [
   {
-    key: "1",
+    key: ROUTES_CONSTANTS.SUPER_ADMIN.children.FACILITY.name,
+    icon: HomeOutlined,
+    text: "Quản lý cơ sở",
+    path: `${ROUTES_CONSTANTS.SUPER_ADMIN.path}/${ROUTES_CONSTANTS.SUPER_ADMIN.children.FACILITY.path}`,
+  },
+  {
+    key: ROUTES_CONSTANTS.SUPER_ADMIN.children.DEPARTMENT.name,
+    icon: HomeOutlined,
+    text: "Quản lý bộ môn",
+    path: `${ROUTES_CONSTANTS.SUPER_ADMIN.path}/${ROUTES_CONSTANTS.SUPER_ADMIN.children.DEPARTMENT.path}`,
+  },
+  {
+    key: ROUTES_CONSTANTS.SUPER_ADMIN.children.OPERATION_LOG.name,
     icon: HistoryOutlined,
     text: "Lịch sử chức năng",
     path: `${ROUTES_CONSTANTS.SUPER_ADMIN.path}/${ROUTES_CONSTANTS.SUPER_ADMIN.children.OPERATION_LOG.path}`,
   },
   {
-    key: "2",
+    key: ROUTES_CONSTANTS.SUPER_ADMIN.children.USER_ACTIVITY_LOG.name,
     icon: LoginOutlined,
     text: "Lịch sử đăng nhập",
     path: `${ROUTES_CONSTANTS.SUPER_ADMIN.path}/${ROUTES_CONSTANTS.SUPER_ADMIN.children.USER_ACTIVITY_LOG.path}`,
-  },
-  {
-    key: "5",
-    icon: HomeOutlined,
-    text: "Quản lý cơ sở",
-    path: ROUTES_CONSTANTS.SUPER_ADMIN.children.FACILITY.path,
   },
 ];
 
@@ -86,27 +92,29 @@ const handleLogout = () => {
               class="text-xl"
             />
           </div>
-          <a-dropdown placement="bottomRight" arrow>
-            <div class="flex items-center cursor-pointer">
-              <a-avatar
-                v-if="userInfo?.pictureUrl"
-                :src="userInfo?.pictureUrl"
-                size="large"
-              >
-                {{ userInfo?.fullName[0] }}
-              </a-avatar>
-              <span class="ml-2 truncate">
-                {{ userInfo?.fullName }}
-              </span>
-            </div>
-            <template #overlay>
-              <a-menu>
-                <a-menu-item key="logout" @click="handleLogout">
-                  Đăng xuất
-                </a-menu-item>
-              </a-menu>
-            </template>
-          </a-dropdown>
+          <div class="flex gap-x-2 items-center">
+            <a-dropdown placement="bottomRight" arrow>
+              <div class="flex items-center cursor-pointer h-8">
+                <a-avatar
+                  v-if="userInfo?.pictureUrl"
+                  :src="userInfo?.pictureUrl"
+                  size="large"
+                >
+                  {{ userInfo?.fullName[0] }}
+                </a-avatar>
+                <span class="ml-2 truncate">
+                  {{ userInfo?.fullName }}
+                </span>
+              </div>
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item key="logout" @click="handleLogout">
+                    Đăng xuất
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+          </div>
         </div>
       </a-layout-header>
       <a-layout-content class="mx-4 bg-white">

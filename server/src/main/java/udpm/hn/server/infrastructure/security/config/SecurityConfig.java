@@ -191,7 +191,12 @@ public class SecurityConfig {
                 auth -> auth.requestMatchers(
                                 appendWildcard(MappingConstants.API_SUPER_ADMIN_OPERATION_LOG),
                                 appendWildcard(MappingConstants.API_PLAN_LOG_HISTORY),
-                                appendWildcard(MappingConstants.API_SUPER_ADMIN_USER_ACTIVITY)
+                                appendWildcard(MappingConstants.API_SUPER_ADMIN_USER_ACTIVITY),
+                                appendWildcard(MappingConstants.API_SUPER_ADMIN_DEPARTMENT),
+                                appendWildcard(MappingConstants.API_SUPER_ADMIN_FACILITY),
+                                appendWildcard(MappingConstants.API_SUPER_ADMIN_MAJOR),
+                                appendWildcard(MappingConstants.API_SUPER_ADMIN_DEPARTMENT_FACILITY),
+                                appendWildcard(MappingConstants.API_SUPER_ADMIN_MAJOR_FACILITY)
                         )
                         .hasAnyAuthority(Role.SUPER_ADMIN.name())
         );

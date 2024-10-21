@@ -15,7 +15,9 @@
       @update:pagination-params="handlePaginationChange"
       @handleOpenDepartmentDetailModal="handleOpenDepartmentDetailModal"
       @handleOpenMajorListModal="handleOpenMajorListModal"
-      @handleOpenDepartmentsFacilityListModal="handleOpenDepartmentsFacilityListModal"
+      @handleOpenDepartmentsFacilityListModal="
+        handleOpenDepartmentsFacilityListModal
+      "
       @handle-open-modal-add="handleOpenDepartmentAddModal"
       @syncSuccess="refetchDepartmentData"
     />
@@ -40,31 +42,43 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
-import { keepPreviousData } from '@tanstack/vue-query';
-import DepartmentFilter from '@/pages/admin/department/DepartmentFilter.vue';
-import DepartmentTable from '@/pages/admin/department/DepartmentTable.vue';
-import MajorListModal from './department-major/MajorListModal.vue';
-import DepartmentFacilityModal from './department-facility/DepartmentFacilityModal.vue';
-import CreateUpdateDepartmentModal from './CreateUpdateDepartmentModal.vue';
-import { useDetailDepartment, useGetDepartment } from '@/services/service/admin/department.action';
-import { DepartmentFacilityResponse, DepartmentResponse, ParamsGetDepartment } from '@/services/api/admin/department.api';
-import { MajorResponse } from '@/services/api/admin/major.api';
+import { computed, ref } from "vue";
+import { keepPreviousData } from "@tanstack/vue-query";
+import DepartmentFilter from "@/pages/admin/department/DepartmentFilter.vue";
+import DepartmentTable from "@/pages/admin/department/DepartmentTable.vue";
+import MajorListModal from "./department-major/MajorListModal.vue";
+import DepartmentFacilityModal from "./department-facility/DepartmentFacilityModal.vue";
+import CreateUpdateDepartmentModal from "./CreateUpdateDepartmentModal.vue";
+import {
+  useDetailDepartment,
+  useGetDepartment,
+} from "@/services/service/admin/department.action";
+import {
+  DepartmentFacilityResponse,
+  DepartmentResponse,
+  ParamsGetDepartment,
+} from "@/services/api/admin/department.api";
+import { MajorResponse } from "@/services/api/admin/major.api";
 
 const params = ref<ParamsGetDepartment>({ page: 1, size: 10 });
 const openDepartmentDetailModal = ref(false);
 const departmentId = ref<string | null>(null);
-const title = ref<string>('');
+const title = ref<string>("");
 
 const { data, isLoading, isFetching, refetch } = useGetDepartment(params, {
   refetchOnWindowFocus: false,
   placeholderData: keepPreviousData,
 });
 
-const { data: dataDetail, isLoading: isLoadingDetail } = useDetailDepartment(departmentId, {
-  refetchOnWindowFocus: false,
-  enabled: computed(() => !!departmentId.value && openDepartmentDetailModal.value),
-});
+const { data: dataDetail, isLoading: isLoadingDetail } = useDetailDepartment(
+  departmentId,
+  {
+    refetchOnWindowFocus: false,
+    enabled: computed(
+      () => !!departmentId.value && openDepartmentDetailModal.value
+    ),
+  }
+);
 
 const handlePaginationChange = (newParams: ParamsGetDepartment) => {
   params.value = { ...params.value, ...newParams };
@@ -92,7 +106,9 @@ const handleOpenDepartmentAddModal = () => {
 const departmentData = computed(() => data?.value?.data?.data || []);
 const totalPages = computed(() => data?.value?.data?.totalPages || 0);
 const departmentDetail = computed(() =>
-  dataDetail.value?.data ? { ...dataDetail.value?.data, departmentId: departmentId?.value } : null
+  dataDetail.value?.data
+    ? { ...dataDetail.value?.data, departmentId: departmentId?.value }
+    : null
 );
 
 const openMajorListModal = ref(false);
@@ -113,14 +129,15 @@ const handleCloseDepartmentsFacilityListModal = () => {
   departmentId.value = null;
 };
 
-const handleOpenDepartmentsFacilityListModal = (record: DepartmentFacilityResponse) => {
+const handleOpenDepartmentsFacilityListModal = (
+  record: DepartmentFacilityResponse
+) => {
   departmentId.value = record.id;
   title.value = record.departmentCode + "_" + record.departmentName;
   openDepartmentsFacilityListModal.value = true;
 };
 
 const refetchDepartmentData = () => {
-  refetch(); 
+  refetch();
 };
-
 </script>
