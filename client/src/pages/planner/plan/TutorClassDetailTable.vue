@@ -3,7 +3,7 @@
     <div class="flex justify-end mb-5" v-if="!canUpdate">
       <a-button @click="handleUpdateStudentPlan" type="primary">Lưu Tất Cả</a-button>
     </div>
-    <a-table
+    <tutor-table
         :columns="columns"
         :data-source="tempDataSource"
         :row-selection="rowSelection"
@@ -37,7 +37,6 @@
               style="width: 100%"
               :options="studentOption"
               :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
-              :bordered="false"
               :disabled="canUpdate"
           >
           </a-select>
@@ -81,7 +80,7 @@
           />
         </div>
       </template>
-    </a-table>
+    </tutor-table>
   </div>
 </template>
 
@@ -95,6 +94,7 @@ import { ERROR_MESSAGE } from "@/constants/message.constant.ts";
 import { FormatCommonOptionsResponse } from "@/services/api/common.api.ts";
 import { confirmModal } from "@/utils/common.helper.ts";
 import {PlusCircleOutlined} from "@ant-design/icons-vue";
+import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
 
 const props = defineProps({
   dataSource: {
@@ -109,7 +109,10 @@ const props = defineProps({
   canUpdate: Boolean
 });
 
-const emit = defineEmits(["handleOpenModalAdd"]);
+const emit = defineEmits([
+  "handleOpenModalAdd",
+  "update:paginationParams",
+]);
 
 const shiftOptions = Array.from({ length: 6 }, (_, index) => ({
   value: `Ca ${index + 1}`,
@@ -130,12 +133,47 @@ watch(() => props.dataSource, (newData) => {
 });
 
 const columns: ColumnType[] = [
-  { title: "Mã lớp", dataIndex: "tutorClassCode", key: "tutorClassCode", ellipsis: true, width: "100px" },
-  { title: "Sinh viên tutor", dataIndex: "studentTutor", key: "studentTutor", ellipsis: true, width: "100px" },
-  { title: "Giảng viên tutor", dataIndex: "teacherTutor", key: "teacherTutor", ellipsis: true, width: "100px" },
-  { title: "Ca học", dataIndex: "shift", key: "shift", ellipsis: true, width: "70px" },
-  { title: "Phòng", dataIndex: "room", key: "room", ellipsis: true, width: "100px" },
-  { title: "Link", dataIndex: "link", key: "link", ellipsis: true, width: "100px" }
+  {
+    title: "Mã lớp",
+    dataIndex: "tutorClassCode",
+    key: "tutorClassCode", ellipsis: true,
+    width: "100px"
+  },
+  {
+    title: "Sinh viên tutor",
+    dataIndex: "studentTutor",
+    key: "studentTutor",
+    ellipsis: true,
+    width: "100px"
+  },
+  {
+    title: "Giảng viên tutor",
+    dataIndex: "teacherTutor",
+    key: "teacherTutor",
+    ellipsis: true,
+    width: "100px"
+  },
+  {
+    title: "Ca học",
+    dataIndex: "shift",
+    key: "shift",
+    ellipsis: true,
+    width: "70px"
+  },
+  {
+    title: "Phòng",
+    dataIndex: "room",
+    key: "room",
+    ellipsis: true,
+    width: "100px"
+  },
+  {
+    title: "Link",
+    dataIndex: "link",
+    key: "link",
+    ellipsis: true,
+    width: "100px"
+  }
 ];
 
 interface DataItem {

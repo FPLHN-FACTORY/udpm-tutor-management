@@ -66,11 +66,8 @@ import DetailHeadSubjectModal from "@/pages/headdepartment/headsubject/DetailHea
 import UpdateHeadSubjectModal from "@/pages/headdepartment/headsubject/UpdateHeadSubjectModal.vue";
 
 const auth = useAuthStore();
-
 const userInfo = computed(() => auth.user);
-
 const semesterId = ref<string | null>(null);
-
 const params = ref<ParamsGetHeadOfSubjects>({
   page: 1,
   size: 10,
@@ -96,11 +93,8 @@ const paramsSubjectsWithAssign = ref<ParamsGetSubjectsWithAssign>({
 });
 
 const open = ref(false);
-
 const openWithAssign = ref(false);
-
 const headSubjectId = ref<string | null>(null);
-
 const userDetail = ref<string | null>(null);
 
 const { data, isLoading, isFetching, refetch } = useGetHeadOfSubject(params, {
@@ -179,23 +173,17 @@ const handleOpenModalUpdate = (record: HeadOfSubjectResponse) => {
 };
 
 const headSubjectData = computed(() => data?.value?.data?.data || []);
-
 const subjectData = computed(
   () => listSubjectByHeadSubjectData?.value?.data?.data || []
 );
-
 const subjectWithAssignData = computed(
   () => listSubjectWithAssignData?.value?.data?.data || []
 );
-
 const checkAssign = computed(() => checkAssignData?.value?.data);
-
 const totalPages = computed(() => data?.value?.data?.totalPages || 0);
-
 const totalPageSubject = computed(
   () => listSubjectByHeadSubjectData?.value?.data?.totalPages || 0
 );
-
 const totalPageSubjectWithAssign = computed(
   () => listSubjectWithAssignData?.value?.data?.totalPages || 0
 );

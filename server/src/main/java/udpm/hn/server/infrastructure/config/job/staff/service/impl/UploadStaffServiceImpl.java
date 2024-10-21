@@ -1,6 +1,7 @@
 package udpm.hn.server.infrastructure.config.job.staff.service.impl;
 
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -26,6 +27,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 @Service
+@Slf4j
 public class UploadStaffServiceImpl implements UploadStaffService {
 
     @Value("${file.upload.staff.path}")
@@ -58,7 +60,7 @@ public class UploadStaffServiceImpl implements UploadStaffService {
             if (e instanceof FileAlreadyExistsException) {
                 throw new RuntimeException("A file of that name already exists.");
             }
-            e.printStackTrace();
+            log.error("Lỗi khi lưu file: {}", e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -84,7 +86,7 @@ public class UploadStaffServiceImpl implements UploadStaffService {
                 throw new RuntimeException("Could not read the file!");
             }
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            log.error("Lỗi khi đọc file: {}", e.getMessage());
             throw new RuntimeException("Error: " + e.getMessage());
         }
     }
@@ -99,7 +101,7 @@ public class UploadStaffServiceImpl implements UploadStaffService {
         try (Stream<Path> paths = Files.walk(this.root, 1)) {
             return paths.filter(path -> !path.equals(this.root)).map(this.root::relativize);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Lỗi khi đọc file: {}", e.getMessage());
             throw new RuntimeException("Could not load the files!");
         }
     }
@@ -115,7 +117,7 @@ public class UploadStaffServiceImpl implements UploadStaffService {
         try {
             Files.delete(root.resolve(filename));
         } catch (IOException e) {
-            e.printStackTrace(System.out);
+            log.error("Lỗi khi xóa file: {}", e.getMessage());
             throw new RuntimeException("Could not delete the file!");
         }
     }

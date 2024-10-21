@@ -78,6 +78,7 @@ const columnsSemester: ColumnType[] = [
     dataIndex: "orderNumber",
     key: "orderNumber",
     ellipsis: true,
+    width: "50px",
   },
   {
     title: "Tên học kỳ",

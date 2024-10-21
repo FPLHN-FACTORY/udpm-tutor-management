@@ -76,7 +76,7 @@ public class PlanLogHistoryServiceImpl implements PlanLogHistoryService {
             planLogHistoryRepository.save(planLogHistory);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Lỗi khi lưu lịch sử kế hoạch: {}", e.getMessage());
         }
         return false;
     }

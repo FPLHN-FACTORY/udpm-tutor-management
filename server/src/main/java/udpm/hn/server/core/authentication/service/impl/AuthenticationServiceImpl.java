@@ -2,10 +2,10 @@ package udpm.hn.server.core.authentication.service.impl;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import udpm.hn.server.core.superadmin.activity.service.UserActivityLogService;
 import udpm.hn.server.core.authentication.model.request.RefreshRequest;
 import udpm.hn.server.core.authentication.model.response.RefreshResponse;
 import udpm.hn.server.core.authentication.repository.ARefreshTokenExtendRepository;
@@ -19,13 +19,12 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final TokenProvider tokenProvider;
 
     private final ARefreshTokenExtendRepository aRefreshTokenExtendRepository;
-
-    private final UserActivityLogService userActivityLogService;
 
     @Override
     public ResponseObject<?> getRefreshToken(@Valid RefreshRequest request) {
@@ -62,7 +61,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             aRefreshTokenExtendRepository.save(refreshTokenEntity);
             return ResponseObject.successForward(null, "Logout successfully");
         } catch (Exception e) {
-            e.printStackTrace();;
+            log.error("Refresh token not found : {}", e.getMessage());
             return ResponseObject.errorForward("Refresh token not found", HttpStatus.NOT_FOUND);
         }
     }

@@ -1,55 +1,59 @@
 <template>
-  <div class="mt-5 rounded-md flex h-full flex-col">
+  <div class=" mt-5 rounded-md flex h-full flex-col">
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
-          :columns="columnsTutorClassDetail"
-          :data-source="dataSource"
-          :loading="loading"
-          :pagination-params="paginationParams || {}"
-          :total-pages="totalPages || 0"
-          :scroll="{ x: 'max-content' }"
-          @update:pagination-params="$emit('update:paginationParams', $event)"
+        wrapperClassName="min-h-[410px]"
+        :columns="columnsTutorClassDetail"
+        :data-source="dataSource"
+        :loading="loading"
+        :pagination-params="paginationParams || {}"
+        :total-pages="totalPages || 0"
+        @update:pagination-params="$emit('update:paginationParams', $event)"
       >
         <template #bodyCell="{ column, record }">
           <div v-if="column.key === 'studentTutor'">
             <a-select
-                v-model:value="record.studentTutor"
-                placeholder="Chọn sinh viên"
-                style="width: 100%"
-                :options="studentOption"
-                show-search
-                :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
-                disabled
+              v-model:value="record.studentTutor"
+              placeholder="Chọn sinh viên"
+              style="width: 100%"
+              :options="studentOption"
+              show-search
+              :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
+              :bordered="false"
+              disabled
             >
             </a-select>
           </div>
           <div v-else-if="column.key === 'teacherTutor'">
             <a-select
-                v-model:value="record.teacherTutor"
-                show-search
-                placeholder="Chọn giảng viên"
-                :options="teacherOption"
-                :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
-                style="width: 100%"
-                disabled
+              v-model:value="record.teacherTutor"
+              show-search
+              placeholder="Chọn giảng viên"
+              :options="teacherOption"
+              :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
+              style="width: 100%"
+              :bordered="false"
+              disabled
             />
           </div>
           <div v-else-if="column.key === 'shift'">
             <a-select
-                v-model:value="record.shift"
-                show-search
-                placeholder="Chọn ca"
-                :options="shiftOptions"
-                :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
-                style="width: 100%"
-                disabled
+              v-model:value="record.shift"
+              show-search
+              placeholder="Chọn ca"
+              :options="shiftOptions"
+              :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
+              style="width: 100%"
+              :bordered="false"
+              disabled
             />
           </div>
           <div v-else-if="column.key === 'room'">
             <a-input
-                v-model:value="record.room"
-                placeholder="Nhập phòng"
-                :disabled="canUpdate"
+              v-model:value="record.room"
+              placeholder="Nhập phòng"
+              :bordered="false"
+              disabled
             />
           </div>
         </template>
@@ -124,5 +128,4 @@ const columnsTutorClassDetail: ColumnType[] = [
     width: "80px",
   },
 ];
-
 </script>

@@ -63,9 +63,9 @@
 import PlanTable from "@/pages/headdepartment/plan/PlanTable.vue";
 import PlanForm from "@/pages/headdepartment/plan/PlanForm.vue";
 import PlanFilter from "@/pages/headdepartment/plan/PlanFilter.vue";
-import { ParamsGetPlans, PlanResponse } from "@/services/api/headdepartment/plan.api.ts";
+import { ParamsGetPlans } from "@/services/api/headdepartment/plan.api.ts";
 import {
-  useDetailPlan, useGetPlanInfo,
+  useGetPlanInfo,
   useGetPlans, useGetSemesterInfo,
 } from "@/services/service/headdepartment/plan.action";
 import { keepPreviousData } from "@tanstack/vue-query";
@@ -76,9 +76,7 @@ import {formatBlockName, getDateFormat} from "@/utils/common.helper.ts";
 
 const auth = useAuthStore();
 const userInfo = computed(() => auth.user);
-const open = ref(false);
-const planId = ref<string | null>(null);
-const activeKey = ref('1'); // Default to the first tab (0-indexed)
+const activeKey = ref('1');
 
 const params = ref<ParamsGetPlans>({
   page: 1,
@@ -103,14 +101,6 @@ const { data: planInfo, refetch: refetchPlanInfo } = useGetPlanInfo(params.value
   enabled: () => !!params.value.semesterId,
 });
 
-const { data: dataDetail } = useDetailPlan(
-    planId,
-    {
-      refetchOnWindowFocus: false,
-      enabled: () => !!planId.value,
-    }
-);
-
 const handlePaginationChange = (newParams: ParamsGetPlans) => {
   params.value = { ...params.value, ...newParams };
 };
@@ -119,45 +109,27 @@ const handleFilter = (newParams: ParamsGetPlans) => {
   params.value = { ...params.value, ...newParams };
 };
 
-const handleOpenModalAdd = () => {
-  open.value = true;
-  planId.value = null;
-};
-
-const handleOpenModalUpdate = (record: PlanResponse) => {
-  planId.value = record.id;
-  open.value = true;
-};
-
 const { data: semesterOptionsData } = useGetSemesterOptions();
 
 const semesterOptions = computed(() =>
-    semesterOptionsData?.value?.data.map((semester) => ({
-      value: semester.id,
-      label: semester.name,
-    }))
+  semesterOptionsData?.value?.data.map((semester) => ({
+    value: semester.id,
+    label: semester.name,
+  }))
 );
 
 watch(
-    () => data.value,
-    (newData) => {
-      if (newData) {
-        refetchPlanInfo();
-      }
-    },
-    { immediate: true } // Optional: Call the function immediately on component mount
+  () => data.value,
+  (newData) => {
+    if (newData) {
+      refetchPlanInfo();
+    }
+  },
+  { immediate: true }
 );
 
 const planData = computed(() => data?.value?.data?.data || []);
 const semesterData = computed(() => semesterInfo.value?.data);
 const planInfoData = computed(() => planInfo.value?.data || null);
 const totalPages = computed(() => data?.value?.data?.totalPages || 0);
-const planDetail = computed(() =>
-    planId.value
-        ? {
-          ...dataDetail.value?.data,
-          planId: planId.value,
-        }
-        : null
-);
 </script>

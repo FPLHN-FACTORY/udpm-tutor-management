@@ -1,6 +1,7 @@
 package udpm.hn.server.core.admin.semester.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class SemesterServiceImpl implements SemesterService {
 
     private final SemesterExtendRepository semesterExtendRepository;
@@ -91,7 +93,6 @@ public class SemesterServiceImpl implements SemesterService {
                     syncSemester(null, semesterResponse);
                 }
             } else {
-                // Nếu đã có semester, đồng bộ từng semester từ dữ liệu nhận được
                 for (SemesterResponse semesterResponse : semesterData) {
                     for (Semester semester : semesters) {
                         syncSemester(semester, semesterResponse);
@@ -101,7 +102,7 @@ public class SemesterServiceImpl implements SemesterService {
 
             return ResponseObject.successForward(null, "Đồng bộ học kỳ và block thành công!");
         } catch (Exception e) {
-            e.printStackTrace();  // In ra stack trace của lỗi để dễ debug
+            log.error("Lỗi khi đồng bộ học kỳ : {}", e.getMessage());
             return ResponseObject.errorForward("Đồng bộ học kỳ và block không thành công! Đã xảy ra lỗi.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -196,11 +197,6 @@ public class SemesterServiceImpl implements SemesterService {
                 return new ResponseObject<>(null, HttpStatus.CONFLICT, "Đã có học kỳ trong khoảng thời gian này!");
             }
 
-//            Optional<Semester> existingHocKy = semesterExtendRepository.existingBySemesterNameAndSemesterYear(name, yearStartTime);
-//            if (existingHocKy.isPresent()) {
-//                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Học kỳ đã tồn tại!");
-//            }
-
             Semester semester = new Semester();
             semester.setSemesterName(SemesterName.valueOf(name));
             semester.setYear(yearStartTime);
@@ -213,7 +209,7 @@ public class SemesterServiceImpl implements SemesterService {
 
             return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm học kỳ, block thành công!");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Lỗi khi thêm học kỳ : {}", e.getMessage());
             return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Thêm học kỳ thất bại!");
         }
     }
@@ -264,7 +260,6 @@ public class SemesterServiceImpl implements SemesterService {
             semester.setStartTime(startTimeSemester);
             semester.setEndTime(endTimeSemester);
             Semester semesterSave = semesterExtendRepository.save(semester);
-
             createBlock(semesterSave, request.getEndTimeBlock1Custom());
 
             return new ResponseObject<>(null, HttpStatus.OK, "Cập nhật học kỳ thành công!");

@@ -28,7 +28,7 @@
               />
             </a-tooltip>
           </div>
-          <div v-else-if="column.key === 'departmentName'" class="text-center">
+          <div v-else-if="column.key === 'departmentName'">
             <p>{{ record.departmentName + " - " + record.facilityName  }}</p>
           </div>
           <div v-else-if="column.key === 'status'" class="text-center">
@@ -77,9 +77,8 @@ const columnsSubject: ColumnType[] = [
     dataIndex: "orderNumber",
     key: "index",
     ellipsis: true,
-    width: "80px",
-    align: "center",
-  },
+    width: "40px",
+    },
   {
     title: "Tên kế hoạch",
     dataIndex: "planName",
@@ -99,7 +98,7 @@ const columnsSubject: ColumnType[] = [
     dataIndex: "departmentName",
     key: "departmentName",
     ellipsis: true,
-    width: "120px",
+    width: "200px",
   },
   {
     title: "Số môn tutor",

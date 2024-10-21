@@ -162,10 +162,10 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
             try {
                 Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);
                 if (!resultLog) {
-                    System.err.println("Có lỗi xảy ra khi lưu log");
+                    log.error("Có lỗi xảy ra khi lưu log");
                 }
             } catch (Exception e) {
-                System.err.println("Lỗi khi ghi log: " + e.getMessage());
+                log.error("Lỗi khi ghi log: {}", e.getMessage());
             }
         }
         return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi lưu kế hoạch");
@@ -238,10 +238,10 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
             try {
                 Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);
                 if (!resultLog) {
-                    System.err.println("Có lỗi xảy ra khi lưu log");
+                    log.error("Có lỗi xảy ra khi lưu log");
                 }
             } catch (Exception e) {
-                System.err.println("Lỗi khi ghi log: " + e.getMessage());
+                log.error("Lỗi khi ghi log: {}", e.getMessage());
             }
         }
         return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi lưu cập nhật kế hoạch");
@@ -348,10 +348,10 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
             try {
                 Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);
                 if (!resultLog) {
-                    System.err.println("Có lỗi xảy ra khi lưu log");
+                    log.error("Có lỗi xảy ra khi lưu log");
                 }
             } catch (Exception e) {
-                System.err.println("Lỗi khi ghi log: " + e.getMessage());
+                log.error("Lỗi khi ghi log: {}", e.getMessage());
             }
         }
         return new ResponseObject<>(null, HttpStatus.OK, "Phê duyệt kế hoạch thành công");

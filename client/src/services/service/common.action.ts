@@ -60,7 +60,7 @@ export const useGetSemesterOptions = (
 };
 
 export const useGetBlockOptions = (
-  semesterId: string,
+  semesterId: string | null,
   options?: any
 ): UseQueryReturnType<
   Awaited<ReturnType<typeof getBlockOptions>>,

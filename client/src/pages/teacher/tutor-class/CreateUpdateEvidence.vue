@@ -14,7 +14,7 @@
         <template v-for="field in formFields" :key="field.name">
           <a-form-item :label="field.label" :name="field.name" v-bind="validateInfos[field.name]">
             <div style="display: flex; align-items: center;">
-              <component 
+              <component
                 :is="field.component" 
                 v-bind="field.props" 
                 v-model:value="modelRef[field.name]" 

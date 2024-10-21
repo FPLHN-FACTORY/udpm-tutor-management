@@ -21,7 +21,7 @@ public interface HSPLTutorClassRepository extends TutorClassRepository {
 
     @Query(value = """
             SELECT tc.id AS id,
-            CONCAT(sj.subject_code,  ' - ', sj.name) AS subjectName,
+            CONCAT(sj.code,  ' - ', sj.name) AS subjectName,
             COALESCE(tcd.numberClasses, 0) AS numberClasses,
             COALESCE(tc.number_of_lectures, 0) AS numberLectures,
             tc.format AS format

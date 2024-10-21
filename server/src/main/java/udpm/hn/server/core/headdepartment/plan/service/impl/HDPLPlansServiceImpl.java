@@ -110,10 +110,6 @@ public class HDPLPlansServiceImpl implements HDPLPlansService {
             planOptional.map(plan -> {
                 plan.setPlanStatus(PlanStatus.HEAD_DEPARTMENT_APPROVED);
                 Plan planResult = planRepository.save(plan);
-                if (planResult == null) {
-                    planLogHistory.setStatus(false);
-                    return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi duyệt kế hoạch");
-                }
                 planLogHistory.setPlanId(planResult.getId());
                 planLogHistory.setStatus(true);
                 return planResult;
@@ -124,7 +120,7 @@ public class HDPLPlansServiceImpl implements HDPLPlansService {
                     .orElseGet(() -> new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại"));
         } catch (Exception e) {
             planLogHistory.setStatus(false);
-            e.printStackTrace();
+
         } finally {
             try {
                 Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);
@@ -132,7 +128,7 @@ public class HDPLPlansServiceImpl implements HDPLPlansService {
                     System.err.println("Có lỗi xảy ra khi lưu log");
                 }
             } catch (Exception e) {
-                System.err.println("Lỗi khi ghi log: " + e.getMessage());
+                log.error("Lỗi khi ghi log: {}", e.getMessage());
             }
         }
         return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi duyệt kế hoạch");
@@ -145,11 +141,8 @@ public class HDPLPlansServiceImpl implements HDPLPlansService {
         planLogHistory.setRoleStaff(Role.CHU_NHIEM_BO_MON.name());
         try {
             Optional<Plan> planOptional = planRepository.findById(request.getPlanId());
-            if (planOptional.isEmpty()) {
-                planLogHistory.setStatus(false);
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch không tồn tại");
-            }
-            if (!planOptional.get().getPlanStatus().equals(PlanStatus.PLANNER_APPROVED)) {
+
+            if (planOptional.isEmpty() || !planOptional.get().getPlanStatus().equals(PlanStatus.PLANNER_APPROVED)) {
                 planLogHistory.setStatus(false);
                 return new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại");
             }
@@ -170,10 +163,6 @@ public class HDPLPlansServiceImpl implements HDPLPlansService {
                 plan.setPlanStatus(PlanStatus.PLANNING);
                 plan.setReason(request.getReason());
                 Plan planResult = planRepository.save(plan);
-                if (planResult == null) {
-                    planLogHistory.setStatus(false);
-                    return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi duyệt kế hoạch");
-                }
                 planLogHistory.setRejectNote(request.getReason());
                 planLogHistory.setPlanId(planResult.getId());
                 planLogHistory.setStatus(true);
@@ -184,15 +173,15 @@ public class HDPLPlansServiceImpl implements HDPLPlansService {
                     .orElseGet(() -> new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Cập nhật thất bại"));
         } catch (Exception e) {
             planLogHistory.setStatus(false);
-            e.printStackTrace();
+            log.error("Lỗi khi cập nhật kế hoạch: {}", e.getMessage());
         } finally {
             try {
                 Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);
                 if (!resultLog) {
-                    System.err.println("Có lỗi xảy ra khi lưu log");
+                    log.error("Lỗi khi ghi log");
                 }
             } catch (Exception e) {
-                System.err.println("Lỗi khi ghi log: " + e.getMessage());
+                log.error("Lỗi khi ghi log: {}", e.getMessage());
             }
         }
         return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi từ chối kế hoạch");

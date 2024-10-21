@@ -47,6 +47,7 @@ import udpm.hn.server.utils.Helper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -80,15 +81,21 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
         OperationLogsRequest operationLogsRequest = new OperationLogsRequest();
         PlanLogHistoryRequest planLogHistory = new PlanLogHistoryRequest();
         planLogHistory.setTypeFunction(FunctionLogType.ADD_NUMBER_OF_CLASS);
-        planLogHistory.setAction("Tạo lớp tutor");
+        planLogHistory.setAction("Tạo lớp môn");
         planLogHistory.setRoleStaff(Role.TRUONG_MON.name());
         try {
-            HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            HttpServletRequest httpServletRequest = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
             operationLogsRequest.setHttpRequest(httpServletRequest);
             operationLogsRequest.setTypeFunction(FunctionLogType.CREATE);
 
             Plan plan = planRepository.findById(request.getPlanId()).orElse(null);
             Subject subject = subjectRepository.findById(request.getSubjectId()).orElse(null);
+            if (plan == null){
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Kế hoạch không tồn tại!");
+            }
+            if (subject == null){
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Môn học không tồn tại!");
+            }
             TutorClass tutorClass = new TutorClass();
             tutorClass.setPlan(plan);
             tutorClass.setSubject(subject);
@@ -100,13 +107,8 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
             operationLogsRequest.setResponse("{\"status\": \"true\"}");
             TutorClass savedTutorClass = tutorClassRepository.save(tutorClass);
             String code = subject.getCode();
-            if (savedTutorClass == null) {
-                planLogHistory.setStatus(false);
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi cập nhật lớp toutor");
-            }
-            if (plan != null && plan.getId() != null) {
-                planLogHistory.setPlanId(plan.getId());
-            }
+
+            planLogHistory.setPlanId(plan.getId());
             planLogHistory.setFormality(Format.fromString(request.getFormat()));
             planLogHistory.setNumberOfClass(request.getNumberOfClasses());
             planLogHistory.setNumberOfLecture(request.getNumberOfLectures());
@@ -123,6 +125,7 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
                     tutorClassDetailRepository.save(tutorClassDetail);
                 }
             }
+
             //Thêm 2 thông báo đến NGUOI_LAP_KE_HOACH và CHU_NHIEM_BO_MON
             List<Notification> listNotificationSave = new ArrayList<>();
             Semester semesterNotification = plan.getBlock().getSemester();
@@ -148,14 +151,17 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
                     )
             );
 
-
-            return new ResponseObject<>(tutorClass, HttpStatus.CREATED, "Tạo mới lớp tutor thành công");
+            return new ResponseObject<>(
+                    tutorClass,
+                    HttpStatus.CREATED,
+                    "Tạo mới lớp môn thành công"
+            );
         } catch (Exception e) {
             operationLogsRequest.setStatus(false);
             planLogHistory.setStatus(false);
             operationLogsRequest.setResponse("{\"status\": \"false\"}");
-            e.printStackTrace();
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Cập nhật số lượng lớp tutor không thành công: " + e.getMessage());
+            log.error("Lỗi khi tạo lớp môn: {}", e.getMessage());
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Tạo lớp môn không thành công!");
         } finally {
             operationLogsService.createOperationLog(operationLogsRequest);
             try {
@@ -164,7 +170,7 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
                     System.err.println("Có lỗi xảy ra khi lưu log");
                 }
             } catch (Exception e) {
-                System.err.println("Lỗi khi ghi log: " + e.getMessage());
+                System.err.println("Lỗi khi ghi log");
             }
         }
     }
@@ -173,36 +179,37 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
     public ResponseObject<?> updateTutorClass(String id, HSPLUpdateTutorClassRequest request) {
         PlanLogHistoryRequest planLogHistory = new PlanLogHistoryRequest();
         planLogHistory.setTypeFunction(FunctionLogType.UPDATE);
-        planLogHistory.setAction("Cập nhật lớp tutor");
+        planLogHistory.setAction("Cập nhật lớp môn");
         planLogHistory.setRoleStaff(Role.TRUONG_MON.name());
         try {
             TutorClass tutorClass = tutorClassRepository.findById(id).orElse(null);
             if (tutorClass == null) {
                 planLogHistory.setStatus(false);
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Id không hợp lệ");
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Lớp môn không tồn tại!");
             }
             tutorClass.setFormat(Format.fromString(request.getFormat()));
             tutorClass.setNumberOfLectures(request.getNumberOfLectures());
             TutorClass tutorClassResult = tutorClassRepository.save(tutorClass);
-            if (tutorClassResult == null) {
-                planLogHistory.setStatus(false);
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi cập nhật lớp tutor");
-            }
             planLogHistory.setPlanId(tutorClassResult.getPlan().getId());
             planLogHistory.setStatus(true);
-            return new ResponseObject<>(tutorClass, HttpStatus.OK, "Cập nhật trạng thái lớp tutor thành công");
+
+            return new ResponseObject<>(
+                    tutorClass,
+                    HttpStatus.OK,
+                    "Cập nhật trạng thái lớp môn thành công"
+            );
         } catch (Exception e) {
             planLogHistory.setStatus(false);
-            e.printStackTrace();
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Cập nhật trạng thái lớp tutor không thành công: " + e.getMessage());
+            log.error("Lỗi khi cập nhật lớp môn: {}", e.getMessage());
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Cập nhật trạng thái lớp môn không thành công!");
         } finally {
             try {
                 Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);
                 if (!resultLog) {
-                    System.err.println("Có lỗi xảy ra khi lưu log");
+                    log.error("Có lỗi xảy ra khi lưu log");
                 }
             } catch (Exception e) {
-                System.err.println("Lỗi khi ghi log: " + e.getMessage());
+                log.error("Lỗi khi ghi log : {}", e.getMessage());
             }
         }
     }
@@ -212,12 +219,17 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
         try {
             HSPLTutorClassResponse tutorClass = tutorClassRepository.getDetailTutorClass(id);
             if (tutorClass == null) {
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Không tồn tại");
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Lớp môn không tồn tại!");
             }
-            return new ResponseObject<>(tutorClass, HttpStatus.OK, "Lấy lớp tutor thành công1");
+
+            return new ResponseObject<>(
+                    tutorClass,
+                    HttpStatus.OK,
+                    "Lấy lớp môn thành công"
+            );
         } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy chi tiết: " + e.getMessage());
+            log.error("Lỗi khi lấy lớp môn: {}", e.getMessage());
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy chi tiết lớp môn!");
         }
     }
 
@@ -225,8 +237,10 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
     public ResponseObject<?> getTutorClasses(HSPLSubjectListRequest request) {
         Pageable pageable = Helper.createPageable(request, "createdDate");
         return new ResponseObject<>(
-                PageableObject.of(tutorClassRepository.getTutorClasses(pageable, request)
-                ), HttpStatus.OK, "Lấy danh sách lớp môn thành công!");
+                PageableObject.of(tutorClassRepository.getTutorClasses(pageable, request)),
+                HttpStatus.OK,
+                "Lấy danh sách lớp môn thành công"
+        );
     }
 
     @Override
@@ -262,10 +276,6 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
             }
             tutorClassDetail.setTeacherConduct(staff);
             TutorClassDetail tutorClassDetailResult = tutorClassDetailRepository.save(tutorClassDetail);
-            if (tutorClassDetailResult == null) {
-                planLogHistory.setStatus(false);
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi cập nhật chi tiết lớp tutor");
-            }
             planLogHistory.setStaffInfo(staff.getStaffCode() + "-" + staff.getName());
             planLogHistory.setCodeTutorClassDetail(tutorClassDetailResult.getCode());
             planLogHistory.setPlanId(tutorClassDetailResult.getTutorClass().getPlan().getId());
@@ -289,11 +299,15 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
             }
             notificationRepository.saveAll(listNotificationSave);
 
-            return new ResponseObject<>(tutorClassDetail, HttpStatus.OK, "Cập nhật giáo viên lớp tutor thành công");
+            return new ResponseObject<>(
+                    tutorClassDetail,
+                    HttpStatus.OK,
+                    "Cập nhật giáo viên lớp tutor thành công"
+            );
         } catch (Exception e) {
             planLogHistory.setStatus(false);
-            e.printStackTrace();
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Cập nhật giáo viên lớp tutor không thành công: " + e.getMessage());
+            log.error("Lỗi khi cập nhật giảng viên: {}", e.getMessage());
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Cập nhật giáo viên không thành công!");
         } finally {
             try {
                 Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);
@@ -301,7 +315,7 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
                     System.err.println("Có lỗi xảy ra khi lưu log");
                 }
             } catch (Exception e) {
-                System.err.println("Lỗi khi ghi log: " + e.getMessage());
+                log.error("Lỗi khi ghi log: {}", e.getMessage());
             }
         }
     }
@@ -325,15 +339,20 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
                 planLogHistory.setPlanId(tutorClass.getPlan().getId());
             }
             List<TutorClassDetail> list = tutorClassDetailRepository.findByTutorClass(tutorClass);
-            if (list.isEmpty()) {
+            if (list.isEmpty() && tutorClass != null) {
                 tutorClassRepository.delete(tutorClass);
             }
             planLogHistory.setStatus(true);
-            return new ResponseObject<>(tutorClassDetail, HttpStatus.OK, "Xóa lớp tutor thành công");
+
+            return new ResponseObject<>(
+                    tutorClassDetail,
+                    HttpStatus.OK,
+                    "Xóa lớp tutor thành công"
+            );
         } catch (Exception e) {
             planLogHistory.setStatus(false);
-            e.printStackTrace();
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Xóa lớp tutor thất bại: " + e.getMessage());
+            log.error("Lỗi khi xóa lớp tutor: {}", e.getMessage());
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Xóa lớp tutor thất bại!");
         } finally {
             try {
                 Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);
@@ -341,7 +360,7 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
                     System.err.println("Có lỗi xảy ra khi lưu log");
                 }
             } catch (Exception e) {
-                System.err.println("Lỗi khi ghi log: " + e.getMessage());
+                System.err.println("Lỗi khi ghi log");
             }
         }
     }
@@ -363,18 +382,19 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
             newTutorClassDetail.setTutorClass(tutorClassDetail.getTutorClass());
             newTutorClassDetail.setCode(Helper.generateTutorClassCodeFromName(tutorClassDetail.getTutorClass().getSubject().getCode()));
             TutorClassDetail newTutorClassDetailResult = tutorClassDetailRepository.save(newTutorClassDetail);
-            if (newTutorClassDetailResult == null) {
-                planLogHistory.setStatus(false);
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi thêm chi tiết lớp tutor");
-            }
             planLogHistory.setCodeTutorClassDetail(newTutorClassDetailResult.getCode());
             planLogHistory.setPlanId(newTutorClassDetailResult.getTutorClass().getPlan().getId());
             planLogHistory.setStatus(true);
-            return new ResponseObject<>(tutorClassDetail, HttpStatus.OK, "Thêm lớp tutor thành công");
+
+            return new ResponseObject<>(
+                    tutorClassDetail,
+                    HttpStatus.OK,
+                    "Thêm lớp tutor thành công!"
+            );
         } catch (Exception e) {
             planLogHistory.setStatus(false);
-            e.printStackTrace();
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Thm lớp tutor thất bại: " + e.getMessage());
+            log.error("Lỗi khi thêm lớp tutor: {}", e.getMessage());
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Thêm lớp tutor thất bại!");
         } finally {
             try {
                 Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);
@@ -382,7 +402,7 @@ public class HSPLTutorClassServiceImpl implements HSPLTutorClassService {
                     System.err.println("Có lỗi xảy ra khi lưu log");
                 }
             } catch (Exception e) {
-                System.err.println("Lỗi khi ghi log: " + e.getMessage());
+                System.err.println("Lỗi khi ghi log");
             }
         }
     }

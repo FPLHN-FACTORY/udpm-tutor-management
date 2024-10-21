@@ -2,7 +2,6 @@ import {
   assignedPlannerRequest,
   AssignedPlannerRequest,
   createPlannerRequest,
-  getAssignedPlannerRequest,
   getDetailPlan,
   getHeadSubjectPlanner,
   getPlanInfo,

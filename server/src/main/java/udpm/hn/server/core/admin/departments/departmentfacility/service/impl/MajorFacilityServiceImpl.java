@@ -3,6 +3,7 @@ package udpm.hn.server.core.admin.departments.departmentfacility.service.impl;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ import java.util.Optional;
 @Service
 @Validated
 @RequiredArgsConstructor
+@Slf4j
 public class MajorFacilityServiceImpl implements MajorFacilityService {
 
     private final MajorFacilityExtendRepository majorFacilityExtendRepository;
@@ -67,7 +69,7 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
                     "Lấy danh sách chuyên ngành theo cơ sở thành công"
             );
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Lỗi khi lấy danh sách chuyên ngành theo cơ sở : {}", e.getMessage());
             throw new RuntimeException("Error executing query", e);
         }
     }
@@ -230,8 +232,8 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
         } catch (RuntimeException e) {
             return ResponseObject.errorForward(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseObject.errorForward("Đồng bộ chuyên ngành và cơ sở không thành công! Đã xảy ra lỗi.", HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error("Lỗi khi đồng bộ chuyên ngành theo cơ sở : {}", e.getMessage());
+            return ResponseObject.errorForward("Đồng bộ chuyên ngành theo cơ sở không thành công! Đã xảy ra lỗi.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

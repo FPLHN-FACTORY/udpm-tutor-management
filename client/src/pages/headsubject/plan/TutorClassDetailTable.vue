@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-10 rounded-md flex h-full flex-col">
+  <div class="mt-5 rounded-md flex h-full flex-col">
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
           wrapperClassName="min-h-[410px]"
@@ -41,6 +41,7 @@
                 :options="shiftOptions"
                 :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
                 style="width: 100%"
+                :bordered="false"
                 disabled
             />
           </div>
@@ -48,6 +49,7 @@
             <a-input
                 v-model:value="record.room"
                 placeholder="Nhập phòng"
+                :bordered="false"
                 disabled
             />
           </div>
@@ -59,6 +61,7 @@
                 show-search
                 :options="studentOption"
                 :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
+                :bordered="false"
                 disabled
             >
             </a-select>
@@ -116,14 +119,13 @@ const shiftOptions = Array.from({ length: 6 }, (_, index) => ({
   label: `Ca ${index + 1}`,
 }));
 
-
 const columnsTutorClassDetail = computed(() => [
   {
     title: "STT",
     dataIndex: "orderNumber",
     key: "index",
     ellipsis: true,
-    width: "50px",
+    width: "40px",
   },
   {
     title: "Mã lớp",
@@ -158,7 +160,7 @@ const columnsTutorClassDetail = computed(() => [
     dataIndex: "room",
     key: "room",
     ellipsis: true,
-    width: "80px",
+    width: "100px",
   },
   ...(props.canUpdate ? [] : [
     {
@@ -175,12 +177,8 @@ const { mutate: deleteTutorClassDetail } = useDeleteTutorClassDetail();
 const { mutate: addTutorClassDetail } = useAddTutorClassDetail();
 
 const isFirstClassOfSubject = (record) => {
-  // Giả sử mỗi record có thuộc tính subjectId
   const subjectId = record.subjectId; // Thay đổi theo thuộc tính thực tế của bạn
-
-  // Tìm lớp đầu tiên theo subjectId
   const firstClassIndex = props?.dataSource?.findIndex(item => item.subjectId === subjectId);
-
   return firstClassIndex === props?.dataSource?.indexOf(record);
 };
 
@@ -195,7 +193,7 @@ const handleUpdateTeacher = (tutorClassDetailId: string, staffId: string) => {
     }, {
       onSuccess: () => {
         toast.success("Cập nhật giảng viên tutor thành công!",{
-          autoClose: 1000, // Hiển thị trong 2 giây
+          autoClose: 1000,
         });
       },
       onError: (error: any) => {

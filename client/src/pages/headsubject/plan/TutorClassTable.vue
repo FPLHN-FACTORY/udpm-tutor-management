@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-10 rounded-md flex h-full flex-col">
+  <div class="mt-5 rounded-md flex h-full flex-col">
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
           wrapperClassName="min-h-[410px]"
@@ -60,6 +60,7 @@ const columnsSubject = computed(() => [
     dataIndex: "orderNumber",
     key: "index",
     ellipsis: true,
+    width: "50px",
   },
   {
     title: "Mã môn học",
@@ -78,6 +79,9 @@ const columnsSubject = computed(() => [
     dataIndex: "numberClasses",
     key: "numberClasses",
     ellipsis: true,
+    width: "200px",
+    align: "center",
+
   },
   {
     title: "Số buổi",

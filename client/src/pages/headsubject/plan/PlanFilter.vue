@@ -69,8 +69,8 @@ const PlanStatusOptions = [
 ];
 
 type ParamsFilterSubjects = {
-  semesterId: string | null;
-  planStatus: string | null;
+  semesterId?: string | null;
+  planStatus?: string | null;
 };
 
 const params = ref<ParamsFilterSubjects>({

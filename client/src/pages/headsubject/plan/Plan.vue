@@ -45,16 +45,16 @@
       </div>
     </div>
     <head-subject-filter
-        @filter="handleFilter"
-        :semesterOptions="semesterOptions"
-        :currentSemester="userInfo?.semesterId"
+      @filter="handleFilter"
+      :semesterOptions="semesterOptions"
+      :currentSemester="userInfo?.semesterId"
     />
     <head-subject-table
-        :data-source="planData"
-        :loading="isLoading || isFetching"
-        :pagination-params="params"
-        :total-pages="totalPages"
-        @handleOpenModalAdd="handleOpenModalAdd"
+      :data-source="planData"
+      :loading="isLoading || isFetching"
+      :pagination-params="params"
+      :total-pages="totalPages"
+      @handleOpenModalAdd="handleOpenModalAdd"
     />
   </div>
 </template>
@@ -111,20 +111,20 @@ const handleFilter = (newParams: ParamsGetPlans) => {
 
 const { data: semesterOptionsData } = useGetSemesterOptions();
 const semesterOptions = computed(() =>
-    semesterOptionsData?.value?.data.map((semester) => ({
-      value: semester.id,
-      label: semester.name,
-    }))
+  semesterOptionsData?.value?.data.map((semester) => ({
+    value: semester.id,
+    label: semester.name,
+  }))
 );
 
 watch(
-    () => data.value,
-    (newData) => {
-      if (newData) {
-        refetchPlanInfo();
-      }
-    },
-    { immediate: true } 
+  () => data.value,
+  (newData) => {
+    if (newData) {
+      refetchPlanInfo();
+    }
+  },
+  { immediate: true }
 );
 
 const planData = computed(() => data?.value?.data?.data || []);

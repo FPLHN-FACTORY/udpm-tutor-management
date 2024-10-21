@@ -30,25 +30,25 @@ export interface ParamsGetSubjectsWithAssign extends PaginationParams {
 }
 
 export interface ParamsGetStaffSubject {
-  currentSemesterId: string | null;
-  currentFacilityId: string | null;
-  currentDepartmentCode: string | null;
-  currentUserId: string | null;
-  headSubjectId: string | null;
-  q: string | null;
+  currentSemesterId?: string | null;
+  currentFacilityId?: string | null;
+  currentDepartmentCode?: string | null;
+  currentUserId?: string | null;
+  headSubjectId?: string | null;
+  q?: string | null;
 }
 
 export interface ParamsReassignSubjectForAnotherHeadSubject {
-  semesterId: string | null;
-  facilityId: string | null;
-  currentHeadSubjectId: string | null;
-  newHeadSubjectId: string | null;
+  semesterId?: string | null;
+  facilityId?: string | null;
+  currentHeadSubjectId?: string | null;
+  newHeadSubjectId?: string | null;
 }
 
 export interface ParamsAssignOrUnAssignSubject {
-  semesterId: string | null;
-  facilityId: string | null;
-  subjectId: string | null;
+  semesterId?: string | null;
+  facilityId?: string | null;
+  subjectId?: string | null;
 }
 
 export type HeadOfSubjectResponse = ResponseList & {

@@ -2,6 +2,7 @@ package udpm.hn.server.core.superadmin.operation.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +31,7 @@ import java.util.Map;
 @Service
 @Validated
 @RequiredArgsConstructor
+@Slf4j
 public class OperationLogsServiceImpl implements OperationLogsService {
 
     private final StaffRepository staffRepository;
@@ -71,7 +73,8 @@ public class OperationLogsServiceImpl implements OperationLogsService {
             }
             return logSystemRepository.save(operationLog);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Lỗi khi lưu log : {}", e.getMessage());
+
         }
 
         return null;
@@ -97,8 +100,7 @@ public class OperationLogsServiceImpl implements OperationLogsService {
 
     private String convertToJsonString(ObjectMapper mapper, Object obj) throws IOException {
 
-        if (obj instanceof OperationLogsRequest) {
-            OperationLogsRequest logRequest = (OperationLogsRequest) obj;
+        if (obj instanceof OperationLogsRequest logRequest) {
             Map<String, Object> requestMap = new HashMap<>();
             requestMap.put("workstation", logRequest.getWorkstation());
             requestMap.put("userName", logRequest.getUserName());

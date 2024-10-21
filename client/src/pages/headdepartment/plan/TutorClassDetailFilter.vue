@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-md m-3">
+  <div class="rounded-md ">
     <a-form
         layout="vertical"
         class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2"
@@ -81,10 +81,10 @@ function onSelectChange(key: keyof ParamsFilterSubjects, value: string) {
 }
 
 watch(
-    params,
-    () => {
-      debouncedEmit();
-    },
-    { deep: true }
+  params,
+  () => {
+    debouncedEmit();
+  },
+  { deep: true }
 );
 </script>

@@ -2,8 +2,8 @@
     <div class="mt-4">
         <div class="flex justify-between items-center">
             <h2 class="p-4 flex items-center text-primary text-3xl font-semibold">
-                <v-icon name="hi-office-building" scale="2" />
-                <span class="m-2 text-3xl">Quản lý buổi học</span>
+              <v-icon name="hi-office-building" scale="2" />
+              <span class="m-2 text-3xl">Quản lý buổi học</span>
             </h2>
         </div>
         <div class="shadow-md p-3 rounded-md mx-3 my-15">

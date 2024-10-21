@@ -61,7 +61,6 @@ const debouncedEmit = debounce(() => {
   emit("filter", params.value);
 }, 500);
 
-// Xử lý thay đổi đầu vào
 function onInputChange(key: keyof ParamsFilterHeadSubjects, event: Event) {
   const target = event.target as HTMLInputElement;
   if (target.value !== undefined) {
@@ -71,7 +70,6 @@ function onInputChange(key: keyof ParamsFilterHeadSubjects, event: Event) {
   }
 }
 
-// Xử lý thay đổi select
 function onSelectChange(key: keyof ParamsFilterHeadSubjects, value: string) {
   params.value[key] = value;
   emit("filter", params.value);
@@ -89,24 +87,23 @@ const semesterOptions = computed(() => {
   })) || [];
 });
 
-// Theo dõi sự thay đổi của `semesterOptions` và đặt giá trị mặc định cho `currentSemesterId`
 watch(
-    semesterOptions,
-    (newOptions) => {
-      if (newOptions.length > 0 && !params.value.currentSemesterId) {
-        params.value.currentSemesterId = newOptions[0].value;
-        emit("filter", params.value); // Gọi filter sau khi thiết lập mặc định
-      }
-    },
-    { immediate: true }
+  semesterOptions,
+  (newOptions) => {
+    if (newOptions.length > 0 && !params.value.currentSemesterId) {
+      params.value.currentSemesterId = newOptions[0].value;
+      emit("filter", params.value); // Gọi filter sau khi thiết lập mặc định
+    }
+  },
+  { immediate: true }
 );
 
 // Theo dõi sự thay đổi của `params` và phát sự kiện sau khi debounce
 watch(
-    params,
-    () => {
-      debouncedEmit();
-    },
-    { deep: true }
+  params,
+  () => {
+    debouncedEmit();
+  },
+  { deep: true }
 );
 </script>

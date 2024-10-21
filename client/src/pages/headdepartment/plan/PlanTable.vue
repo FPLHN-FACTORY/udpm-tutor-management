@@ -8,41 +8,41 @@
     </div>
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
-          wrapperClassName="min-h-[410px]"
-          :columns="columnsSubject"
-          :data-source="dataSource"
-          :loading="loading"
-          :pagination-params="paginationParams || {}"
-          :total-pages="totalPages || 0"
-          @update:pagination-params="$emit('update:paginationParams', $event)"
+        wrapperClassName="min-h-[410px]"
+        :columns="columnsSubject"
+        :data-source="dataSource"
+        :loading="loading"
+        :pagination-params="paginationParams || {}"
+        :total-pages="totalPages || 0"
+        @update:pagination-params="$emit('update:paginationParams', $event)"
       >
         <template #bodyCell="{ column, record }">
           <div v-if="column.key === 'action'" class="space-x-2 flex items-center justify-center">
             <a-tooltip v-if="record.status === 'PLANNER_APPROVED'" title="Phê duyệt kế hoạch" color="#FFC26E">
               <a-button
-                  class="flex items-center justify-center"
-                  type="primary"
-                  size="large"
-                  @click="handleApprovePlan(record.id)"
-                  :icon="h(CheckCircleOutlined)"
+                class="flex items-center justify-center"
+                type="primary"
+                size="large"
+                @click="handleApprovePlan(record.id)"
+                :icon="h(CheckCircleOutlined)"
               />
             </a-tooltip>
             <a-tooltip v-if="record.status === 'PLANNER_APPROVED'" title="Từ chối kế hoạch" color="#FFC26E">
               <a-button
-                  class="flex items-center justify-center"
-                  type="primary"
-                  size="large"
-                  @click="openRejectModal(record.id)"
-                  :icon="h(StopOutlined)"
+                class="flex items-center justify-center"
+                type="primary"
+                size="large"
+                @click="openRejectModal(record.id)"
+                :icon="h(StopOutlined)"
               />
             </a-tooltip>
             <a-tooltip title="Chi tiết kế hoạch" color="#FFC26E">
               <a-button
-                  class="flex items-center justify-center"
-                  type="primary"
-                  size="large"
-                  @click="goToDetail(record.id)"
-                  :icon="h(EyeOutlined)"
+                class="flex items-center justify-center"
+                type="primary"
+                size="large"
+                @click="goToDetail(record.id)"
+                :icon="h(EyeOutlined)"
               />
             </a-tooltip>
           </div>
@@ -64,16 +64,16 @@
 
     <!-- Modal từ chối kế hoạch -->
     <a-modal
-        title="Nhập lý do từ chối"
-        v-model:open="isRejectModalOpen"
-        @cancel="closeRejectModal"
-        @ok="handleRejectPlan"
-        ok-text="Xác nhận"
-        cancel-text="Huỷ"
+      title="Nhập lý do từ chối"
+      v-model:open="isRejectModalOpen"
+      @cancel="closeRejectModal"
+      @ok="handleRejectPlan"
+      ok-text="Xác nhận"
+      cancel-text="Huỷ"
     >
       <a-input
-          v-model:value="rejectReason"
-          placeholder="Nhập lý do từ chối"
+        v-model:value="rejectReason"
+        placeholder="Nhập lý do từ chối"
       />
     </a-modal>
   </div>
@@ -105,6 +105,9 @@ defineEmits([
 ]);
 
 const router = useRouter();
+const isRejectModalOpen = ref(false);
+const rejectReason = ref("");
+const currentPlanId = ref("");
 
 const goToDetail = (planId: string) => {
   router.push({ name: 'hDPlDetailPlan', params: { planId } });
@@ -112,10 +115,6 @@ const goToDetail = (planId: string) => {
 
 const { mutate: approvePlan } = useApprovePlan();
 const { mutate: rejectPlan } = useRejectPlan();
-
-const isRejectModalOpen = ref(false);
-const rejectReason = ref("");
-const currentPlanId = ref("");
 
 const handleApprovePlan = (id: string) => {
   const message = 'Bạn chắc chắn muốn phê duyệt kế hoạch này chứ!'; // Thông điệp xác nhận
@@ -160,7 +159,7 @@ const handleRejectPlan = () => {
         },
         onError: (error: any) => {
           toast.error(
-              error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+            error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
           )
         },
       });

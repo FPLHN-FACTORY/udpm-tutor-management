@@ -88,7 +88,6 @@ const emit = defineEmits([
 ]);
 
 const isSyncing = ref(false);
-
 const { mutateAsync: onSync } = useSyncHeadSubjectAttach();
 
 const handleSyncHeadSubjectAttach = async () => {
@@ -109,26 +108,33 @@ const handleSyncHeadSubjectAttach = async () => {
 };
 
 const columnsSubject: ColumnType[] = [
-  { title: "STT", dataIndex: "orderNumber", key: "index", ellipsis: true },
+  {
+    title: "STT",
+    dataIndex: "orderNumber",
+    key: "index",
+    ellipsis: true,
+    width: "40px",
+  },
   {
     title: "Mã nhân viên",
     dataIndex: "staffCode",
     key: "staffCode",
     ellipsis: true,
+    width: "120px",
   },
   {
     title: "Tên nhân viên",
     dataIndex: "staffName",
     key: "staffName",
     ellipsis: true,
-    width: "250px",
+    width: "160px",
   },
   {
     title: "Email FPT",
     dataIndex: "emailFPT",
     key: "emailFPT",
     ellipsis: true,
-    width: "120px",
+    width: "200px",
   },
   {
     title: "Email FE",
@@ -136,14 +142,13 @@ const columnsSubject: ColumnType[] = [
     key: "emailFE",
     ellipsis: true,
     width: "200px",
-    align: "center",
   },
   {
     title: "Phân công",
     dataIndex: "isAssigned",
     key: "isAssigned",
     ellipsis: true,
-    align: "center",
+    width: "120px",
   },
   {
     title: "Môn đang phụ trách",
@@ -153,6 +158,11 @@ const columnsSubject: ColumnType[] = [
     align: "center",
     width: "150px",
   },
-  { title: "Hành động", key: "action", align: "center", width: "150px" },
+  {
+    title: "Hành động",
+    key: "action",
+    align: "center",
+    width: "150px"
+  },
 ];
 </script>

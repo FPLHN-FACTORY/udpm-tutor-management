@@ -1,34 +1,34 @@
 <template>
-    <div class="mt-4">
-      <div class="flex justify-between items-center">
-        <h2 class="p-4 flex items-center text-primary text-3xl font-semibold">
-          <v-icon name="hi-office-building" scale="2" />
-          <span class="m-2 text-3xl">Quản lý lịch sử</span>
-        </h2>
-      </div>
-      <plan-log-history-filter 
+  <div class="mt-4">
+    <div class="flex justify-between items-center">
+      <h2 class="p-4 flex items-center text-primary text-3xl font-semibold">
+        <v-icon name="hi-office-building" scale="2" />
+        <span class="m-2 text-3xl">Quản lý lịch sử</span>
+      </h2>
+    </div>
+    <plan-log-history-filter
         :semesterOptions="semesterOptions"
         :semesterId="userInfo?.semesterId || null"
         :blockId="userInfo?.blockId || null"
-      @filter="handleFilter"  />
-      <plan-log-history-table
+        @filter="handleFilter"  />
+    <plan-log-history-table
         :data-source="planLogHistoryData"
         :loading="isLoading || isFetching"
         :pagination-params="params"
         :total-pages="totalPages"
         @update:pagination-params="handlePaginationChange"
         @handleOpenModalDetail="handleOpenModalDetail"
-      />
-      <plan-log-history-detail
-      :open="open"
-      :plan-log-detail="planLogDetail || null"
-      :loading="isLoadingDetail"
-      @handleCloseModal="handleCloseModal"
-      />
-    </div>
-  </template>
+    />
+    <plan-log-history-detail
+        :open="open"
+        :plan-log-detail="planLogDetail || null"
+        :loading="isLoadingDetail"
+        @handleCloseModal="handleCloseModal"
+    />
+  </div>
+</template>
   
-  <script lang="ts" setup>
+<script lang="ts" setup>
 import PlanLogHistoryTable from './PlanLogHistoryTable.vue';
 import PlanLogHistoryFilter from './PlanLogHistoryFilter.vue';
 import PlanLogHistoryDetail from './PlanLogHistoryDetail.vue';
@@ -64,7 +64,6 @@ const { data, isLoading, isFetching } = useGetPlanLogHistory(params, {
   placeholderData: keepPreviousData,
 });
 
-
 const handlePaginationChange = (newParams: ParamsGetPlanLog) => {
   params.value = { ...params.value, ...newParams };
 };
@@ -75,19 +74,19 @@ const handleFilter = (newParams: ParamsGetPlanLog) => {
 
 const { data: semesterOptionsData } = useGetSemesterOptions();
 const semesterOptions = computed(() =>
-    semesterOptionsData?.value?.data.map((semester) => ({
-      value: semester.id,
-      label: semester.name,
-    }))
+  semesterOptionsData?.value?.data.map((semester) => ({
+    value: semester.id,
+    label: semester.name,
+  }))
 );
 
 const handleOpenModalDetail = (record: GetPlanLogResponse) => {
-    planLogHistoryId.value = record.id;
+  planLogHistoryId.value = record.id;
   open.value = true;
 };
 
 const { data: dataDetail, isLoading: isLoadingDetail } = useDetailPlanLogHistory(
-    planLogHistoryId,
+  planLogHistoryId,
   {
     refetchOnWindowFocus: false,
     enabled: () => !!planLogHistoryId.value,
@@ -102,5 +101,5 @@ const handleCloseModal = () => {
 const planLogHistoryData = computed(() => data?.value?.data?.data || []);
 const totalPages = computed(() => data?.value?.data?.totalPages || 0);
 const planLogDetail = computed(() => dataDetail.value?.data || null);
-  </script>
+</script>
   

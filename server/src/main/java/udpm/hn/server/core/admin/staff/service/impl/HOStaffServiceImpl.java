@@ -83,7 +83,7 @@ public class HOStaffServiceImpl implements HOStaffService {
 
         Optional<Staff> staffList = staffRepo.findByStaffCode(staffRequest.getStaffCode());
 
-        if (!staffList.isEmpty() && staffList.get().getStatus() == EntityStatus.ACTIVE) {
+        if (staffList.isPresent() && staffList.get().getStatus() == EntityStatus.ACTIVE) {
             return new ResponseObject<>(null, HttpStatus.CONFLICT, "Mã nhân viên đã tồn tại");
         }
 
@@ -110,7 +110,7 @@ public class HOStaffServiceImpl implements HOStaffService {
         staff.setName(staffRequest.getName());
         Optional<Staff> checkStaff = staffRepo.findByStaffCode(staffRequest.getStaffCode());
 
-        if (!checkStaff.isEmpty() &&
+        if (checkStaff.isPresent() &&
             !checkStaff.get().getId().equalsIgnoreCase(staffRequest.getStaffCode()) &&
             checkStaff.get().getStatus() == EntityStatus.ACTIVE) {
             if (!staff.getId().equals(checkStaff.get().getId())) {
@@ -134,7 +134,7 @@ public class HOStaffServiceImpl implements HOStaffService {
         }
         //change status in staff_role
         List<StaffRole> staffRoles = staffRoleRepo.findAllByStaff_IdAndStatus(idStaff, EntityStatus.ACTIVE);
-        staffRoles.stream().forEach(staffRole -> staffRole.setStatus(EntityStatus.INACTIVE));
+        staffRoles.forEach(staffRole -> staffRole.setStatus(EntityStatus.INACTIVE));
         staffRoleRepo.saveAll(staffRoles);
         //change status in staff
         staffOptional.get().setStatus(EntityStatus.INACTIVE);
@@ -161,7 +161,7 @@ public class HOStaffServiceImpl implements HOStaffService {
 
             return ResponseObject.successForward(null, "Đồng bộ nhân viên thành công!");
         } catch (Exception e) {
-            e.printStackTrace(); // Log the stack trace for debugging
+            log.error("Lỗi khi đồng bộ nhân viên : {}", e.getMessage());
             return ResponseObject.errorForward(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -178,7 +178,6 @@ public class HOStaffServiceImpl implements HOStaffService {
             throw new RuntimeException("Chưa có đồng bộ bộ môn theo cơ sở");
         }
 
-        // Retrieve MajorFacility based on department and major
         List<MajorFacility> majorFacilities = majorFacilityRepository.findAllByDepartmentFacility_IdAndMajor_Code(
                 departmentFacilities.get().getDepartmentFacilityId(), majorCode);
 
@@ -186,10 +185,8 @@ public class HOStaffServiceImpl implements HOStaffService {
             throw new RuntimeException("Chưa đồng bộ chuyên ngành theo cơ sở");
         }
 
-        // Create or retrieve Staff entity
         Staff postStaff = (staff == null) ? new Staff() : staffRepo.findByStaffCode(staffResponse.getStaffDetail().getStaffCode()).orElseGet(Staff::new);
 
-        // Update staff details
         StaffResponse.StaffDetail staffDetail = staffResponse.getStaffDetail();
         postStaff.setStaffCode(staffDetail.getStaffCode());
         postStaff.setName(staffDetail.getFullName());
@@ -199,17 +196,14 @@ public class HOStaffServiceImpl implements HOStaffService {
         postStaff.setStatus(EntityStatus.ACTIVE);
         postStaff.setStaffIdentityId(staffResponse.getStaffDetail().getId());
 
-        // Save staff to database
         Staff savedStaff = staffRepo.save(postStaff);
 
-        // Create StaffMajorFacility association
         StaffMajorFacility staffMajorFacility = (staff == null) ? new StaffMajorFacility() : majorFacilityStaffRepository.findByStaff_Id(savedStaff.getId()).orElseGet(StaffMajorFacility::new);
         staffMajorFacility.setStaff(savedStaff);
         staffMajorFacility.setMajorFacility(majorFacilities.get(0));
         staffMajorFacility.setStatus(EntityStatus.ACTIVE);
         majorFacilityStaffRepository.save(staffMajorFacility);
 
-        // Handle roles
         List<StaffRoleResponse> staffRoleResponses = identityConnection.getRoleStaffs(campusCode, savedStaff.getStaffCode());
         if (!staffRoleResponses.isEmpty()) {
             List<StaffRole> existingRoles = staffRoleRepo.findAllByStaff_IdAndStatus(savedStaff.getId(), EntityStatus.ACTIVE);
@@ -228,16 +222,13 @@ public class HOStaffServiceImpl implements HOStaffService {
                         staffRoleRepo.save(newStaffRole);
                     });
 
-                    // Nếu role không tồn tại, tạo role mới
-                    if (!roleOptional.isPresent()) {
+                    if (roleOptional.isEmpty()) {
                         Role newRole = new Role();
                         newRole.setCode(staffRoleResponse.getRoleCode());
-                        newRole.setName(staffRoleResponse.getRoleName()); // Giả định bạn có tên role
+                        newRole.setName(staffRoleResponse.getRoleName());
                         newRole.setFacility(facility);
-                        // Thiết lập các thuộc tính khác của Role nếu cần
                         roleRepository.save(newRole);
 
-                        // Tạo StaffRole mới với role vừa được thêm
                         StaffRole newStaffRole = new StaffRole();
                         newStaffRole.setStaff(savedStaff);
                         newStaffRole.setRole(newRole);

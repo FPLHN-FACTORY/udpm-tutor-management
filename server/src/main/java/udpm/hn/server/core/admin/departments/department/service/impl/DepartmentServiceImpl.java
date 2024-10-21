@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -29,11 +30,13 @@ import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.utils.Helper;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @Validated
 @RequiredArgsConstructor
+@Slf4j
 public class DepartmentServiceImpl implements DepartmentService {
 
     private final DepartmentExtendRepository departmentExtendRepository;
@@ -155,7 +158,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     public ResponseObject<?> synchronize() {
         OperationLogsRequest operationLogsRequest = new OperationLogsRequest();
         try {
-            HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            HttpServletRequest httpServletRequest = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
             operationLogsRequest.setHttpRequest(httpServletRequest);
             operationLogsRequest.setTypeFunction(FunctionLogType.SYNCHRONIZED);
             List<DepartmentResponse> departmentData = identityConnection.getDepartments();
@@ -178,7 +181,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         } catch (Exception e) {
             operationLogsRequest.setStatus(false);
             operationLogsRequest.setResponse("{\"status\": \"false\"}");
-            e.printStackTrace();
+            log.error("Lỗi khi đồng bộ bộ môn : {}", e.getMessage());
             return ResponseObject.errorForward("Đồng bộ bộ môn không thành công! Đã xảy ra lỗi.", HttpStatus.INTERNAL_SERVER_ERROR);
         } finally {
             operationLogsService.createOperationLog(operationLogsRequest);

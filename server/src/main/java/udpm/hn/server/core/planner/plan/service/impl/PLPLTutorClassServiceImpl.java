@@ -19,19 +19,14 @@ import udpm.hn.server.core.planner.plan.repository.PLPLStudentTutorClassReposito
 import udpm.hn.server.core.planner.plan.repository.PLPLTutorClassDetailRepository;
 import udpm.hn.server.core.planner.plan.repository.PLPLTutorClassRepository;
 import udpm.hn.server.core.planner.plan.service.PLPLTutorClassService;
-import udpm.hn.server.entity.Block;
-import udpm.hn.server.entity.Plan;
 import udpm.hn.server.entity.StudentTutor;
 import udpm.hn.server.entity.TutorClassDetail;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
 import udpm.hn.server.infrastructure.constant.FunctionLogType;
-import udpm.hn.server.infrastructure.constant.PlanStatus;
 import udpm.hn.server.infrastructure.constant.Role;
 import udpm.hn.server.utils.Helper;
-
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,12 +47,12 @@ public class PLPLTutorClassServiceImpl implements PLPLTutorClassService {
         try {
             PLPLTutorClassResponse tutorClass = tutorClassRepository.getDetailTutorClass(id);
             if (tutorClass == null) {
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Không tồn tại");
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Lớp môn Không tồn tại!");
             }
-            return new ResponseObject<>(tutorClass, HttpStatus.OK, "Lấy lớp tutor thành công1");
+            return new ResponseObject<>(tutorClass, HttpStatus.OK, "Lấy lớp môn thành công");
         } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Lỗi khi lấy chi tiết: " + e.getMessage());
+            log.error("Lỗi khi lấy thông tin chi tiết lớp môn: ", e);
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi xảy ra khi lấy chi tiết lớp môn!");
         }
     }
 
@@ -131,15 +126,15 @@ public class PLPLTutorClassServiceImpl implements PLPLTutorClassService {
                             System.err.println("Có lỗi xảy ra khi lưu log");
                         }
                     } catch (Exception e) {
-                        System.err.println("Lỗi khi ghi log: " + e.getMessage());
+                        log.error("Lỗi khi ghi log: {}", e.getMessage());
                     }
                 }
             });
 
             return new ResponseObject<>(true, HttpStatus.OK, "Cập nhật thành công");
         } catch (Exception e) {
-            // Xử lý lỗi
-            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Cập nhật thất bại: " + e.getMessage());
+            log.error("Lỗi khi cập nhật lớp tutor: {}", e.getMessage());
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Cập nhật lớp tutor thất bại!");
         }
     }
 
@@ -181,7 +176,7 @@ public class PLPLTutorClassServiceImpl implements PLPLTutorClassService {
             return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm sinh viên thành công thành công");
         } catch (Exception e) {
             planLogHistory.setStatus(false);
-            e.printStackTrace();
+            log.error("Lỗi khi thêm sinh viên tutor: {}", e.getMessage());
         } finally {
             try {
                 Boolean resultLog = planLogHistoryService.createPlanLogHistory(planLogHistory);
@@ -189,11 +184,10 @@ public class PLPLTutorClassServiceImpl implements PLPLTutorClassService {
                     System.err.println("Có lỗi xảy ra khi lưu log");
                 }
             } catch (Exception e) {
-                System.err.println("Lỗi khi ghi log: " + e.getMessage());
+                log.error("Lỗi khi ghi log: {}", e.getMessage());
             }
         }
-        return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi thêm sinh viên tutor");
-
+        return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi sảy ra khi thêm sinh viên tutor!");
     }
 
 }

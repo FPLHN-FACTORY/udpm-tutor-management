@@ -27,54 +27,54 @@ import { debounce } from 'lodash';
 import { computed, ref, watch } from 'vue';
 
 type ParamsFilterTutorClass = {
-    classCode: string | null,
-    subjectId: string | null
+  classCode: string | null,
+  subjectId: string | null
 }
 
 const { data: subjectOptionsData } = useGetSubjectOptions();
 
 const subjectOptions = computed(() => {
-    return subjectOptionsData?.value?.data?.map((item) => ({
-        value: item.id,
-        label: item.name,
-    })) || [];
+  return subjectOptionsData?.value?.data?.map((item) => ({
+    value: item.id,
+    label: item.name,
+  })) || [];
 });
 
 const params = ref<ParamsFilterTutorClass>({
-    classCode: '',
-    subjectId: ''
+  classCode: '',
+  subjectId: ''
 })
 
 
 const emit = defineEmits(['filter'])
 
 function onChange(key: keyof ParamsFilterTutorClass, event: Event) {
-    if (
-        event &&
-        event.target &&
-        (event.target as HTMLInputElement).value !== undefined
-    ) {
-        params.value[key] = (event.target as HTMLInputElement).value
-    } else if (event && typeof event === 'string') {
-        params.value[key] = event
-    }
+  if (
+      event &&
+      event.target &&
+      (event.target as HTMLInputElement).value !== undefined
+  ) {
+    params.value[key] = (event.target as HTMLInputElement).value
+  } else if (event && typeof event === 'string') {
+    params.value[key] = event
+  }
 }
 
 
 function onSelectChange(key: keyof ParamsFilterTutorClass, value: string) {
-    params.value[key] = value;
-    emit('filter', params.value)
+  params.value[key] = value;
+  emit('filter', params.value)
 }
 
 const debouncedEmit = debounce(() => {
-    emit('filter', params.value)
+  emit('filter', params.value)
 }, 2000)
 
 watch(
-    params,
-    () => {
-        debouncedEmit();
-    },
-    { deep: true }
+  params,
+  () => {
+    debouncedEmit();
+  },
+  { deep: true }
 );
 </script>

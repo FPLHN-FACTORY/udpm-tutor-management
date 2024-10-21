@@ -194,8 +194,7 @@ const columnsSubject: ColumnType[] = [
     dataIndex: "orderNumber",
     key: "index",
     ellipsis: true,
-    width: "80px",
-    align: "center",
+    width: "40px",
   },
   {
     title: "Tên kế hoạch",
