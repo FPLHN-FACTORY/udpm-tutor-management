@@ -180,6 +180,17 @@ export const routes: RouteRecordRaw[] = [
           requiresAuth: true,
         },
       },
+      // Planner route
+      {
+        path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLANNER.path,
+        name: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLANNER.name,
+        component: () =>
+          import("@/pages/headdepartment/planner/HeadSubjectPlanner.vue"),
+        meta: {
+          requiresRole: ROLES.HEAD_DEPARTMENT,
+          requiresAuth: true,
+        },
+      },
       // Plan Log History route
       {
         path: ROUTES_CONSTANTS.HEAD_DEPARTMENT.children.PLAN_LOG_HISTORY.path,
@@ -229,17 +240,6 @@ export const routes: RouteRecordRaw[] = [
           import(
             "@/pages/headsubject/planloghistory/HeadSubjectPlanLogHistory.vue"
           ),
-        meta: {
-          requiresRole: ROLES.HEAD_SUBJECT,
-          requiresAuth: true,
-        },
-      },
-      // Planner route
-      {
-        path: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLANNER.path,
-        name: ROUTES_CONSTANTS.HEAD_SUBJECT.children.PLANNER.name,
-        component: () =>
-          import("@/pages/headsubject/planner/HeadSubjectPlanner.vue"),
         meta: {
           requiresRole: ROLES.HEAD_SUBJECT,
           requiresAuth: true,
