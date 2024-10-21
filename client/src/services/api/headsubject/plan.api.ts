@@ -2,33 +2,11 @@ import {DefaultResponse, PaginationParams, PaginationResponse, ResponseList} fro
 import {AxiosResponse} from "axios";
 import {PREFIX_API_HEAD_SUBJECT_PLAN} from "@/constants/url.ts";
 import request from "@/services/request.ts";
-import { Ref } from "vue";
-
 export interface ParamsGetPlans extends PaginationParams {
   semesterId?: string | null;
   departmentCode?: string | null;
   facilityCode?: string | null;
 }
-
-export interface ParamsGetListPlaner extends PaginationParams {
-  currentSemesterId?: string | null,
-  currentBlockId?: string | null,
-  currentFacilityCode?: string | null,
-  currentDepartmentCode?: string | null,
-  currentUserId?: string | null,
-}
-
-export interface AssignedPlannerRequest {
-  currentSemesterId: string | null,
-  currentBlockId: string | null,
-  currentFacilityCode: string | null,
-  currentDepartmentCode: string | null,
-  currentUserId: string | null,
-}
-
-export type AssignedPlannerResponse =  {
-  id: string;
-};
 
 export type PlanResponse = ResponseList & {
   planName: string;
@@ -151,59 +129,4 @@ export const getDetailPlan = async (planId: string | null) => {
   return res.data;
 };
 
-export type HeadOfSubjectPlannerResponse = ResponseList & {
-  staffCode: string;
-  staffName: string;
-  emailFPT: string;
-  emailFE: string;
-  isAssigned: number;
-};
 
-export const getHeadSubjectPlanner = async (params: Ref<ParamsGetListPlaner>) => {
-  const res = (await request({
-      url: `${PREFIX_API_HEAD_SUBJECT_PLAN}/planner`,
-      method: "GET",
-      params: params.value,
-  })) as AxiosResponse<
-      DefaultResponse<PaginationResponse<Array<HeadOfSubjectPlannerResponse>>>
-  >;
-
-  return res.data;
-};
-
-
-export const assignedPlannerRequest = async (
-  id: string,
-  params: AssignedPlannerRequest) => {
-const res = (await request({
-  url: `${PREFIX_API_HEAD_SUBJECT_PLAN}/planner/${id}`,
-  method: "PUT",
-  data: params,
-})) as AxiosResponse<DefaultResponse<null>>;
-
-return res.data;
-};
-
-export interface createPlannerRequest {
-  currentSemesterId: string | null,
-  currentBlockId: string | null,
-  currentFacilityCode: string | null,
-  currentDepartmentCode: string | null,
-  currentUserId: string | null,
-  name: string | null,
-  staffCode: string | null,
-  emailFe: string | null,
-  emailFpt: string | null,
-}
-
-export const createPlannerRequest = async (
-  params: createPlannerRequest
-) => {
-    const res = (await request({
-      url: `${PREFIX_API_HEAD_SUBJECT_PLAN}/planner`,
-      method: "POST",
-      data: params,
-    })) as AxiosResponse<DefaultResponse<null>>;
-
-    return res.data;
-};

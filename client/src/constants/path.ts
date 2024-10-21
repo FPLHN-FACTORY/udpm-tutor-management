@@ -57,6 +57,10 @@ export const ROUTES_CONSTANTS = {
         path: "plan-log",
         name: "hDPplanLogHistory",
       },
+      PLANNER: {
+        path: "planner",
+        name: "hDPlPlaner",
+      },
     },
   },
   PLANNER: {
@@ -120,10 +124,6 @@ export const ROUTES_CONSTANTS = {
       PLAN: {
         path: "subject-plan",
         name: "subject-plan",
-      },
-      PLANNER: {
-        path: "planner",
-        name: "subjectPlaner",
       },
       PLAN_DETAIL: {
         path: "plan/:planId",

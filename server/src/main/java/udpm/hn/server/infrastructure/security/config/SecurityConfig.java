@@ -156,7 +156,8 @@ public class SecurityConfig {
                 auth -> auth.requestMatchers(
                                 appendWildcard(MappingConstants.API_HEAD_DEPARTMENT_HEAD_PLAN),
                                 appendWildcard(MappingConstants.API_HEAD_DEPARTMENT_HEAD_SUBJECT),
-                                appendWildcard(MappingConstants.API_PLAN_LOG_HISTORY)
+                                appendWildcard(MappingConstants.API_PLAN_LOG_HISTORY),
+                                appendWildcard(MappingConstants.API_HEAD_DEPARTMENT_PLANNER)
                         )
                         .hasAnyAuthority(Role.CHU_NHIEM_BO_MON.name())
         );
