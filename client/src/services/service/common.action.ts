@@ -143,15 +143,15 @@ return useQuery({
 };
 
 export const useGetStaffOptions = (
-  params: Ref<ParamsStaffOptions>,
-  options?: any
+    params: Ref<ParamsStaffOptions>,
+    options?: any
 ): UseQueryReturnType<
-  Awaited<ReturnType<typeof getStaffOptions>>,
-  Error
+    Awaited<ReturnType<typeof getStaffOptions>>,
+    Error
 > => {
-return useQuery({
-  queryKey: [queryKey.common.staffOptions],
-  queryFn: () => getStaffOptions(params.value),
-  ...options,
-});
+  return useQuery({
+    queryKey: [queryKey.common.staffOptions],
+    queryFn: () => getStaffOptions(params.value),
+    ...options,
+  });
 };

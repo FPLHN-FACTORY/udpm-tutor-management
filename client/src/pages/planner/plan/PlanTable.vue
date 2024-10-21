@@ -26,6 +26,22 @@
       >
         <template #bodyCell="{ column, record }">
           <div v-if="column.key === 'action'" class="space-x-2 flex items-center justify-center">
+            <a-tooltip v-if="record.status === 'IN_PROGRESS'" title="Import sinh viên" color="#FFC26E">
+              <input
+                  type="file"
+                  accept=".xls, .xlsx"
+                  @change="handleFileChange"
+                  style="display: none"
+                  ref="fileInput"
+              />
+              <a-button
+                  class="flex items-center justify-center"
+                  type="primary"
+                  size="large"
+                  @click="selectFile(record.id)"
+                  :icon="h(UploadOutlined)"
+              />
+            </a-tooltip>
             <a-tooltip v-if="record.status === 'PLANNING'" title="Phê duyệt kế hoạch" color="#FFC26E">
               <a-button
                   class="flex items-center justify-center"
@@ -64,7 +80,7 @@
                   :icon="h(EditOutlined)"
               />
             </a-tooltip>
-            <a-tooltip title="Download file" color="#FFC26E">
+            <a-tooltip title="Xuất file kế hoạch" color="#FFC26E">
               <a-button
                   class="flex items-center justify-center"
                   type="primary"
@@ -95,17 +111,77 @@
 
 <script setup lang="ts">
 import TutorTable from "@/components/ui/TutorTable/TutorTable.vue";
-import {CheckCircleOutlined, DownloadOutlined, EditOutlined, EyeOutlined} from "@ant-design/icons-vue";
+import {
+  CheckCircleOutlined,
+  DownloadOutlined,
+  EditOutlined,
+  ExclamationCircleOutlined,
+  EyeOutlined,
+  UploadOutlined
+} from "@ant-design/icons-vue";
 import { ColumnType } from "ant-design-vue/es/table";
-import {h} from "vue";
+import {createVNode, h, ref} from "vue";
 import { PlanResponse } from "@/services/api/planner/plan.api.ts";
 import {useRouter} from "vue-router";
 import {confirmModal, formatBlockName, getDateFormat, getTagColor, getTagStatus} from "@/utils/common.helper.ts";
-import {useApprovePlan, useCheckApprovePlan, useStartPlan} from "@/services/service/planner/plan.action.ts";
+import {
+  useApprovePlan,
+  useCheckApprovePlan,
+  useStartPlan,
+  useUploadFileStudent
+} from "@/services/service/planner/plan.action.ts";
 import {toast} from "vue3-toastify";
 import {ERROR_MESSAGE} from "@/constants/message.constant.ts";
+import {Modal} from "ant-design-vue";
 
 const router = useRouter();
+const fileInput = ref<HTMLInputElement | null>(null);
+const planId = ref<string>("");
+
+const selectFile = (id: string) => {
+  fileInput.value?.click();
+  planId.value = id;
+};
+
+const handleFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files.length > 0) {
+    handleImportStudent(target.files[0]);
+  }
+};
+
+const { mutate: uploadFileStudent } = useUploadFileStudent();
+
+const handleImportStudent = (file: File) => {
+  Modal.confirm({
+    content: 'Bạn chắc chắn muốn import file chứ!',
+    icon: createVNode(ExclamationCircleOutlined),
+    centered: true,
+    async onOk() {
+      try {
+        uploadFileStudent({file, planId}, {
+          onSuccess: () => {
+            toast.success("Import file sinh viên thành công");
+          },
+          onError: (error: any) => {
+            toast.error(
+                error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+            )
+          },
+        })
+      } catch (error: any) {
+        console.error("🚀 ~ handleAdd ~ error:", error);
+        toast.error(
+            error?.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
+        );
+      }
+    },
+    cancelText: 'Huỷ',
+    onCancel() {
+      Modal.destroyAll();
+    },
+  });
+}
 
 const goToDetail = (planId: string) => {
   router.push({ name: 'pLPlDetailPlan', params: { planId } });

@@ -7,7 +7,13 @@
       </h2>
     </div>
     <div class="flex justify-end mb-5">
-      <a-button @click="handleTutorClassDetail" type="primary">Lưu Tất Cả</a-button>
+      <a-button
+          @click="handleTutorClassDetail"
+          type="primary"
+          :hidden="canUpdate"
+      >
+            Lưu Tất Cả
+      </a-button>
     </div>
     <div class="flex h-0 flex-1 flex-col">
       <tutor-table
@@ -38,7 +44,7 @@
                 :options="shiftOptions"
                 :filter-option="(input, option) => option.label.toLowerCase().includes(input.toLowerCase())"
                 style="width: 100%"
-                :bordered="false"
+                :disabled="canUpdate"
             />
           </div>
         </template>
@@ -74,7 +80,8 @@ const props = defineProps({
   },
   totalPages: Number,
   paginationParams: Object,
-  loading: Boolean
+  loading: Boolean,
+  canUpdate: Boolean
 })
 
 interface DataItem {

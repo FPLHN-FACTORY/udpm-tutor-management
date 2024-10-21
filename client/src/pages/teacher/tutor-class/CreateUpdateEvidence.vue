@@ -73,7 +73,7 @@ import { AddOrUpdateLectureEvidenceParams } from '@/services/api/teacher/tutor-c
 import { useAddOrUpdateLectureEvidence } from '@/services/service/teacher/tutor-class.action';
 import { ExclamationCircleOutlined, LinkOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import { Form, Modal } from "ant-design-vue";
-import { computed, createVNode, h, reactive, ref, watch } from "vue";
+import { computed, createVNode, h, reactive, watch } from "vue";
 import { toast } from 'vue3-toastify';
 
 const props = defineProps({
@@ -257,5 +257,4 @@ const handleClose = () => {
   emit("handleClose");
   resetFields();
 };
-
 </script>

@@ -66,12 +66,14 @@ const columnsSubject = computed(() => [
     title: "Mã môn học",
     dataIndex: "subjectCode",
     key: "subjectCode",
+    width: "200px",
     ellipsis: true,
   },
   {
     title: "Tên môn học",
     dataIndex: "subjectName",
     key: "subjectName",
+    width: "200px",
     ellipsis: true,
   },
   {

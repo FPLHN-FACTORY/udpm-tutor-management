@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
+import udpm.hn.server.core.teacher.tutorclass.model.request.TCTCCurrentPlanRequest;
 import udpm.hn.server.core.teacher.tutorclass.model.request.TCTCEvidenceRequest;
 import udpm.hn.server.core.teacher.tutorclass.model.request.TCTCTutorClassListRequest;
 import udpm.hn.server.core.teacher.tutorclass.model.request.TCTCUpdateLectureRequest;
@@ -25,7 +26,6 @@ import udpm.hn.server.infrastructure.config.drive.service.GoogleDriveFileService
 import udpm.hn.server.infrastructure.constant.Format;
 import udpm.hn.server.infrastructure.constant.Shift;
 import udpm.hn.server.utils.Helper;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -223,6 +223,23 @@ public class TCTCTutorClassServiceImpl implements TCTCTutorClassService {
             throw new IOException("File rỗng hoặc không hợp lệ.");
         }
         return googleDriveFileService.upload(file, folderName, true);
+    }
+
+    public ResponseObject<?> getPlan(TCTCCurrentPlanRequest request) {
+        return new ResponseObject<>(
+                tutorClassRepository.getPLan(request),
+                HttpStatus.OK,
+                "Lấy thông tin môn học thành công"
+        );
+    }
+
+    @Override
+    public ResponseObject<?> getTutorClassDetail(String id) {
+        return new ResponseObject<>(
+                tutorClassDetailExtendRepository.getTutorClassDetail(id),
+                HttpStatus.OK,
+                "Lấy thông tin lớp học thành công"
+        );
     }
 
 }

@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
+import udpm.hn.server.core.teacher.tutorclass.model.request.TCTCCurrentPlanRequest;
 import udpm.hn.server.core.teacher.tutorclass.model.request.TCTCEvidenceRequest;
 import udpm.hn.server.core.teacher.tutorclass.model.request.TCTCUpdateLectureRequest;
 import udpm.hn.server.core.teacher.tutorclass.model.request.TCTCUpdateTutorClassDetailRequest;
@@ -37,6 +36,11 @@ public class TeacherTutorClassRestController {
         return Helper.createResponseEntity(tutorClassService.getLecturesByTutorClassDetailId(id));
     }
 
+    @GetMapping("/infor/{id}")
+    public ResponseEntity<?> getTutorClassDetail(@PathVariable String id) {
+        return Helper.createResponseEntity(tutorClassService.getTutorClassDetail(id));
+    }
+
     @GetMapping("/lecture/{id}")
     public ResponseEntity<?> getEvidenceLectureDetail(@PathVariable String id) {
         return Helper.createResponseEntity(tutorClassService.getEvidenceLectureDetail(id));
@@ -55,6 +59,11 @@ public class TeacherTutorClassRestController {
     @PutMapping("/lecture-evidence")
     public ResponseEntity<?> addLectureEvidence(@ModelAttribute TCTCEvidenceRequest request) {
         return Helper.createResponseEntity(tutorClassService.evidenceLecture(request));
+    }
+
+    @GetMapping("/plan")
+    public ResponseEntity<?> getPlan(TCTCCurrentPlanRequest request) {
+        return Helper.createResponseEntity(tutorClassService.getPlan(request));
     }
 
 }

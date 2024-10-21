@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import udpm.hn.server.core.planner.plan.model.request.PLPLTutorClassDetailRequest;
 import udpm.hn.server.core.planner.plan.model.response.PLPLTutorClassDetailResponse;
+import udpm.hn.server.infrastructure.config.googleform.model.GFTutorClassDetailResponse;
 import udpm.hn.server.repository.TutorClassDetailRepository;
-
 import java.util.List;
 
 @Repository
@@ -80,21 +80,24 @@ public interface GFPLTutorClassDetailRepository extends TutorClassDetailReposito
 
     @Query(value = """
             SELECT
-                CONCAT(tcd.code, ' ( ', sj.name, ' )') AS tutorClassCode,
-                tcd.link AS link
+                sj.code AS subjectCode,
+                tcd.code AS tutorClassCode,
+                tcd.link AS link,
+                tcd.default_shift AS shift,
+                tcd.teacher_conduct_id as teacher
             FROM
                 tutor_class_detail tcd
             LEFT JOIN tutor_class tc ON tc.id = tcd.tutor_class_id
             LEFT JOIN plan pl ON pl.id = tc.plan_id
             LEFT JOIN subject sj ON sj.id = tc.subject_id
             LEFT JOIN head_subject_by_semester hsbs ON hsbs.id_subject = sj.id
-            LEFT JOIN staff st ON st.id = tcd.teacher_conduct_id
             LEFT JOIN student_tutor sd ON sd.id = tcd.student_conduct_id
             WHERE
                 pl.id = :planId
+            GROUP BY sj.code,tcd.code,tcd.link,tcd.default_shift,tcd.teacher_conduct_id
             ORDER BY tcd.code
             """,
             nativeQuery = true)
-    List<PLPLTutorClassDetailResponse> getDataTutorClassDetail(String planId);
+    List<GFTutorClassDetailResponse> getDataTutorClassDetail(String planId);
 
 }

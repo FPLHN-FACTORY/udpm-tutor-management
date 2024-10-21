@@ -144,7 +144,7 @@ export const getRoleOptions = async (params: ParamsRoleSearch) => {
 export interface ParamsMajorOption {
   departmentId: string | null;
   facilityId: string | null
-};
+}
 
 export const getMajorOptions = async (
   params: ParamsMajorOption,

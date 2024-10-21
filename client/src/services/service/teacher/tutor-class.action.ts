@@ -3,8 +3,8 @@ import {
     addOrUpdateLectureEvidence,
     AddOrUpdateLectureEvidenceParams,
     getEvidenceLectureDetail,
-    getLectures,
-    getTutorClasses,
+    getLectures, getPlan, getTutorClassDetail,
+    getTutorClasses, ParamsGetPlan,
     ParamsGetTutorClass, updateLecture, UpdateLectureParams, updateTutorClassDetail,
     UpdateTutorClassDetailParams
 } from "@/services/api/teacher/tutor-class.api"
@@ -90,5 +90,33 @@ export const useAddOrUpdateLectureEvidence = () => {
         onError: (error: any) => {
             console.log("🚀 ~ useCreatePlan ~ error:", error);
         },
+    });
+};
+
+export const useGetPlan = (
+    params: Ref<ParamsGetPlan>,
+    options?: any
+): UseQueryReturnType<
+    Awaited<ReturnType<typeof getPlan>>,
+    Error
+> => {
+    return useQuery({
+        queryKey: [queryKey.teacher.tutorClass.planList],
+        queryFn: () => getPlan(params.value),
+        ...options,
+    });
+};
+
+export const useGetTutorClassDetail = (
+    tcdId: Ref<string | null>,
+    options?: any
+): UseQueryReturnType<
+    Awaited<ReturnType<typeof getTutorClassDetail>>,
+    Error
+> => {
+    return useQuery({
+        queryKey: [queryKey.teacher.tutorClass.tutorClassDetail],
+        queryFn: () => getTutorClassDetail(tcdId.value),
+        ...options,
     });
 };

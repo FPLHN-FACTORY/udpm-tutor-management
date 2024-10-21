@@ -10,7 +10,7 @@ import {
     updateStaff,
     updateStaffDepartmentMajor,
     updateStaffPermission,
-    UpdateStaffPermissionParams
+    UpdateStaffPermissionParams, uploadFileStaff
 } from "../../api/admin/staff.api.ts";
 import { ComputedRef, Ref } from "vue";
 import { useMutation, useQuery, useQueryClient, UseQueryReturnType } from "@tanstack/vue-query";
@@ -184,4 +184,29 @@ export const useGetDetailStaffDeparmentMajor = (
     });
 };
 
+export const useUploadFileStaff = () => {
+    const queryClient = useQueryClient();
 
+    return useMutation({
+        mutationFn: (file: File) => uploadFileStaff(file),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [queryKey.admin.staff.staffList], // Cập nhật query key nếu cần
+            });
+        },
+        onError: (error: any) => {
+            console.log("🚀 ~ useUploadFile ~ error:", error);
+        },
+    });
+};
+
+// export const useGetDownloadTemplate = (
+//     facilityId: string | null,
+//     options?: any
+// ): UseQueryReturnType<Awaited<ReturnType<typeof downloadTemplateStaff>>, Error> => {
+//     return useQuery({
+//         queryKey: [queryKey.admin.staff.staffDownloadTemplate],
+//         queryFn: () => downloadTemplateStaff(facilityId),
+//         ...options,
+//     });
+// };
