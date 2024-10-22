@@ -1,9 +1,9 @@
 package udpm.hn.server.core.admin.departments.department.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -29,7 +29,6 @@ import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.repository.MajorRepository;
 import udpm.hn.server.utils.Helper;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -57,20 +56,20 @@ public class MajorServiceImpl implements MajorService {
         log.setTypeFunction(FunctionLogType.SEARCH);
         log.setStatus(true);
         try {
-           Pageable pageable = Helper.createPageable(request, "createdDate");
+            Pageable pageable = Helper.createPageable(request, "createdDate");
             Page<MajorResponse> majorResponses = majorExtendRepository.getAllMajorByDepartmentIdFilter(id, pageable, request);
             log.setResponse(majorResponses.getContent());
-           return new ResponseObject<>(
-                   PageableObject.of(majorResponses),
-                   HttpStatus.OK,
-                   "Lấy thành công danh sách chuyên ngành"
-           );
-       } catch (Exception e) {
+            return new ResponseObject<>(
+                    PageableObject.of(majorResponses),
+                    HttpStatus.OK,
+                    "Lấy thành công danh sách chuyên ngành"
+            );
+        } catch (Exception e) {
             log.setStatus(false);
             log.setErrorMessage(e.getMessage());
             e.printStackTrace();
             return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi trong quá trình lấy danh sách chuyên ngành");
-       } finally {
+        } finally {
             logsService.createOperationLog(log);
         }
     }
@@ -99,18 +98,18 @@ public class MajorServiceImpl implements MajorService {
                     addMajor.setStatus(EntityStatus.ACTIVE);
                     majorRepository.save(addMajor);
                     log.setSuccessMessage("Thêm chuyên ngành vào bộ môn " +
-                            currentDepartment.getName() + " thành công");
+                                          currentDepartment.getName() + " thành công");
                     return new ResponseObject<>(null, HttpStatus.CREATED, log.getSuccessMessage());
                 } else {
                     log.setStatus(false);
                     log.setErrorMessage("Chuyên ngành đã tồn tại trong bộ môn " +
-                            currentDepartment.getName());
+                                        currentDepartment.getName());
                     return new ResponseObject<>(null, HttpStatus.CONFLICT, log.getErrorMessage());
                 }
             } else {
                 log.setStatus(false);
                 log.setErrorMessage("Bộ môn mà bạn đang thêm chuyên " +
-                        "ngành không tồn tại [ " + departmentOptional.get().getName() + " ]");
+                                    "ngành không tồn tại [ " + departmentOptional.get().getName() + " ]");
                 return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
             }
         } catch (Exception e) {
@@ -147,7 +146,7 @@ public class MajorServiceImpl implements MajorService {
                         if (existsMajor.isPresent()) {
                             log.setStatus(false);
                             log.setErrorMessage("Tên chuyên ngành đã tồn tại: " +
-                                    request.getMajorName().trim());
+                                                request.getMajorName().trim());
                             return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
                         }
                     }
@@ -157,18 +156,18 @@ public class MajorServiceImpl implements MajorService {
                     majorUpdate.setCode(request.getMajorCode().trim());
                     majorRepository.save(majorUpdate);
                     log.setSuccessMessage("Cập nhât chuyên ngành vào bộ môn " +
-                            currentDepartment.getName() + " thành công");
+                                          currentDepartment.getName() + " thành công");
                     return new ResponseObject<>(null, HttpStatus.OK, log.getSuccessMessage());
                 } else {
                     log.setStatus(false);
                     log.setErrorMessage("Chuyên ngành không tồn tại trong bộ môn " +
-                            currentDepartment.getName());
+                                        currentDepartment.getName());
                     return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
                 }
             } else {
                 log.setStatus(false);
                 log.setErrorMessage("Bộ môn mà bạn đang cập nhật chuyên ngành " +
-                        "không tồn tại [ " + departmentOptional.get().getName() + " ]");
+                                    "không tồn tại [ " + departmentOptional.get().getName() + " ]");
                 return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
             }
         } catch (Exception e) {
@@ -194,7 +193,7 @@ public class MajorServiceImpl implements MajorService {
             );
             majorRepository.save(majorDelete);
             return new ResponseObject<>(null, HttpStatus.OK, "Chuyển đổi thành công chuyên ngành " +
-                    majorDelete.getName());
+                                                             majorDelete.getName());
         } else {
             return new ResponseObject<>(null, HttpStatus.OK, "chuyên ngành không tồn tại trong bộ môn");
         }
