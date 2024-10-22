@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ROUTES_CONSTANTS } from "@/constants/path";
 import { useAuthStore } from "@/stores/auth";
 import {
   BookOutlined,
@@ -30,31 +31,31 @@ const itemsAdmin = computed(() => [
     key: "1",
     icon: CalendarOutlined,
     text: "Quản lý học kỳ",
-    path: "/admin/semester",
+    path: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.SEMESTER.path}`,
   },
   {
     key: "2",
     icon: IdcardOutlined,
     text: "Quản lý chức vụ",
-    path: "/admin/role",
+    path: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.ROLE.path}`,
   },
   {
     key: "3",
     icon: UserOutlined,
     text: "Quản lý nhân viên",
-    path: "/admin/staff",
+    path: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.STAFF.path}`,
   },
   {
     key: "4",
     icon: BookOutlined,
     text: "Quản lý môn học",
-    path: "/admin/subject",
+    path: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.SUBJECT.path}`,
   },
   {
-    key: "6",
+    key: "5",
     icon: BuildOutlined,
     text: "Quản lý bộ môn",
-    path: "/admin/department",
+    path: `${ROUTES_CONSTANTS.ADMIN.path}/${ROUTES_CONSTANTS.ADMIN.children.DEPARTMENT.path}`,
   },
 ]);
 

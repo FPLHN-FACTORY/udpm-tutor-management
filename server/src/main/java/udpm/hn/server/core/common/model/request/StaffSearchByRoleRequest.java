@@ -12,8 +12,11 @@ import java.util.List;
 public class StaffSearchByRoleRequest {
 
     private List<String> role;
+
     private String departmentCode;
+
     private String facilityCode;
+
     private String roleCode;
 
 }

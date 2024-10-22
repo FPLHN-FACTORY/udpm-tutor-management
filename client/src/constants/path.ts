@@ -93,16 +93,24 @@ export const ROUTES_CONSTANTS = {
         path: "tutor-class-detail/:tutorClassDetailId",
         name: "tcTutorClassDetail",
       },
-      STUDENT_ATTENDANCE : {
+      STUDENT_ATTENDANCE: {
         path: "student-attendance/:lectureId",
         name: "tcStudentAttendance",
-      }
+      },
     },
   },
   SUPER_ADMIN: {
     path: "/super-admin",
     name: "logSystem",
     children: {
+      FACILITY: {
+        path: "facility",
+        name: "facility",
+      },
+      DEPARTMENT: {
+        path: "admin-department",
+        name: "admin-department",
+      },
       OPERATION_LOG: {
         path: "operation-log",
         name: "operationLog",
@@ -110,10 +118,6 @@ export const ROUTES_CONSTANTS = {
       USER_ACTIVITY_LOG: {
         path: "user-log",
         name: "userActivityLog",
-      },
-      FACILITY: {
-        path: "facility",
-        name: "facility",
       },
     },
   },
