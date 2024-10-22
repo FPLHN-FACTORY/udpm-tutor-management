@@ -1,25 +1,31 @@
 package udpm.hn.server.core.admin.departments.department.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import udpm.hn.server.core.admin.departments.department.model.request.CreateOrUpdateMajorRequest;
 import udpm.hn.server.core.admin.departments.department.model.request.FindMajorRequest;
+import udpm.hn.server.core.admin.departments.department.model.response.MajorResponse;
 import udpm.hn.server.core.admin.departments.department.repository.DepartmentExtendRepository;
 import udpm.hn.server.core.admin.departments.department.repository.MajorExtendRepository;
 import udpm.hn.server.core.admin.departments.department.service.MajorService;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
+import udpm.hn.server.core.superadmin.operation.model.request.OperationLogsRequest;
+import udpm.hn.server.core.superadmin.operation.service.OperationLogsService;
 import udpm.hn.server.entity.Department;
 import udpm.hn.server.entity.Major;
 import udpm.hn.server.infrastructure.connection.IdentityConnection;
-import udpm.hn.server.infrastructure.connection.response.MajorResponse;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
+import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.repository.MajorRepository;
 import udpm.hn.server.utils.Helper;
 
@@ -40,79 +46,138 @@ public class MajorServiceImpl implements MajorService {
 
     private final MajorRepository majorRepository;
 
+    private final OperationLogsService logsService;
+
     @Override
     public ResponseObject<?> getAllMajor(String id, FindMajorRequest request) {
-        Pageable pageable = Helper.createPageable(request, "createdDate");
-        return new ResponseObject<>(
-                PageableObject.of(majorExtendRepository.getAllMajorByDepartmentIdFilter(id, pageable, request)),
-                HttpStatus.OK,
-                "Lấy thành công danh sách chuyên ngành"
-        );
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(request);
+        log.setTypeFunction(FunctionLogType.SEARCH);
+        log.setStatus(true);
+        try {
+           Pageable pageable = Helper.createPageable(request, "createdDate");
+            Page<MajorResponse> majorResponses = majorExtendRepository.getAllMajorByDepartmentIdFilter(id, pageable, request);
+            log.setResponse(majorResponses.getContent());
+           return new ResponseObject<>(
+                   PageableObject.of(majorResponses),
+                   HttpStatus.OK,
+                   "Lấy thành công danh sách chuyên ngành"
+           );
+       } catch (Exception e) {
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi trong quá trình lấy danh sách chuyên ngành");
+       } finally {
+            logsService.createOperationLog(log);
+        }
     }
 
     @Override
     public ResponseObject<?> addMajor(@Valid CreateOrUpdateMajorRequest request) {
-        request.setMajorName(request.getMajorName().replaceAll("\\s+", " "));
-        request.setMajorCode(request.getMajorCode().replaceAll("\\s+", " "));
-        Optional<Major> existsMajor = majorExtendRepository.findMajorByNameAndDepartmentId(request.getMajorName().trim(), request.getDepartmentId());
-        Optional<Department> departmentOptional = departmentExtendRepository.findById(request.getDepartmentId());
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(request);
+        log.setTypeFunction(FunctionLogType.CREATE);
+        log.setStatus(true);
+        try {
+            request.setMajorName(request.getMajorName().replaceAll("\\s+", " "));
+            request.setMajorCode(request.getMajorCode().replaceAll("\\s+", " "));
+            Optional<Major> existsMajor = majorExtendRepository.findMajorByNameAndDepartmentId(request.getMajorName().trim(), request.getDepartmentId());
+            Optional<Department> departmentOptional = departmentExtendRepository.findById(request.getDepartmentId());
 
-        if (departmentOptional.isPresent()) {
-            Department currentDepartment = departmentOptional.get();
-            if (existsMajor.isEmpty()) {
-                Major addMajor = new Major();
-                addMajor.setName(request.getMajorName().trim());
-                addMajor.setCode(request.getMajorCode().trim());
-                addMajor.setDepartment(currentDepartment);
-                addMajor.setStatus(EntityStatus.ACTIVE);
-                majorRepository.save(addMajor);
-
-                return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm chuyên ngành vào bộ môn " +
-                        currentDepartment.getName() + " thành công");
+            if (departmentOptional.isPresent()) {
+                Department currentDepartment = departmentOptional.get();
+                if (existsMajor.isEmpty()) {
+                    Major addMajor = new Major();
+                    addMajor.setName(request.getMajorName().trim());
+                    addMajor.setCode(request.getMajorCode().trim());
+                    addMajor.setDepartment(currentDepartment);
+                    addMajor.setStatus(EntityStatus.ACTIVE);
+                    majorRepository.save(addMajor);
+                    log.setSuccessMessage("Thêm chuyên ngành vào bộ môn " +
+                            currentDepartment.getName() + " thành công");
+                    return new ResponseObject<>(null, HttpStatus.CREATED, log.getSuccessMessage());
+                } else {
+                    log.setStatus(false);
+                    log.setErrorMessage("Chuyên ngành đã tồn tại trong bộ môn " +
+                            currentDepartment.getName());
+                    return new ResponseObject<>(null, HttpStatus.CONFLICT, log.getErrorMessage());
+                }
             } else {
-                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Chuyên ngành đã tồn tại trong bộ môn " +
-                        currentDepartment.getName());
+                log.setStatus(false);
+                log.setErrorMessage("Bộ môn mà bạn đang thêm chuyên " +
+                        "ngành không tồn tại [ " + departmentOptional.get().getName() + " ]");
+                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
             }
-        } else {
-            return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Bộ môn mà bạn đang thêm chuyên " +
-                    "ngành không tồn tại [ " + departmentOptional.get().getName() + " ]");
+        } catch (Exception e) {
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi trong quá trình tạo chuyên ngành");
+        } finally {
+            logsService.createOperationLog(log);
         }
     }
 
     @Override
     public ResponseObject<?> updateMajor(@Valid CreateOrUpdateMajorRequest request, String id) {
-        request.setMajorName(request.getMajorName().replaceAll("\\s+", " "));
-        request.setMajorCode(request.getMajorCode().replaceAll("\\s+", " "));
-        Optional<Major> majorOptional = majorRepository.findById(id);
-        Optional<Department> departmentOptional = departmentExtendRepository.findById(request.getDepartmentId());
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(request);
+        log.setTypeFunction(FunctionLogType.UPDATE);
+        log.setStatus(true);
+        try {
+            request.setMajorName(request.getMajorName().replaceAll("\\s+", " "));
+            request.setMajorCode(request.getMajorCode().replaceAll("\\s+", " "));
+            Optional<Major> majorOptional = majorRepository.findById(id);
+            Optional<Department> departmentOptional = departmentExtendRepository.findById(request.getDepartmentId());
 
-        if (departmentOptional.isPresent()) {
-            Department currentDepartment = departmentOptional.get();
-            if (majorOptional.isPresent()) {
-                Major majorUpdate = majorOptional.get();
+            if (departmentOptional.isPresent()) {
+                Department currentDepartment = departmentOptional.get();
+                if (majorOptional.isPresent()) {
+                    Major majorUpdate = majorOptional.get();
 
-                if (!majorUpdate.getName().trim().equalsIgnoreCase(request.getMajorName().trim())) {
-                    Optional<Major> existsMajor = majorExtendRepository.findMajorByNameAndDepartmentId(request.getMajorName().trim(), request.getDepartmentId());
-                    if (existsMajor.isPresent()) {
-                        return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Tên chuyên ngành đã tồn tại: " +
-                                request.getMajorName().trim());
+                    if (!majorUpdate.getName().trim().equalsIgnoreCase(request.getMajorName().trim())) {
+                        Optional<Major> existsMajor = majorExtendRepository.findMajorByNameAndDepartmentId(request.getMajorName().trim(), request.getDepartmentId());
+                        if (existsMajor.isPresent()) {
+                            log.setStatus(false);
+                            log.setErrorMessage("Tên chuyên ngành đã tồn tại: " +
+                                    request.getMajorName().trim());
+                            return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
+                        }
                     }
+
+                    majorUpdate.setName(request.getMajorName().trim());
+                    majorUpdate.setDepartment(currentDepartment);
+                    majorUpdate.setCode(request.getMajorCode().trim());
+                    majorRepository.save(majorUpdate);
+                    log.setSuccessMessage("Cập nhât chuyên ngành vào bộ môn " +
+                            currentDepartment.getName() + " thành công");
+                    return new ResponseObject<>(null, HttpStatus.OK, log.getSuccessMessage());
+                } else {
+                    log.setStatus(false);
+                    log.setErrorMessage("Chuyên ngành không tồn tại trong bộ môn " +
+                            currentDepartment.getName());
+                    return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
                 }
-
-                majorUpdate.setName(request.getMajorName().trim());
-                majorUpdate.setDepartment(currentDepartment);
-                majorUpdate.setCode(request.getMajorCode().trim());
-                majorRepository.save(majorUpdate);
-
-                return new ResponseObject<>(null, HttpStatus.OK, "Cập nhât chuyên ngành vào bộ môn " +
-                        currentDepartment.getName() + " thành công");
             } else {
-                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Chuyên ngành không tồn tại trong bộ môn " +
-                        currentDepartment.getName());
+                log.setStatus(false);
+                log.setErrorMessage("Bộ môn mà bạn đang cập nhật chuyên ngành " +
+                        "không tồn tại [ " + departmentOptional.get().getName() + " ]");
+                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
             }
-        } else {
-            return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Bộ môn mà bạn đang cập nhật chuyên ngành " +
-                    "không tồn tại [ " + departmentOptional.get().getName() + " ]");
+        } catch (Exception e) {
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi trong quá trình cập nhật chuyên ngành");
+        } finally {
+            logsService.createOperationLog(log);
         }
     }
 
@@ -133,49 +198,6 @@ public class MajorServiceImpl implements MajorService {
         } else {
             return new ResponseObject<>(null, HttpStatus.OK, "chuyên ngành không tồn tại trong bộ môn");
         }
-    }
-
-    @Override
-    @Transactional
-    public ResponseObject<?> synchronize() {
-        try {
-            List<MajorResponse> majorData = identityConnection.getMajors();
-            List<Major> majors = majorRepository.findAll();
-
-            if (majors.isEmpty()) {
-                majorData.forEach(majorResponse -> syncMajor(null, majorResponse));
-            } else {
-                majorData.forEach(majorResponse -> {
-                    majors.forEach(major -> syncMajor(major, majorResponse));
-                });
-            }
-            return ResponseObject.successForward(null, "Đồng bộ chuyên ngành thành công!");
-        } catch (RuntimeException e) {
-            return ResponseObject.errorForward(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
-            log.error("Lỗi khi đồng bộ chuyên ngành: {}", e.getMessage());
-            return ResponseObject.errorForward("Đồng bộ chuyên ngành không thành công! Đã xảy ra lỗi.", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    private void syncMajor(Major major, MajorResponse majorResponse) {
-        Major postMajor;
-        if (major == null) {
-            postMajor = new Major();
-        } else {
-            Optional<Major> majorOptional = majorRepository.findByCode(
-                    majorResponse.getMajorCode());
-            postMajor = majorOptional.orElseGet(Major::new);
-        }
-        Department department = departmentExtendRepository.findDepartmentByDepartmentIdentityId(majorResponse.getDepartmentId()).orElse(null);
-        if (department == null) {
-            throw new RuntimeException("Dữ liệu bộ môn chưa được đồng bộ, vui lòng đồng dữ liệu bộ môn");
-        }
-        postMajor.setName(majorResponse.getMajorName());
-        postMajor.setCode(majorResponse.getMajorCode());
-        postMajor.setMajorIdentityId(majorResponse.getMajorId());
-        postMajor.setDepartment(department);
-        majorRepository.save(postMajor);
     }
 
 }

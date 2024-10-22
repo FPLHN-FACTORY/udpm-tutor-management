@@ -1,14 +1,19 @@
 package udpm.hn.server.core.admin.staff.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import udpm.hn.server.core.admin.staff.model.request.HOSaveStaffRequest;
 import udpm.hn.server.core.admin.staff.model.request.HOStaffRequest;
 import udpm.hn.server.core.admin.staff.model.response.HOStaffDepartmentFacilityResponse;
+import udpm.hn.server.core.admin.staff.model.response.HOStaffResonpse;
 import udpm.hn.server.core.admin.staff.repository.HOStaffDepartmentFacilityRepository;
 import udpm.hn.server.core.admin.staff.repository.HOStaffFacilityRepository;
 import udpm.hn.server.core.admin.staff.repository.HOStaffMajorFacilityRepository;
@@ -18,6 +23,8 @@ import udpm.hn.server.core.admin.staff.repository.HOStaffRoleRepository;
 import udpm.hn.server.core.admin.staff.service.HOStaffService;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
+import udpm.hn.server.core.superadmin.operation.model.request.OperationLogsRequest;
+import udpm.hn.server.core.superadmin.operation.service.OperationLogsService;
 import udpm.hn.server.entity.Facility;
 import udpm.hn.server.entity.MajorFacility;
 import udpm.hn.server.entity.Role;
@@ -28,6 +35,7 @@ import udpm.hn.server.infrastructure.connection.IdentityConnection;
 import udpm.hn.server.infrastructure.connection.response.StaffResponse;
 import udpm.hn.server.infrastructure.connection.response.StaffRoleResponse;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
+import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.repository.RoleRepository;
 import udpm.hn.server.utils.Helper;
 
@@ -55,13 +63,32 @@ public class HOStaffServiceImpl implements HOStaffService {
 
     private final HOStaffFacilityRepository facilityRepository;
 
+    private final OperationLogsService logsService;
+
     @Override
     public ResponseObject<?> getStaffByRole(HOStaffRequest hoRoleStaffRequest) {
-        Pageable page = Helper.createPageable(hoRoleStaffRequest, "createdDate");
-        return new ResponseObject<>(
-                        PageableObject.of(staffRepo.getStaffs(page, hoRoleStaffRequest)),
-                        HttpStatus.OK,
-                "get staffs successfully");
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(hoRoleStaffRequest);
+        log.setTypeFunction(FunctionLogType.SEARCH);
+        log.setStatus(true);
+        try {
+            Pageable page = Helper.createPageable(hoRoleStaffRequest, "createdDate");
+            Page<HOStaffResonpse> staffResponse = staffRepo.getStaffs(page, hoRoleStaffRequest);
+            log.setResponse(staffResponse.getContent());
+            return new ResponseObject<>(
+                    PageableObject.of(staffResponse),
+                    HttpStatus.OK,
+                    "get staffs successfully");
+        } catch (Exception e) {
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi trong quá trình lấy danh sách nhân viên");
+        } finally {
+            logsService.createOperationLog(log);
+        }
     }
 
     @Override
@@ -76,54 +103,89 @@ public class HOStaffServiceImpl implements HOStaffService {
 
     @Override
     public ResponseObject<?> createStaff(HOSaveStaffRequest staffRequest) {
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(staffRequest);
+        log.setTypeFunction(FunctionLogType.CREATE);
+        log.setStatus(true);
+        try {
+            Staff staff = new Staff();
 
-        Staff staff = new Staff();
+            staff.setName(staffRequest.getName());
 
-        staff.setName(staffRequest.getName());
+            Optional<Staff> staffList = staffRepo.findByStaffCode(staffRequest.getStaffCode());
 
-        Optional<Staff> staffList = staffRepo.findByStaffCode(staffRequest.getStaffCode());
+            if (!staffList.isEmpty() && staffList.get().getStatus() == EntityStatus.ACTIVE) {
+                log.setStatus(false);
+                log.setErrorMessage("Mã nhân viên đã tồn tại");
+                return new ResponseObject<>(null, HttpStatus.CONFLICT, log.getErrorMessage());
+            }
 
-        if (staffList.isPresent() && staffList.get().getStatus() == EntityStatus.ACTIVE) {
-            return new ResponseObject<>(null, HttpStatus.CONFLICT, "Mã nhân viên đã tồn tại");
+            staff.setStatus(EntityStatus.ACTIVE);
+            staff.setStaffCode(staffRequest.getStaffCode());
+            staff.setEmailFe(staffRequest.getEmailFe());
+            staff.setEmailFpt(staffRequest.getEmailFpt());
+            staffRepo.save(staff);
+            log.setSuccessMessage("Thêm nhân viên thành công");
+            return new ResponseObject<>(null, HttpStatus.CREATED, log.getSuccessMessage());
+        } catch (Exception e) {
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi trong quá trình lấy thêm nhân viên");
+        } finally {
+            logsService.createOperationLog(log);
         }
 
-        staff.setStatus(EntityStatus.ACTIVE);
-        staff.setStaffCode(staffRequest.getStaffCode());
-        staff.setEmailFe(staffRequest.getEmailFe());
-        staff.setEmailFpt(staffRequest.getEmailFpt());
-        staffRepo.save(staff);
-
-        return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm nhân viên thành công");
     }
 
     @Override
     public ResponseObject<?> updateStaff(HOSaveStaffRequest staffRequest) {
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(staffRequest);
+        log.setTypeFunction(FunctionLogType.UPDATE);
+        log.setStatus(true);
+        try {
+            Optional<Staff> staffOptional = staffRepo.findById(staffRequest.getId());
 
-        Optional<Staff> staffOptional = staffRepo.findById(staffRequest.getId());
-
-        if (staffOptional.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Không tìm thấy nhân viên");
-        }
-
-        Staff staff = staffOptional.get();
-        staff.setId(staffRequest.getId());
-        staff.setName(staffRequest.getName());
-        Optional<Staff> checkStaff = staffRepo.findByStaffCode(staffRequest.getStaffCode());
-
-        if (checkStaff.isPresent() &&
-            !checkStaff.get().getId().equalsIgnoreCase(staffRequest.getStaffCode()) &&
-            checkStaff.get().getStatus() == EntityStatus.ACTIVE) {
-            if (!staff.getId().equals(checkStaff.get().getId())) {
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Mã nhân viên đã tồn tại");
+            if (staffOptional.isEmpty()) {
+                log.setStatus(false);
+                log.setErrorMessage("Không tìm thấy nhân viên");
+                return new ResponseObject<>(null, HttpStatus.NOT_FOUND, log.getErrorMessage());
             }
+
+            Staff staff = staffOptional.get();
+            staff.setId(staffRequest.getId());
+            staff.setName(staffRequest.getName());
+            Optional<Staff> checkStaff = staffRepo.findByStaffCode(staffRequest.getStaffCode());
+
+            if (!checkStaff.isEmpty() &&
+                    !checkStaff.get().getId().equalsIgnoreCase(staffRequest.getStaffCode()) &&
+                    checkStaff.get().getStatus() == EntityStatus.ACTIVE) {
+                if (!staff.getId().equals(checkStaff.get().getId())) {
+                    log.setStatus(false);
+                    log.setErrorMessage("Mã nhân viên đã tồn tại");
+                    return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, log.getErrorMessage());
+                }
+            }
+
+            staff.setStaffCode(staffRequest.getStaffCode());
+            staff.setEmailFe(staffRequest.getEmailFe());
+            staff.setEmailFpt(staffRequest.getEmailFpt());
+            staffRepo.save(staff);
+            log.setSuccessMessage("Sửa nhân viên thành công");
+            return new ResponseObject<>(null, HttpStatus.OK, log.getSuccessMessage());
+        } catch (Exception e) {
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi trong quá trình lấy cập nhật nhân viên");
+        } finally {
+            logsService.createOperationLog(log);
         }
-
-        staff.setStaffCode(staffRequest.getStaffCode());
-        staff.setEmailFe(staffRequest.getEmailFe());
-        staff.setEmailFpt(staffRequest.getEmailFpt());
-        staffRepo.save(staff);
-
-        return new ResponseObject<>(null, HttpStatus.OK, "Sửa nhân viên thành công");
     }
 
     @Override

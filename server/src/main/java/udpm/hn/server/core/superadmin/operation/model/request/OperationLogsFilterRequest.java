@@ -12,5 +12,5 @@ public class OperationLogsFilterRequest extends PageableRequest {
     private String typeFunction;
     private Long fromDate;
     private Long toDate;
-    private EntityStatus status;
+    private String status;
 }

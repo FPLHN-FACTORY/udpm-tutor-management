@@ -1,5 +1,6 @@
 package udpm.hn.server.core.admin.departments.departmentfacility.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import udpm.hn.server.core.admin.departments.departmentfacility.model.request.CreateMajorFacilityRequest;
 import udpm.hn.server.core.admin.departments.departmentfacility.model.request.MajorFacilityRequest;
 import udpm.hn.server.core.admin.departments.departmentfacility.model.request.UpdateMajorFacilityRequest;
@@ -21,6 +24,8 @@ import udpm.hn.server.core.admin.departments.departmentfacility.repository.Major
 import udpm.hn.server.core.admin.departments.departmentfacility.service.MajorFacilityService;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
+import udpm.hn.server.core.superadmin.operation.model.request.OperationLogsRequest;
+import udpm.hn.server.core.superadmin.operation.service.OperationLogsService;
 import udpm.hn.server.entity.DepartmentFacility;
 import udpm.hn.server.entity.Major;
 import udpm.hn.server.entity.MajorFacility;
@@ -28,6 +33,7 @@ import udpm.hn.server.entity.Staff;
 import udpm.hn.server.infrastructure.connection.IdentityConnection;
 import udpm.hn.server.infrastructure.connection.response.MajorCampusResponse;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
+import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.repository.MajorFacilityRepository;
 import udpm.hn.server.utils.Helper;
 
@@ -52,25 +58,36 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
 
     private final MajorFacilityRepository majorFacilityRepository;
 
+    private final OperationLogsService logsService;
 
     @Override
 
     public ResponseObject<?> getAllMajorFacilities(@Valid MajorFacilityRequest request) {
         Pageable pageable = Helper.createPageable(request, "id");
-
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(request);
+        log.setTypeFunction(FunctionLogType.SEARCH);
+        log.setStatus(true);
         try {
             PageableObject<?> listMajorFacility = PageableObject.of(majorFacilityExtendRepository.findAllMajorFacilities(request, pageable));
             FacilityDepartmentInfoResponse facilityDepartmentInfo = majorFacilityExtendRepository.getFacilityDepartmentInfo(request.getDepartmentFacilityId());
             MajorFacilitiesResponse majorFacilitiesResponse = new MajorFacilitiesResponse();
             majorFacilitiesResponse.setMajorFacilities(listMajorFacility);
             majorFacilitiesResponse.setFacilityDepartmentInfo(facilityDepartmentInfo);
+            log.setResponse(majorFacilitiesResponse);
             return ResponseObject.successForward(
                     majorFacilitiesResponse,
                     "Lấy danh sách chuyên ngành theo cơ sở thành công"
             );
         } catch (Exception e) {
-            log.error("Lỗi khi lấy danh sách chuyên ngành theo cơ sở : {}", e.getMessage());
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("Error executing query", e);
+        } finally {
+            logsService.createOperationLog(log);
         }
     }
 
@@ -83,99 +100,143 @@ public class MajorFacilityServiceImpl implements MajorFacilityService {
 
     @Override
     public ResponseObject<?> createMajorFacility(@Valid CreateMajorFacilityRequest request) {
-        Optional<DepartmentFacility> departmentFacilityOptional = departmentFacilityRepository
-                .findById(request.getDepartmentFacilityId());
-        if (departmentFacilityOptional.isEmpty()) {
-            return ResponseObject.errorForward(
-                    "Không tìm thấy bộ môn theo cơ sở",
-                    HttpStatus.BAD_REQUEST
-            );
-        }
-
-        Optional<Staff> staffOptional = staffRepository.findById(request.getHeadMajorId());
-        if (staffOptional.isEmpty()) {
-            return ResponseObject.errorForward(
-                    "Không tìm thấy nhân viên",
-                    HttpStatus.BAD_REQUEST
-            );
-        }
-
-        Optional<Major> majorOptional = majorRepository.findById(request.getMajorId());
-        if (majorOptional.isEmpty()) {
-            return ResponseObject.errorForward(
-                    "Không tìm thấy chuyên ngành",
-                    HttpStatus.BAD_REQUEST
-            );
-        }
-
-        Optional<MajorFacility> majorFacilityOptional = majorFacilityExtendRepository
-                .findByMajor_IdAndDepartmentFacility_Id(
-                        request.getMajorId(),
-                        request.getDepartmentFacilityId()
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(request);
+        log.setTypeFunction(FunctionLogType.CREATE);
+        log.setStatus(true);
+        try {
+            Optional<DepartmentFacility> departmentFacilityOptional = departmentFacilityRepository
+                    .findById(request.getDepartmentFacilityId());
+            if (departmentFacilityOptional.isEmpty()) {
+                log.setStatus(false);
+                log.setErrorMessage("Không tìm thấy bộ môn theo cơ sở");
+                return ResponseObject.errorForward(
+                        log.getErrorMessage(),
+                        HttpStatus.BAD_REQUEST
                 );
-        if (majorFacilityOptional.isPresent()) {
-            return ResponseObject.errorForward(
-                    "Chuyên ngành theo cơ sở đã tồn tại",
-                    HttpStatus.BAD_REQUEST
+            }
+
+            Optional<Staff> staffOptional = staffRepository.findById(request.getHeadMajorId());
+            if (staffOptional.isEmpty()) {
+                log.setStatus(false);
+                log.setErrorMessage("Không tìm thấy nhân viên");
+                return ResponseObject.errorForward(
+                        log.getErrorMessage(),
+                        HttpStatus.BAD_REQUEST
+                );
+            }
+
+            Optional<Major> majorOptional = majorRepository.findById(request.getMajorId());
+            if (majorOptional.isEmpty()) {
+                log.setStatus(false);
+                log.setErrorMessage("Không tìm thấy chuyên ngành");
+                return ResponseObject.errorForward(
+                        log.getErrorMessage(),
+                        HttpStatus.BAD_REQUEST
+                );
+            }
+
+            Optional<MajorFacility> majorFacilityOptional = majorFacilityExtendRepository
+                    .findByMajor_IdAndDepartmentFacility_Id(
+                            request.getMajorId(),
+                            request.getDepartmentFacilityId()
+                    );
+            if (majorFacilityOptional.isPresent()) {
+                log.setStatus(false);
+                log.setErrorMessage("Chuyên ngành theo cơ sở đã tồn tại");
+                return ResponseObject.errorForward(
+                        log.getErrorMessage(),
+                        HttpStatus.BAD_REQUEST
+                );
+            }
+
+            MajorFacility majorFacility = new MajorFacility();
+            majorFacility.setMajor(majorOptional.get());
+            majorFacility.setDepartmentFacility(departmentFacilityOptional.get());
+            majorFacility.setStatus(EntityStatus.ACTIVE);
+            majorFacility.setStaff(staffOptional.get());
+            majorFacilityExtendRepository.save(majorFacility);
+            log.setSuccessMessage("Tạo chuyên ngành theo cơ sở thành công");
+            return ResponseObject.successForward(
+                    new ModifyMajorFacilityResponse(
+                            majorFacility.getMajor().getName(),
+                            majorFacility.getDepartmentFacility().getFacility().getName(),
+                            majorFacility.getDepartmentFacility().getDepartment().getName()
+                    ),
+                    log.getSuccessMessage()
             );
+        } catch (Exception e) {
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi trong quá trình thêm chuyên ngành theo cơ sở");
+        } finally {
+            logsService.createOperationLog(log);
         }
-
-        MajorFacility majorFacility = new MajorFacility();
-        majorFacility.setMajor(majorOptional.get());
-        majorFacility.setDepartmentFacility(departmentFacilityOptional.get());
-        majorFacility.setStatus(EntityStatus.ACTIVE);
-        majorFacility.setStaff(staffOptional.get());
-        majorFacilityExtendRepository.save(majorFacility);
-
-        return ResponseObject.successForward(
-                new ModifyMajorFacilityResponse(
-                        majorFacility.getMajor().getName(),
-                        majorFacility.getDepartmentFacility().getFacility().getName(),
-                        majorFacility.getDepartmentFacility().getDepartment().getName()
-                ),
-                "Tạo chuyên ngành theo cơ sở thành công"
-        );
     }
 
     @Override
     public ResponseObject<?> updateMajorFacility(String majorFacilityId, @Valid UpdateMajorFacilityRequest request) {
-        Optional<MajorFacility> majorFacilityOptional = majorFacilityExtendRepository.findById(majorFacilityId);
-        if (majorFacilityOptional.isEmpty()) {
-            return ResponseObject.errorForward(
-                    "Không tìm thấy chuyên ngành theo cơ sở",
-                    HttpStatus.NOT_FOUND
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(request);
+        log.setTypeFunction(FunctionLogType.UPDATE);
+        log.setStatus(true);
+        try {
+            Optional<MajorFacility> majorFacilityOptional = majorFacilityExtendRepository.findById(majorFacilityId);
+            if (majorFacilityOptional.isEmpty()) {
+                log.setStatus(false);
+                log.setErrorMessage("Không tìm thấy chuyên ngành theo cơ sở");
+                return ResponseObject.errorForward(
+                        log.getErrorMessage(),
+                        HttpStatus.NOT_FOUND
+                );
+            }
+
+            Optional<Staff> staffOptional = staffRepository.findById(request.getHeadMajorId());
+            if (staffOptional.isEmpty()) {
+                log.setStatus(false);
+                log.setErrorMessage("Không tìm thấy nhân viên");
+                return ResponseObject.errorForward(
+                        log.getErrorMessage(),
+                        HttpStatus.BAD_REQUEST
+                );
+            }
+
+            Optional<Major> majorOptional = majorRepository.findById(request.getMajorId());
+            if (majorOptional.isEmpty()) {
+                log.setStatus(false);
+                log.setErrorMessage("Không tìm thấy chuyên ngành");
+                return ResponseObject.errorForward(
+                        log.getErrorMessage(),
+                        HttpStatus.BAD_REQUEST
+                );
+            }
+
+            MajorFacility majorFacility = majorFacilityOptional.get();
+            majorFacility.setMajor(majorOptional.get());
+            majorFacility.setStaff(staffOptional.get());
+            majorFacilityExtendRepository.save(majorFacility);
+            log.setSuccessMessage("Cập nhật chuyên ngành theo cơ sở thành công");
+            return ResponseObject.successForward(
+                    new ModifyMajorFacilityResponse(
+                            majorFacility.getMajor().getName(),
+                            majorFacility.getDepartmentFacility().getFacility().getName(),
+                            majorFacility.getDepartmentFacility().getDepartment().getName()
+                    ),
+                    log.getSuccessMessage()
             );
+        } catch (Exception e) {
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi trong quá trình cập nhật chuyên ngành theo cơ sở");
+        } finally {
+            logsService.createOperationLog(log);
         }
-
-        Optional<Staff> staffOptional = staffRepository.findById(request.getHeadMajorId());
-        if (staffOptional.isEmpty()) {
-            return ResponseObject.errorForward(
-                    "Không tìm thấy nhân viên",
-                    HttpStatus.BAD_REQUEST
-            );
-        }
-
-        Optional<Major> majorOptional = majorRepository.findById(request.getMajorId());
-        if (majorOptional.isEmpty()) {
-            return ResponseObject.errorForward(
-                    "Không tìm thấy chuyên ngành",
-                    HttpStatus.BAD_REQUEST
-            );
-        }
-
-        MajorFacility majorFacility = majorFacilityOptional.get();
-        majorFacility.setMajor(majorOptional.get());
-        majorFacility.setStaff(staffOptional.get());
-        majorFacilityExtendRepository.save(majorFacility);
-
-        return ResponseObject.successForward(
-                new ModifyMajorFacilityResponse(
-                        majorFacility.getMajor().getName(),
-                        majorFacility.getDepartmentFacility().getFacility().getName(),
-                        majorFacility.getDepartmentFacility().getDepartment().getName()
-                ),
-                "Cập nhật chuyên ngành theo cơ sở thành công"
-        );
     }
 
     @Override

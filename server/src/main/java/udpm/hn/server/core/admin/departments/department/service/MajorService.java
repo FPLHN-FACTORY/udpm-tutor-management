@@ -15,6 +15,4 @@ public interface MajorService {
 
     ResponseObject<?> deleteMajor(String id);
 
-    ResponseObject<?> synchronize();
-
 }

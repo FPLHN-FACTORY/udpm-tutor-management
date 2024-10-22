@@ -18,7 +18,7 @@ public interface OperationLogsResponse extends IsIdentify, HasOrderNumber {
 
     String getResponse();
 
-    Integer getStatus();
+    String getStatus();
 
     Long getCreatedDate();
 }

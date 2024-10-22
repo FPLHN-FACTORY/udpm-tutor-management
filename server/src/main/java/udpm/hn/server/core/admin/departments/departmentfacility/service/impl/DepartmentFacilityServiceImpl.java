@@ -1,19 +1,24 @@
 package udpm.hn.server.core.admin.departments.departmentfacility.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import udpm.hn.server.core.admin.departments.departmentfacility.model.request.CreateOrUpdateDepartmentFacilityRequest;
 import udpm.hn.server.core.admin.departments.departmentfacility.model.request.FindFacilityDetailRequest;
+import udpm.hn.server.core.admin.departments.departmentfacility.model.response.DepartmentFacilityResponse;
 import udpm.hn.server.core.admin.departments.departmentfacility.repository.DFDepartmentExtendRepository;
 import udpm.hn.server.core.admin.departments.departmentfacility.repository.DFDepartmentFacilityExtendRepository;
 import udpm.hn.server.core.admin.departments.departmentfacility.repository.DFFacilityExtendRepository;
@@ -21,6 +26,8 @@ import udpm.hn.server.core.admin.departments.departmentfacility.repository.DFSta
 import udpm.hn.server.core.admin.departments.departmentfacility.service.DepartmentFacilityService;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
+import udpm.hn.server.core.superadmin.operation.model.request.OperationLogsRequest;
+import udpm.hn.server.core.superadmin.operation.service.OperationLogsService;
 import udpm.hn.server.entity.Department;
 import udpm.hn.server.entity.DepartmentFacility;
 import udpm.hn.server.entity.Facility;
@@ -30,6 +37,7 @@ import udpm.hn.server.infrastructure.connection.IdentityConnection;
 import udpm.hn.server.infrastructure.connection.response.DepartmentCampusResponse;
 import udpm.hn.server.infrastructure.connection.response.MajorCampusResponse;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
+import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.repository.DepartmentFacilityRepository;
 import udpm.hn.server.repository.DepartmentRepository;
 import udpm.hn.server.repository.FacilityRepository;
@@ -64,78 +72,151 @@ public class DepartmentFacilityServiceImpl implements DepartmentFacilityService 
 
     private final StaffRepository staffRepository;
 
+    private final OperationLogsService logsService;
+
     @Override
     public ResponseObject<?> getAllDepartmentFacility(String id, FindFacilityDetailRequest request) {
-        Pageable pageable = Helper.createPageable(request, "createdDate");
-        return new ResponseObject<>(
-                PageableObject.of(dfDepartmentFacilityExtendRepository.getDepartmentFacilitiesByValueFind(id, pageable, request)),
-                HttpStatus.OK,
-                "Lấy thành công danh sách bộ môn theo cơ sở"
-        );
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(request);
+        log.setTypeFunction(FunctionLogType.SEARCH);
+        log.setStatus(true);
+        try {
+            Pageable pageable = Helper.createPageable(request, "createdDate");
+            Page<DepartmentFacilityResponse> responses = dfDepartmentFacilityExtendRepository.getDepartmentFacilitiesByValueFind(id, pageable, request);
+            log.setResponse(responses.getContent());
+            return new ResponseObject<>(
+                    PageableObject.of(responses),
+                    HttpStatus.OK,
+                    "Lấy thành công danh sách bộ môn theo cơ sở"
+            );
+        } catch (Exception e) {
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi trong quá trình lấy danh sách bộ môn theo cơ sở");
+        } finally {
+            logsService.createOperationLog(log);
+        }
     }
 
     @Override
     public ResponseObject<?> addDepartmentFacility(@Valid CreateOrUpdateDepartmentFacilityRequest request) {
-        Optional<Department> departmentOptional = dfDepartmentExtendRepository.findById(request.getDepartmentId());
-        Optional<Facility> facilityOptional = dfFacilityExtendRepository.findById(request.getFacilityId());
-        Optional<Staff> staffOptional = dfStaffExtendRepository.findById(request.getHeadOfDepartmentId());
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(request);
+        log.setTypeFunction(FunctionLogType.CREATE);
+        log.setStatus(true);
+        try {
+            Optional<Department> departmentOptional = dfDepartmentExtendRepository.findById(request.getDepartmentId());
+            Optional<Facility> facilityOptional = dfFacilityExtendRepository.findById(request.getFacilityId());
+            Optional<Staff> staffOptional = dfStaffExtendRepository.findById(request.getHeadOfDepartmentId());
 
-        if (dfDepartmentFacilityExtendRepository.existsByIdDepartmentAndIdFacilityAndIdAdd(request).isPresent()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Bộ môn theo cơ sở đã tồn tại!");
-        }
+            if (dfDepartmentFacilityExtendRepository.existsByIdDepartmentAndIdFacilityAndIdAdd(request).isPresent()) {
+                log.setStatus(false);
+                log.setErrorMessage("Bộ môn theo cơ sở đã tồn tại!");
+                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
+            }
 
-        if (facilityOptional.isPresent() && staffOptional.isPresent() && departmentOptional.isPresent()) {
-            DepartmentFacility addDepartmentFacility = new DepartmentFacility();
-            addDepartmentFacility.setDepartment(departmentOptional.get());
-            addDepartmentFacility.setFacility(facilityOptional.get());
-            addDepartmentFacility.setStaff(staffOptional.get());
-            addDepartmentFacility.setStatus(EntityStatus.ACTIVE);
-            dfDepartmentFacilityExtendRepository.save(addDepartmentFacility);
-            return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm thành công");
-        } else if (facilityOptional.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Không tìm thấy cơ sở trên");
-        } else if (staffOptional.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Không tìm thấy CNBM trên");
-        } else {
-            return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Không tìm thấy bộ môn trên");
+            if (facilityOptional.isPresent() && staffOptional.isPresent() && departmentOptional.isPresent()) {
+                DepartmentFacility addDepartmentFacility = new DepartmentFacility();
+                addDepartmentFacility.setDepartment(departmentOptional.get());
+                addDepartmentFacility.setFacility(facilityOptional.get());
+                addDepartmentFacility.setStaff(staffOptional.get());
+                addDepartmentFacility.setStatus(EntityStatus.ACTIVE);
+                dfDepartmentFacilityExtendRepository.save(addDepartmentFacility);
+                log.setSuccessMessage("Thêm thành công bộ môn");
+                return new ResponseObject<>(null, HttpStatus.CREATED, log.getSuccessMessage());
+            } else if (facilityOptional.isEmpty()) {
+                log.setStatus(false);
+                log.setErrorMessage("Không tìm thấy cơ sở trên");
+                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
+            } else if (staffOptional.isEmpty()) {
+                log.setStatus(false);
+                log.setErrorMessage("Không tìm thấy CNBM trên");
+                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
+            } else {
+                log.setStatus(false);
+                log.setErrorMessage("Không tìm thấy bộ môn trên");
+                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
+            }
+        } catch (Exception e) {
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi trong quá trình thêm bộ môn theo cơ sở");
+        } finally {
+            logsService.createOperationLog(log);
         }
     }
 
     @Override
     public ResponseObject<?> updateDepartmentFacility(@Valid CreateOrUpdateDepartmentFacilityRequest request, String id) {
-        Optional<DepartmentFacility> departmentFacilityOptional = dfDepartmentFacilityExtendRepository.findById(id);
-        if (departmentFacilityOptional.isPresent()) {
-            Optional<Department> departmentOptional = dfDepartmentExtendRepository.findById(request.getDepartmentId());
-            Optional<Facility> facilityOptional = dfFacilityExtendRepository.findById(request.getFacilityId());
-            Optional<Staff> staffOptional = dfStaffExtendRepository.findById(request.getHeadOfDepartmentId());
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(request);
+        log.setTypeFunction(FunctionLogType.UPDATE);
+        log.setStatus(true);
+        try {
+            Optional<DepartmentFacility> departmentFacilityOptional = dfDepartmentFacilityExtendRepository.findById(id);
+            if (departmentFacilityOptional.isPresent()) {
+                Optional<Department> departmentOptional = dfDepartmentExtendRepository.findById(request.getDepartmentId());
+                Optional<Facility> facilityOptional = dfFacilityExtendRepository.findById(request.getFacilityId());
+                Optional<Staff> staffOptional = dfStaffExtendRepository.findById(request.getHeadOfDepartmentId());
 
-            if (facilityOptional.isPresent() && staffOptional.isPresent() && departmentOptional.isPresent()) {
-                DepartmentFacility updateDepartmentFacility = departmentFacilityOptional.get();
-                if (updateDepartmentFacility.getFacility().equals(facilityOptional.get())) {
-                    updateDepartmentFacility.setStaff(staffOptional.get());
-                    updateDepartmentFacility.setDepartment(departmentOptional.get());
-                    updateDepartmentFacility.setFacility(facilityOptional.get());
-                    dfDepartmentFacilityExtendRepository.save(updateDepartmentFacility);
-                } else {
-                    if (isDuplicateRecord(request).isPresent()) {
-                        return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Cập nhật trùng cơ sở hoặc để như cũ");
+                if (facilityOptional.isPresent() && staffOptional.isPresent() && departmentOptional.isPresent()) {
+                    DepartmentFacility updateDepartmentFacility = departmentFacilityOptional.get();
+                    if (updateDepartmentFacility.getFacility().equals(facilityOptional.get())) {
+                        updateDepartmentFacility.setStaff(staffOptional.get());
+                        updateDepartmentFacility.setDepartment(departmentOptional.get());
+                        updateDepartmentFacility.setFacility(facilityOptional.get());
+                        dfDepartmentFacilityExtendRepository.save(updateDepartmentFacility);
+                    } else {
+                        if (isDuplicateRecord(request).isPresent()) {
+                            log.setStatus(false);
+                            log.setErrorMessage("Cập nhật trùng cơ sở hoặc để như cũ");
+                            return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
+                        }
+                        updateDepartmentFacility.setStaff(staffOptional.get());
+                        updateDepartmentFacility.setDepartment(departmentOptional.get());
+                        updateDepartmentFacility.setFacility(facilityOptional.get());
+                        dfDepartmentFacilityExtendRepository.save(updateDepartmentFacility);
+
                     }
-                    updateDepartmentFacility.setStaff(staffOptional.get());
-                    updateDepartmentFacility.setDepartment(departmentOptional.get());
-                    updateDepartmentFacility.setFacility(facilityOptional.get());
-                    dfDepartmentFacilityExtendRepository.save(updateDepartmentFacility);
+                    log.setSuccessMessage("Sửa thành công !");
+                    return new ResponseObject<>(null, HttpStatus.OK, log.getSuccessMessage());
+                } else if (facilityOptional.isEmpty()) {
+                    log.setStatus(false);
+                    log.setErrorMessage("Không tìm thấy cơ sở trên");
+                    return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
+                } else if (staffOptional.isEmpty()) {
+                    log.setStatus(false);
+                    log.setErrorMessage("Không tìm thấy nhân viên trên");
+                    return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
+                } else if (departmentOptional.isEmpty()) {
+                    log.setStatus(false);
+                    log.setErrorMessage("Không tìm thấy bộ môn trên");
+                    return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
+                } else {
+                    log.setStatus(false);
+                    log.setErrorMessage("Sửa thất bại");
+                    return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
                 }
-
-                return new ResponseObject<>(null, HttpStatus.OK, "Sửa thành công !");
-            } else if (facilityOptional.isEmpty()) {
-                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Không tìm thấy cơ sở trên");
-            } else if (staffOptional.isEmpty()) {
-                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Không tìm thấy nhân viên trên");
             } else {
-                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Không tìm thấy bộ môn trên");
+                log.setStatus(false);
+                log.setErrorMessage("Bộ môn theo cơ sở trên không tồn tại");
+                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
             }
-        } else {
-            return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Bộ môn theo cơ sở trên không tồn tại");
+        } catch (Exception e) {
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi trong quá trình cập nhật bộ môn theo cơ sở");
+        } finally {
+            logsService.createOperationLog(log);
         }
     }
 
@@ -200,7 +281,7 @@ public class DepartmentFacilityServiceImpl implements DepartmentFacilityService 
                 if (departmentFacilities.isEmpty()) {
                     syncDepartmentCampus(null, departmentCampusResponse, department, facility);
                 } else {
-                   DepartmentFacility correspondingFacility = departmentFacilityRepository.findDepartmentFacilityByDepartmentFacility(departmentCampusResponse.getDepartmentCampusId()).orElse(null);
+                    DepartmentFacility correspondingFacility = departmentFacilityRepository.findDepartmentFacilityByDepartmentFacility(departmentCampusResponse.getDepartmentCampusId()).orElse(null);
                     syncDepartmentCampus(correspondingFacility, departmentCampusResponse, department, facility);
                 }
             }
@@ -223,7 +304,7 @@ public class DepartmentFacilityServiceImpl implements DepartmentFacilityService 
                     .orElseGet(DepartmentFacility::new);
         }
         Optional<Staff> staff = staffRepository.findStaffByEmail(departmentCampusResponse.getEmailHeadDepartmentFpt(), departmentCampusResponse.getEmailHeadDepartmentFe());
-        if(staff.isEmpty()) {
+        if (staff.isEmpty()) {
             throw new RuntimeException("Dữ liệu nhân viên chưa được đồng bộ, vui lòng đồng dữ liệu nhân viên");
         }
         postDepartmentFacility.setStaff(staff.get());

@@ -54,7 +54,7 @@ export type OperationLogResponse = {
     code: string;
     createdDate: string;
     typeFunction: number;
-    status: number;
+    status: string;
   };
 
 export const getOperationLogs = async (params: Ref<ParamsGetOperationLogs>) => {

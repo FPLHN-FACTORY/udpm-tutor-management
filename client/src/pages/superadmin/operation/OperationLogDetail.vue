@@ -21,31 +21,30 @@
             <div class="shadow-md p-1 rounded-md my-15">
               <div>
                 <a-descriptions class="p-1">
-                  <a-descriptions-item :span="2" label="Tên người dùng">{{
-                    props.operationLogDetail?.userName
-                  }}</a-descriptions-item>
-                  <a-descriptions-item :span="2" label="Mã người dùng">{{
-                    props.operationLogDetail?.code
-                  }}</a-descriptions-item>
-                  <a-descriptions-item :span="2" label="Email">{{
-                    props.operationLogDetail?.email
-                  }}</a-descriptions-item>
-                  <a-descriptions-item :span="2" label="Máy trạm">{{
-                    props.operationLogDetail?.workstation
-                  }}</a-descriptions-item>
-                  <a-descriptions-item :span="2" label="Thời gian thực hiện">{{
-                    getDateFormat(props.operationLogDetail?.createdDate, true)
-                  }}</a-descriptions-item>
-                  <a-descriptions-item label="Chức năng"
-                    ><a-tag
-                      :color="
-                        getTagColorLog(props.operationLogDetail?.typeFunction)
-                      "
-                      >{{
-                        getTagStatusLog(props.operationLogDetail?.typeFunction)
-                      }}</a-tag
-                    ></a-descriptions-item
-                  >
+                  <a-descriptions-item :span="2" label="Tên người dùng">
+                    {{ props.operationLogDetail?.userName }}
+                  </a-descriptions-item>
+                  <a-descriptions-item :span="2" label="Mã người dùng">
+                    {{ props.operationLogDetail?.code }}
+                  </a-descriptions-item>
+                  <a-descriptions-item :span="2" label="Email">
+                    {{ props.operationLogDetail?.email }}
+                  </a-descriptions-item>
+                  <a-descriptions-item label="Chức năng">
+                    <a-tag :color="getTagColorLog(props.operationLogDetail?.typeFunction)">
+                      {{ getTagStatusLog(props.operationLogDetail?.typeFunction) }}
+                    </a-tag>
+                  </a-descriptions-item>
+                  <a-descriptions-item :span="2" label="Thời gian thực hiện">
+                    {{ getDateFormat(props.operationLogDetail?.createdDate, true) }}
+                  </a-descriptions-item>
+                  <a-descriptions-item :span="2" label="Trạng thái">
+                    <a-tag v-if="props.operationLogDetail?.status === 'ACTIVE'" color="success">Thành công</a-tag>
+                    <a-tag v-else-if="props.operationLogDetail?.status === 'INACTIVE'" color="error">Thất bại</a-tag>
+                  </a-descriptions-item>
+                  <a-descriptions-item :span="12" label="API">
+                    {{ props.operationLogDetail?.api }}
+                  </a-descriptions-item>
                 </a-descriptions>
               </div>
             </div>

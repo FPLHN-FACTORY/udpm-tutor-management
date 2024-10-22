@@ -43,9 +43,4 @@ public class MajorController {
         return Helper.createResponseEntity(majorService.deleteMajor(id));
     }
 
-    @GetMapping("/synchronize")
-    public ResponseEntity<?> synchronize() {
-        return Helper.createResponseEntity(majorService.synchronize());
-    }
-
 }

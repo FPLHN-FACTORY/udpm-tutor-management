@@ -27,4 +27,8 @@ public class OperationLogsRequest {
 
     private Boolean status;
 
+    private String errorMessage;
+
+    private String successMessage;
+
 }
