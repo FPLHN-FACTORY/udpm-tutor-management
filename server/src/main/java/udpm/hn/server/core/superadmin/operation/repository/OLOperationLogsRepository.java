@@ -24,7 +24,7 @@ public interface OLOperationLogsRepository extends OperationLogsRepository {
             l.api as api,
             l.type_function AS typeFunction,
             l.created_date AS createdDate,
-            l.status as status
+            l.status_log as status
         FROM
             operation_log l
         WHERE
@@ -35,7 +35,7 @@ public interface OLOperationLogsRepository extends OperationLogsRepository {
             AND (:#{#req.typeFunction} IS NULL OR l.type_function = :#{#req.typeFunction})
             AND (:#{#req.fromDate} IS NULL OR l.created_date >= :#{#req.fromDate})
             AND (:#{#req.toDate} IS NULL OR l.created_date <= :#{#req.toDate})
-            AND (:#{#req.status} IS NULL OR l.status = :#{#req.status})
+            AND (:#{#req.status} IS NULL OR l.status_log = :#{#req.status})
         ORDER BY l.created_date DESC
     """,
             countQuery = """
@@ -51,7 +51,7 @@ public interface OLOperationLogsRepository extends OperationLogsRepository {
             AND (:#{#req.typeFunction} IS NULL OR l.type_function = :#{#req.typeFunction})
             AND (:#{#req.fromDate} IS NULL OR l.created_date >= :#{#req.fromDate})
             AND (:#{#req.toDate} IS NULL OR l.created_date <= :#{#req.toDate})
-            AND (:#{#req.status} IS NULL OR l.status = :#{#req.status})
+            AND (:#{#req.status} IS NULL OR l.status_log = :#{#req.status})
             ORDER BY l.created_date DESC
     """,
             nativeQuery = true
@@ -68,7 +68,8 @@ public interface OLOperationLogsRepository extends OperationLogsRepository {
                         l.request as request,
                         l.response as response,
                         l.type_function AS typeFunction,
-                        l.created_date AS createdDate
+                        l.created_date AS createdDate,
+                        l.status_log as status
             FROM
             	operation_log l
             WHERE

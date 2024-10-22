@@ -17,12 +17,11 @@ import udpm.hn.server.core.admin.departments.department.model.request.FindDepart
 import udpm.hn.server.core.admin.departments.department.model.response.DDepartmentResponse;
 import udpm.hn.server.core.admin.departments.department.repository.DepartmentExtendRepository;
 import udpm.hn.server.core.admin.departments.department.service.DepartmentService;
-import udpm.hn.server.core.superadmin.operation.model.request.OperationLogsRequest;
-import udpm.hn.server.core.superadmin.operation.service.OperationLogsService;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
+import udpm.hn.server.core.superadmin.operation.model.request.OperationLogsRequest;
+import udpm.hn.server.core.superadmin.operation.service.OperationLogsService;
 import udpm.hn.server.entity.Department;
-import udpm.hn.server.entity.OperationLog;
 import udpm.hn.server.infrastructure.connection.IdentityConnection;
 import udpm.hn.server.infrastructure.connection.response.DepartmentResponse;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
@@ -43,28 +42,34 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     private final IdentityConnection identityConnection;
 
-    private final OperationLogsService operationLogsService;
+    private final OperationLogsService logsService;
 
     @Override
     public ResponseObject<?> getAllDepartment(FindDepartmentsRequest request) {
-        Pageable pageable = Helper.createPageable(request, "createdDate");
-        Page<DDepartmentResponse> departmentResponses = departmentExtendRepository.getAllDepartmentByFilter(pageable, request);
         HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        OperationLogsRequest operationLogsRequest = new OperationLogsRequest();
-        operationLogsRequest.setHttpRequest(httpServletRequest);
-        operationLogsRequest.setRequest(request);
-        operationLogsRequest.setResponse(departmentResponses.getContent());
-        operationLogsRequest.setTypeFunction(FunctionLogType.SEARCH);
-        operationLogsRequest.setStatus(true);
-        OperationLog operationLog = operationLogsService.createOperationLog(operationLogsRequest);
-        if(operationLog==null){
-            return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Đã xảy ra lỗi khi lưu log");
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(request);
+        log.setTypeFunction(FunctionLogType.SEARCH);
+        log.setStatus(true);
+
+        try {
+            Pageable pageable = Helper.createPageable(request, "createdDate");
+            Page<DDepartmentResponse> departmentResponses = departmentExtendRepository.getAllDepartmentByFilter(pageable, request);
+            log.setResponse(departmentResponses.getContent());
+            return new ResponseObject<>(
+                    PageableObject.of(departmentResponses),
+                    HttpStatus.OK,
+                    "Lấy thành công danh sách bộ môn"
+            );
+        } catch (Exception e) {
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi trong quá trình lấy danh sách bộ môn");
+        } finally {
+            logsService.createOperationLog(log);
         }
-        return new ResponseObject<>(
-                PageableObject.of(departmentResponses),
-                HttpStatus.OK,
-                "Lấy thành công danh sách bộ môn"
-        );
     }
 
     @Override
@@ -74,65 +79,116 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public ResponseObject<?> getDepartmentsManagedByStaff(String staffId) {
-        return new ResponseObject<>(departmentExtendRepository.getDepartmentsManagedByStaff(staffId),  HttpStatus.OK, "Lấy thành công danh sách bộ môn theo trưởng môn");
+        return new ResponseObject<>(departmentExtendRepository.getDepartmentsManagedByStaff(staffId), HttpStatus.OK, "Lấy thành công danh sách bộ môn theo trưởng môn");
     }
 
 
     @Override
     public ResponseObject<?> addDepartment(@Valid CreateUpdateDepartmentRequest request) {
-        String code = Helper.generateCodeFromName((request.getDepartmentCode().trim()));
-        request.setDepartmentName(request.getDepartmentName().replaceAll("\\s+", " "));
-        request.setDepartmentCode(code);
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(request);
+        log.setTypeFunction(FunctionLogType.CREATE);
+        log.setStatus(true);
 
-        boolean checkExistName = departmentExtendRepository.existsByName(request.getDepartmentName().trim());
-        boolean checkExistCode = departmentExtendRepository.existsByCode(code);
+        try {
+            String code = Helper.generateCodeFromName(request.getDepartmentCode().trim());
+            request.setDepartmentName(request.getDepartmentName().replaceAll("\\s+", " "));
+            request.setDepartmentCode(code);
 
-        if (checkExistCode) {
-            return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Mã bộ môn đã tồn tại");
+            boolean checkExistName = departmentExtendRepository.existsByName(request.getDepartmentName().trim());
+            boolean checkExistCode = departmentExtendRepository.existsByCode(code);
+
+            if (checkExistCode) {
+                log.setStatus(false);
+                log.setErrorMessage("Mã bộ môn đã tồn tại");
+                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
+            }
+
+            if (checkExistName) {
+                log.setStatus(false);
+                log.setErrorMessage("Tên bộ môn đã tồn tại");
+                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
+            }
+
+            Department department = new Department();
+            department.setStatus(EntityStatus.ACTIVE);
+            department.setCode(code);
+            department.setName(request.getDepartmentName().trim());
+            this.departmentExtendRepository.save(department);
+            log.setSuccessMessage("Thêm thành công bộ môn");
+            return new ResponseObject<>(null, HttpStatus.CREATED, log.getSuccessMessage());
+
+        } catch (Exception e) {
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi trong quá trình thêm bộ môn");
+
+        } finally {
+            try {
+                logsService.createOperationLog(log);
+            } catch (Exception logError) {
+                logError.printStackTrace();
+            }
         }
 
-        if (checkExistName) {
-            return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Tên bộ môn đã tồn tại");
-        }
-
-        Department department = new Department();
-        department.setStatus(EntityStatus.ACTIVE);
-        department.setCode(code);
-        department.setName(request.getDepartmentName().trim());
-        this.departmentExtendRepository.save(department);
-        return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm thành công bộ môn");
     }
 
     @Override
     public ResponseObject<?> updateDepartment(@Valid CreateUpdateDepartmentRequest request, String id) {
-        String code = Helper.generateCodeFromName((request.getDepartmentCode().trim()));
-        request.setDepartmentName(request.getDepartmentName().replaceAll("\\s+", " "));
-        request.setDepartmentCode(code);
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(request);
+        log.setTypeFunction(FunctionLogType.UPDATE);
+        log.setStatus(true);
 
-        Optional<Department> departmentOptional = departmentExtendRepository.findById(id);
+        try {
+            String code = Helper.generateCodeFromName((request.getDepartmentCode().trim()));
+            request.setDepartmentName(request.getDepartmentName().replaceAll("\\s+", " "));
+            request.setDepartmentCode(code);
 
-        if (departmentOptional.isEmpty()) {
-            return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Bộ môn không tồn tại");
-        }
+            Optional<Department> departmentOptional = departmentExtendRepository.findById(id);
 
-        Department updateDepartment = departmentOptional.get();
-        if (!updateDepartment.getCode().trim().equalsIgnoreCase(code)) {
-            if (departmentExtendRepository.existsByCode(code)) {
-                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Mã bộ môn đã tồn tại: " +
-                        code);
+            if (departmentOptional.isEmpty()) {
+                log.setStatus(false);
+                log.setErrorMessage("Bộ môn không tồn tại");
+                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
+            }
+
+            Department updateDepartment = departmentOptional.get();
+            if (!updateDepartment.getCode().trim().equalsIgnoreCase(code)) {
+                if (departmentExtendRepository.existsByCode(code)) {
+                    log.setStatus(false);
+                    log.setErrorMessage("Mã bộ môn đã tồn tại: " + code);
+                    return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
+                }
+            }
+            if (!updateDepartment.getName().trim().equalsIgnoreCase(request.getDepartmentName().trim())) {
+                if (departmentExtendRepository.existsByName(request.getDepartmentName().trim())) {
+                    log.setStatus(false);
+                    log.setErrorMessage("Tên bộ môn đã tồn tại: " + request.getDepartmentName().trim());
+                    return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, log.getErrorMessage());
+                }
+            }
+
+            updateDepartment.setCode(code);
+            updateDepartment.setName(request.getDepartmentName().trim());
+            this.departmentExtendRepository.save(updateDepartment);
+            log.setSuccessMessage("Cập nhật bộ môn thành công");
+            return new ResponseObject<>(null, HttpStatus.OK, log.getSuccessMessage());
+        } catch (Exception e) {
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi trong quá trình cập nhật bộ môn");
+        } finally {
+            try {
+                logsService.createOperationLog(log);
+            } catch (Exception logError) {
+                logError.printStackTrace();
             }
         }
-        if (!updateDepartment.getName().trim().equalsIgnoreCase(request.getDepartmentName().trim())) {
-            if (departmentExtendRepository.existsByName(request.getDepartmentName().trim())) {
-                return new ResponseObject<>(null, HttpStatus.NOT_ACCEPTABLE, "Tên bộ môn đã tồn tại: " +
-                        request.getDepartmentName().trim());
-            }
-        }
-
-        updateDepartment.setCode(code);
-        updateDepartment.setName(request.getDepartmentName().trim());
-        this.departmentExtendRepository.save(updateDepartment);
-        return new ResponseObject<>(null, HttpStatus.OK, "Cập nhật bộ môn thành công");
     }
 
     @Override
@@ -152,56 +208,4 @@ public class DepartmentServiceImpl implements DepartmentService {
         this.departmentExtendRepository.save(deleteDepartment);
         return new ResponseObject<>(null, HttpStatus.OK, "Xóa bộ môn thành công");
     }
-
-    @Override
-    @Transactional
-    public ResponseObject<?> synchronize() {
-        OperationLogsRequest operationLogsRequest = new OperationLogsRequest();
-        try {
-            HttpServletRequest httpServletRequest = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
-            operationLogsRequest.setHttpRequest(httpServletRequest);
-            operationLogsRequest.setTypeFunction(FunctionLogType.SYNCHRONIZED);
-            List<DepartmentResponse> departmentData = identityConnection.getDepartments();
-            List<Department> departments = departmentExtendRepository.findAll();
-            if (departments.isEmpty()) {
-                for (DepartmentResponse departmentResponse : departmentData) {
-                    syncDepartment(null, departmentResponse);
-                }
-            } else {
-                for (DepartmentResponse departmentResponse : departmentData) {
-                    for (Department department : departments) {
-                        syncDepartment(department, departmentResponse);
-                    }
-                }
-            }
-            operationLogsRequest.setRequest(departments);
-            operationLogsRequest.setResponse(departmentData);
-            operationLogsRequest.setStatus(true);
-            return ResponseObject.successForward(null, "Đồng bộ bộ môn thành công!");
-        } catch (Exception e) {
-            operationLogsRequest.setStatus(false);
-            operationLogsRequest.setResponse("{\"status\": \"false\"}");
-            log.error("Lỗi khi đồng bộ bộ môn : {}", e.getMessage());
-            return ResponseObject.errorForward("Đồng bộ bộ môn không thành công! Đã xảy ra lỗi.", HttpStatus.INTERNAL_SERVER_ERROR);
-        } finally {
-            operationLogsService.createOperationLog(operationLogsRequest);
-        }
-    }
-
-    private void syncDepartment(Department department, DepartmentResponse departmentResponse) {
-        Department postDepartment;
-        if (department == null) {
-            postDepartment = new Department();
-        } else {
-            Optional<Department> departmentOptional = departmentExtendRepository.findDepartmentByDepartmentIdentityId(
-                    departmentResponse.getDepartmentId());
-            postDepartment = departmentOptional.orElseGet(Department::new);
-        }
-        postDepartment.setName(departmentResponse.getDepartmentName());
-        postDepartment.setCode(departmentResponse.getDepartmentCode());
-        postDepartment.setDepartmentIdentityId(departmentResponse.getDepartmentId());
-        departmentExtendRepository.save(postDepartment);
-    }
-
-
 }

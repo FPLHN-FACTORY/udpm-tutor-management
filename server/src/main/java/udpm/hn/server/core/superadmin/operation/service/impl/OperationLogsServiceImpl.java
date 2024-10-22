@@ -44,6 +44,9 @@ public class OperationLogsServiceImpl implements OperationLogsService {
         OperationLog operationLog = new OperationLog();
 
         try {
+
+            System.out.println(request.getStatus());
+
             String requestJson = (request.getRequest() != null) ? convertToJsonString(mapper, request.getRequest()) : "{}";
             String responseJson = (request.getResponse() != null) ? convertToJsonString(mapper, request.getResponse()) : "{}";
             if (requestJson.trim().startsWith("{") || requestJson.trim().startsWith("[")) {
@@ -61,22 +64,26 @@ public class OperationLogsServiceImpl implements OperationLogsService {
                 });
             }
             operationLog.setTypeFunction(request.getTypeFunction());
-            operationLog.setWorkstation("ĐANG FIX CỨNG");
-            operationLog.setRequest(requestJson);
-            operationLog.setResponse(responseJson);
             operationLog.setApi(request.getHttpRequest().getRequestURI());
             operationLog.setCreatedDate(System.currentTimeMillis());
-            if(request.getStatus()) {
-                operationLog.setStatus(EntityStatus.ACTIVE);
-            } else {
-                operationLog.setStatus(EntityStatus.INACTIVE);
-            }
+            operationLog.setRequest(requestJson);
+            String responseMessage = buildResponseMessage(request.getErrorMessage(), request.getSuccessMessage());
+            operationLog.setResponse(responseMessage != null ? responseMessage : responseJson);
+            operationLog.setStatusLog(request.getStatus() ? EntityStatus.ACTIVE.name() : EntityStatus.INACTIVE.name());
             return logSystemRepository.save(operationLog);
         } catch (Exception e) {
-            log.error("Lỗi khi lưu log : {}", e.getMessage());
+            e.printStackTrace();
 
         }
+        return null;
+    }
 
+    private String buildResponseMessage(String errorMessage, String successMessage) {
+        if (errorMessage != null && successMessage == null) {
+            return "{\"message\": \"" + errorMessage + "\", \"status\": false}";
+        } else if (successMessage != null) {
+            return "{\"message\": \"" + successMessage + "\", \"status\": true}";
+        }
         return null;
     }
 
@@ -110,6 +117,7 @@ public class OperationLogsServiceImpl implements OperationLogsService {
             requestMap.put("email", logRequest.getEmail());
             requestMap.put("code", logRequest.getCode());
             requestMap.put("status", logRequest.getStatus());
+            requestMap.put("errorMessage", logRequest.getErrorMessage());
 
             return mapper.writeValueAsString(requestMap);
         }

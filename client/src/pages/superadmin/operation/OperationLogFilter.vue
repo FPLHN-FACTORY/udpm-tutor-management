@@ -72,7 +72,7 @@ type ParamsFilterSubjects = {
     typeFunction: number | null;
     fromDate: number | null;
     toDate: number | null;
-    status: number | null;
+    status: string | null;
 };
 
 function onChange(key: keyof ParamsGetOperationLogs, event: any) {

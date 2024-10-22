@@ -73,7 +73,7 @@ import { getDateFormat } from "@/utils/common.helper";
       width: "50px",
     },
     {
-      title: "Tên người dùng",
+      title: "Người dùng",
       dataIndex: "name",
       key: "name",
       ellipsis: true,

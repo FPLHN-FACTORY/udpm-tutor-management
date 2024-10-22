@@ -44,4 +44,7 @@ public class OperationLog extends PrimaryEntity implements Serializable {
     @Column(length = 16777216)
     private String response;
 
+    @Column(name = "status_log")
+    private String statusLog;
+
 }

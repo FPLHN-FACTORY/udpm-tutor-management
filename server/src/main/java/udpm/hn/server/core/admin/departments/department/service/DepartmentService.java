@@ -21,8 +21,6 @@ public interface DepartmentService {
 
     ResponseObject<?> deleteDepartment(String id);
 
-    ResponseObject<?> synchronize();
-
     ResponseObject<?> getDepartmentsManagedByStaff(String staffId);
 
 }

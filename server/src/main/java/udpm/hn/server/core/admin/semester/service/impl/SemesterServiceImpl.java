@@ -1,12 +1,15 @@
 package udpm.hn.server.core.admin.semester.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import udpm.hn.server.core.admin.block.repository.BlockExtendRepository;
 import udpm.hn.server.core.admin.semester.model.request.CreateUpdateSemesterRequest;
 import udpm.hn.server.core.admin.semester.model.request.SemesterRequest;
@@ -14,12 +17,15 @@ import udpm.hn.server.core.admin.semester.repository.SemesterExtendRepository;
 import udpm.hn.server.core.admin.semester.service.SemesterService;
 import udpm.hn.server.core.common.base.PageableObject;
 import udpm.hn.server.core.common.base.ResponseObject;
+import udpm.hn.server.core.superadmin.operation.model.request.OperationLogsRequest;
+import udpm.hn.server.core.superadmin.operation.service.OperationLogsService;
 import udpm.hn.server.entity.Block;
 import udpm.hn.server.entity.Semester;
 import udpm.hn.server.infrastructure.connection.IdentityConnection;
 import udpm.hn.server.infrastructure.connection.response.SemesterResponse;
 import udpm.hn.server.infrastructure.constant.BlockName;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
+import udpm.hn.server.infrastructure.constant.FunctionLogType;
 import udpm.hn.server.infrastructure.constant.SemesterName;
 import udpm.hn.server.utils.Helper;
 
@@ -41,14 +47,32 @@ public class SemesterServiceImpl implements SemesterService {
 
     private final IdentityConnection identityConnection;
 
+    private final OperationLogsService logsService;
+
     @Override
     public ResponseObject<?> getAllSemester(SemesterRequest request) {
-        Pageable pageable = Helper.createPageable(request, "createdDate");
-        return new ResponseObject<>(
-                PageableObject.of(semesterExtendRepository.getAllSemester(pageable, request)),
-                HttpStatus.OK,
-                "Lấy danh sách học kỳ thành công!"
-        );
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(request);
+        log.setTypeFunction(FunctionLogType.SEARCH);
+        log.setStatus(true);
+        try {
+            Pageable pageable = Helper.createPageable(request, "createdDate");
+            Page<udpm.hn.server.core.admin.semester.model.response.SemesterResponse> responses = semesterExtendRepository.getAllSemester(pageable, request);
+            log.setResponse(responses.getContent());
+            return new ResponseObject<>(
+                    PageableObject.of(responses),
+                    HttpStatus.OK,
+                    "Lấy danh sách học kỳ thành công!"
+            );
+        } catch (Exception e) {
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            return new ResponseObject<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi trong quá trình lấy danh học kỳ");
+        } finally {
+            logsService.createOperationLog(log);
+        }
     }
 
     @Override
@@ -171,6 +195,12 @@ public class SemesterServiceImpl implements SemesterService {
 
     @Override
     public ResponseObject<?> createSemester(CreateUpdateSemesterRequest request) {
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(request);
+        log.setTypeFunction(FunctionLogType.CREATE);
+        log.setStatus(true);
         try {
             LocalDateTime startDateSemester = Instant.ofEpochMilli(request.getStartTime())
                     .atZone(ZoneId.systemDefault())
@@ -186,15 +216,21 @@ public class SemesterServiceImpl implements SemesterService {
             Long endTimeSemester = request.getEndTimeCustom();
 
             if (!yearStartTime.equals(yearEndTime)) {
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Thời gian bắt đầu và kết thúc học kỳ phải cùng một năm!");
+                log.setStatus(false);
+                log.setErrorMessage("Thời gian bắt đầu và kết thúc học kỳ phải cùng một năm!");
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, log.getErrorMessage());
             }
 
             if (request.getEndTimeBlock1() > endTimeSemester || request.getEndTimeBlock1() < startTimeSemester) {
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Thời gian kết thúc block 1 phải nằm trong khoảng thời gian của học kỳ!");
+                log.setStatus(false);
+                log.setErrorMessage("Thời gian kết thúc block 1 phải nằm trong khoảng thời gian của học kỳ!");
+                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, log.getErrorMessage());
             }
 
             if (!semesterExtendRepository.checkConflictTime(startTimeSemester, endTimeSemester).isEmpty()) {
-                return new ResponseObject<>(null, HttpStatus.CONFLICT, "Đã có học kỳ trong khoảng thời gian này!");
+                log.setStatus(false);
+                log.setErrorMessage("Đã có học kỳ trong khoảng thời gian này!");
+                return new ResponseObject<>(null, HttpStatus.CONFLICT, log.getErrorMessage());
             }
 
             Semester semester = new Semester();
@@ -206,48 +242,65 @@ public class SemesterServiceImpl implements SemesterService {
             Semester semesterSave = semesterExtendRepository.save(semester);
 
             createBlock(semesterSave, request.getEndTimeBlock1Custom());
-
-            return new ResponseObject<>(null, HttpStatus.CREATED, "Thêm học kỳ, block thành công!");
+            log.setSuccessMessage("Thêm học kỳ, block thành công!");
+            return new ResponseObject<>(null, HttpStatus.CREATED, log.getSuccessMessage());
         } catch (Exception e) {
-            log.error("Lỗi khi thêm học kỳ : {}", e.getMessage());
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            e.printStackTrace();
             return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Thêm học kỳ thất bại!");
+        } finally {
+            logsService.createOperationLog(log);
         }
     }
 
     @Override
     public ResponseObject<?> updateSemester(String semesterId, CreateUpdateSemesterRequest request) {
-        Optional<Semester> existingSemester = semesterExtendRepository.findById(semesterId);
-        if (existingSemester.isPresent()) {
-            Semester semester = existingSemester.get();
-            LocalDateTime startDateSemester = Instant.ofEpochMilli(request.getStartTime())
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDateTime();
-            LocalDateTime endDateSemester = Instant.ofEpochMilli(request.getEndTime())
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDateTime();
-            Integer yearStartTime = startDateSemester.getYear();
-            Integer yearEndTime = endDateSemester.getYear();
-            Long startTimeSemester = request.getStartTimeCustom();
-            Long endTimeSemester = request.getEndTimeCustom();
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OperationLogsRequest log = new OperationLogsRequest();
+        log.setHttpRequest(httpServletRequest);
+        log.setRequest(request);
+        log.setTypeFunction(FunctionLogType.UPDATE);
+        log.setStatus(true);
+        try {
+            Optional<Semester> existingSemester = semesterExtendRepository.findById(semesterId);
+            if (existingSemester.isPresent()) {
+                Semester semester = existingSemester.get();
+                LocalDateTime startDateSemester = Instant.ofEpochMilli(request.getStartTime())
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDateTime();
+                LocalDateTime endDateSemester = Instant.ofEpochMilli(request.getEndTime())
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDateTime();
+                Integer yearStartTime = startDateSemester.getYear();
+                Integer yearEndTime = endDateSemester.getYear();
+                Long startTimeSemester = request.getStartTimeCustom();
+                Long endTimeSemester = request.getEndTimeCustom();
 
-            if (!yearStartTime.equals(yearEndTime)) {
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Thời gian bắt đầu và kết thúc học kỳ phải cùng một năm!");
-            }
+                if (!yearStartTime.equals(yearEndTime)) {
+                    log.setStatus(false);
+                    log.setErrorMessage("Thời gian bắt đầu và kết thúc học kỳ phải cùng một năm!");
+                    return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, log.getErrorMessage());
+                }
 
-            if (request.getEndTimeBlock1() > endTimeSemester || request.getEndTimeBlock1() < startTimeSemester) {
-                return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Thời gian kết thúc block 1 phải nằm trong khoảng thời gian của học kỳ!");
-            }
+                if (request.getEndTimeBlock1() > endTimeSemester || request.getEndTimeBlock1() < startTimeSemester) {
+                    log.setStatus(false);
+                    log.setErrorMessage("Thời gian kết thúc block 1 phải nằm trong khoảng thời gian của học kỳ!");
+                    return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, log.getErrorMessage());
+                }
 
-            List<Semester> semesters = semesterExtendRepository.checkConflictTime(startTimeSemester, endTimeSemester);
-            if (!semesters.isEmpty()) {
-                for (Semester s : semesters) {
-                    if (!s.getId().equals(semester.getId())) {
-                        return new ResponseObject<>(null, HttpStatus.CONFLICT, "Đã có học kỳ trong khoảng thời gian này!");
+                List<Semester> semesters = semesterExtendRepository.checkConflictTime(startTimeSemester, endTimeSemester);
+                if (!semesters.isEmpty()) {
+                    for (Semester s : semesters) {
+                        if (!s.getId().equals(semester.getId())) {
+                            log.setStatus(false);
+                            log.setErrorMessage("Đã có học kỳ trong khoảng thời gian này!");
+                            return new ResponseObject<>(null, HttpStatus.CONFLICT, log.getErrorMessage());
+                        }
                     }
                 }
-            }
 
-            String name = SemesterName.valueOf(request.getSemesterName()).toString();
+                String name = SemesterName.valueOf(request.getSemesterName()).toString();
 
 //            Optional<Semester> existingByHocKyAndYear = semesterExtendRepository.existingBySemesterNameAndSemesterYear(name, yearStartTime);
 //            if (existingByHocKyAndYear.isPresent() && !existingByHocKyAndYear.get().equals(semester)) {
@@ -255,16 +308,27 @@ public class SemesterServiceImpl implements SemesterService {
 //                        "Học kỳ đã tồn tại!");
 //            }
 
-            semester.setSemesterName(SemesterName.valueOf(request.getSemesterName()));
-            semester.setYear(yearStartTime);
-            semester.setStartTime(startTimeSemester);
-            semester.setEndTime(endTimeSemester);
-            Semester semesterSave = semesterExtendRepository.save(semester);
-            createBlock(semesterSave, request.getEndTimeBlock1Custom());
+                semester.setSemesterName(SemesterName.valueOf(request.getSemesterName()));
+                semester.setYear(yearStartTime);
+                semester.setStartTime(startTimeSemester);
+                semester.setEndTime(endTimeSemester);
+                Semester semesterSave = semesterExtendRepository.save(semester);
 
-            return new ResponseObject<>(null, HttpStatus.OK, "Cập nhật học kỳ thành công!");
+                createBlock(semesterSave, request.getEndTimeBlock1Custom());
+                log.setSuccessMessage("Cập nhật học kỳ thành công!");
+                return new ResponseObject<>(null, HttpStatus.OK, log.getSuccessMessage());
+            }
+            log.setStatus(false);
+            log.setErrorMessage("Học kỳ không tồn tại!");
+            return new ResponseObject<>(null, HttpStatus.NOT_FOUND, log.getErrorMessage());
+        } catch (Exception e) {
+            log.setStatus(false);
+            log.setErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return new ResponseObject<>(null, HttpStatus.BAD_REQUEST, "Có lỗi say ra khi cập nhật học kỳ!");
+        } finally {
+            logsService.createOperationLog(log);
         }
-        return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Học kỳ không tồn tại!");
     }
 
     public void createBlock(Semester semester, Long endTimeBlock1) {
