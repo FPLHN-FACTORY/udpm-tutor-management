@@ -15,7 +15,7 @@ public interface PLPLStaffsRepository extends StaffRepository {
     @Query(
             value = """
             SELECT
-                s.email_fe
+                s.email_fpt
             FROM
                 staff s
             LEFT JOIN staff_major_facility smf ON s.id = smf.id_staff
@@ -29,6 +29,7 @@ public interface PLPLStaffsRepository extends StaffRepository {
                 r.code IN :role
                 AND d.code LIKE CONCAT('%', :departmentCode, '%')
                 AND f.code LIKE CONCAT('%', :facilityCode, '%')
+            GROUP BY s.email_fpt
             """,
             nativeQuery = true
     )

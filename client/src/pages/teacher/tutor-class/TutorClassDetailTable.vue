@@ -89,7 +89,11 @@
                 Tại đây
               </a>
             </div>
-
+          </div>
+          <div v-if="column.key === 'lectureStatus'" class="text-center">
+            <a-tag :color="getStatusLecture(record.lectureStatus).color">
+              {{ getStatusLecture(record.lectureStatus).label }}
+            </a-tag>
           </div>
         </template>
       </tutor-table>
@@ -102,7 +106,7 @@ import {EyeOutlined, PlusSquareOutlined} from '@ant-design/icons-vue';
 import { ColumnType } from 'ant-design-vue/es/table';
 import {h, ref, watch} from 'vue';
 import TutorTable from '@/components/ui/TutorTable/TutorTable.vue';
-import {confirmModal} from "@/utils/common.helper.ts";
+import {confirmModal, getStatusLecture} from "@/utils/common.helper.ts";
 import {
   LectureResponse, UpdateLectureParams,
 } from "@/services/api/teacher/tutor-class.api.ts";
@@ -265,8 +269,8 @@ const columnsTutorClass: ColumnType[] = [
   },
   {
     title: "Trạng thái",
-    dataIndex: "status",
-    key: "status",
+    dataIndex: "lectureStatus",
+    key: "lectureStatus",
     ellipsis: true,
     width: "100px"
   },
