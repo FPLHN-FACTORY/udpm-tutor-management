@@ -24,6 +24,7 @@ import udpm.hn.server.entity.TutorClassDetail;
 import udpm.hn.server.infrastructure.config.drive.dto.GoogleDriveFileDTO;
 import udpm.hn.server.infrastructure.config.drive.service.GoogleDriveFileService;
 import udpm.hn.server.infrastructure.constant.Format;
+import udpm.hn.server.infrastructure.constant.LectureStatus;
 import udpm.hn.server.infrastructure.constant.Shift;
 import udpm.hn.server.utils.Helper;
 import java.io.IOException;
@@ -48,8 +49,6 @@ public class TCTCTutorClassServiceImpl implements TCTCTutorClassService {
 
     @Override
     public ResponseObject<?> getTutorClassesByTeacher(TCTCTutorClassListRequest request) {
-        log.info("Teacher id: " + request.getTeacherId());
-        log.info("Request: " + request.toString());
         Optional<Staff> staffOptional = teacherRepository.findById(request.getTeacherId());
         if (staffOptional.isEmpty()) {
             return new ResponseObject<>(null, HttpStatus.BAD_GATEWAY, "Giảng viên không tồn tại");
@@ -204,6 +203,7 @@ public class TCTCTutorClassServiceImpl implements TCTCTutorClassService {
             Lecture lecture = new Lecture();
             lecture.setTutorClassDetail(tutorClassDetail);
             lecture.setShift(shift);
+            lecture.setLectureStatus(LectureStatus.NOT_STARTED);
             lecture.setFormat(tutorClassDetail.getTutorClass().getFormat());
             lecture.setName("Buổi " + (j + 1));
             lectureRepository.save(lecture);

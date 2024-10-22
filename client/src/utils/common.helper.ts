@@ -153,6 +153,21 @@ export const getTagFormat = (status: string): string => {
   }
 };
 
+export const getStatusLecture = (status: string): { label: string; color: string } => {
+  switch (status) {
+    case "NOT_STARTED":
+      return { label: "Chưa bắt đầu", color: "gray" };
+    case "IN_PROGRESS":
+      return { label: "Đang bắt đầu", color: "yellow" };
+    case "COMPLETED":
+      return { label: "Đã hoàn thành", color: "green" };
+    case "RESCHEDULED":
+      return { label: "Dời lịch", color: "red" };
+    default:
+      return { label: "Không xác định", color: "default" };
+  }
+};
+
 export const formatBlockName = (blockName: string): string => {
   return blockName.replace(/^BLOCK_/, "Block ");
 };
