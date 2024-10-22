@@ -15,7 +15,7 @@ public interface ConfigRoleCustomRepository extends RoleRepository {
                     SELECT CONCAT(r.name,' - ',f.name) AS roleName
                     FROM role r
                     LEFT JOIN facility f ON f.id = r.id_facility
-                    WHERE r.status = 0
+                    WHERE r.status = 0 AND f.id = :idFacility
                     """,
             nativeQuery = true
     )

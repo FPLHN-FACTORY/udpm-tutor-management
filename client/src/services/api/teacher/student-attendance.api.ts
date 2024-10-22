@@ -11,14 +11,15 @@ export type StudentAttendanceResponse = ResponseList & {
     isAttendance: string,
     attendanceReason: string,
     attendanceTime: number,
-    note: string
+    note: string,
+    checked: string,
 }
 
 export interface CreateAttendanceRequest {
     studentId: string;
     lectureId: string;
     note: string;
-    isPresent: boolean;
+    isPresent: string;
 }
 
 export const getStudentAttendance = async (

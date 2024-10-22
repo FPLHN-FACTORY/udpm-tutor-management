@@ -4,7 +4,7 @@ import {
   CreateUpdatePlanParams,
   getDetailPlan, getPlanInfo, getPlanInfoById,
   getPlans, getSemesterInfo,
-  ParamsGetPlans, startPlan, updatePlan
+  ParamsGetPlans, startPlan, updatePlan, uploadFileStudent
 } from "@/services/api/planner/plan.api.ts";
 import {Ref} from "vue";
 import {useMutation, useQuery, useQueryClient, UseQueryReturnType} from "@tanstack/vue-query";
@@ -74,9 +74,9 @@ export const useUpdatePlan = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
-                   planId,
-                   params,
-                 }: {
+      planId,
+      params,
+    }:{
       planId: string;
       params: CreateUpdatePlanParams;
     }) => updatePlan(planId, params),
@@ -143,4 +143,26 @@ export const useCheckApprovePlan = (
     queryFn: () => checkApprovePlan(planId),
     ...options,
   };
+};
+
+export const useUploadFileStudent = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      file,
+      planId,
+    }:{
+      file: File;
+      planId: Ref<string>
+    }) => uploadFileStudent(file,planId.value),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKey.planner.plan.planList], // Cập nhật query key nếu cần
+      });
+    },
+    onError: (error: any) => {
+      console.log("🚀 ~ useUploadFile ~ error:", error);
+    },
+  });
 };

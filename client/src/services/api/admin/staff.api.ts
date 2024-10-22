@@ -197,3 +197,35 @@ export const getDetailStaffDepartmentMajor = async (idStaffMajorFacility: string
     return res.data;
 };
 
+export const uploadFileStaff = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await request({
+        url: `${PREFIX_API_STAFF_ADMIN}/file/upload`, // Đảm bảo rằng URL này chính xác
+        method: "POST",
+        data: formData,
+        headers: {
+            'Content-Type': 'multipart/form-data', // Đặt header cho multipart
+        },
+    }) as AxiosResponse<DefaultResponse<null>>;
+
+    return res.data;
+};
+
+export const downloadTemplateStaff = async (idFacility: string | null) => {
+    const response = await request({
+        url: `${PREFIX_API_STAFF_ADMIN}/file/template/${idFacility}`, // Ensure this URL is correct
+        method: 'GET',
+        responseType: 'blob', // Important for file downloads
+    });
+
+    // Create a URL for the file
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'template.xlsx'); // Specify a default file name
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+};

@@ -47,7 +47,7 @@ public class DownloadStaffTemplate {
         this.httpSession = httpSession;
     }
 
-    public ResponseObject<?> downloadTemplate() {
+    public ResponseObject<?> downloadTemplate(String facilityId) {
 
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Template Thông Tin Nhân Viên");
@@ -92,9 +92,7 @@ public class DownloadStaffTemplate {
             cell.setCellValue("Chức vụ");
             cell.setCellStyle(headerCellStyle);
 
-            List<String> validDepartmentFacility = departmentFacilityRepository.findAllByIdFacility(
-                    (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID)
-            );
+            List<String> validDepartmentFacility = departmentFacilityRepository.findAllByIdFacility(facilityId);
 
             if (validDepartmentFacility.isEmpty()) {
                 return ResponseObject.errorForward(
@@ -103,9 +101,7 @@ public class DownloadStaffTemplate {
                 );
             }
 
-            List<String> validRole = roleRepository.findAllByFacilityId(
-                    (String) httpSession.getAttribute(SessionConstant.CURRENT_USER_FACILITY_ID)
-            );
+            List<String> validRole = roleRepository.findAllByFacilityId(facilityId);
 
             if (validRole.isEmpty()) {
                 return ResponseObject.errorForward(
