@@ -55,7 +55,7 @@ public class StudentProcessor implements ItemProcessor<StudentExcelRequest, Tran
                 return null;
             }
 
-            return createTransferStaffRole(item, student,tutorClassDetail);
+            return createTransferStudent(item, student,tutorClassDetail);
         } catch (Exception e) {
             return null;
         }
@@ -78,7 +78,7 @@ public class StudentProcessor implements ItemProcessor<StudentExcelRequest, Tran
         return classStudentJoined.orElse(null);
     }
 
-    private TransferStudent createTransferStaffRole(StudentExcelRequest item, Student student,TutorClassDetail tutorClassDetail) {
+    private TransferStudent createTransferStudent(StudentExcelRequest item, Student student,TutorClassDetail tutorClassDetail) {
         Student newStudent = updateStudent(student, item);
         ClassStudentJoined classStudentJoined = new ClassStudentJoined();
         classStudentJoined.setTutorClassDetail(tutorClassDetail);
