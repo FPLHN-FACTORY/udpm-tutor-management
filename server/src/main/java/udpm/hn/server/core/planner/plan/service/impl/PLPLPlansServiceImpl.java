@@ -18,6 +18,7 @@ import udpm.hn.server.core.planner.plan.model.request.PLPLUpdatePlanRequest;
 import udpm.hn.server.core.planner.plan.repository.PLPLBlocksRepository;
 import udpm.hn.server.core.planner.plan.repository.PLPLDepartmentFacilitysRepository;
 import udpm.hn.server.core.planner.plan.repository.PLPLPlansRepository;
+import udpm.hn.server.core.planner.plan.repository.PLPLSemestersRepository;
 import udpm.hn.server.core.planner.plan.repository.PLPLStaffsRepository;
 import udpm.hn.server.core.planner.plan.repository.PlanNotificationRepository;
 import udpm.hn.server.core.planner.plan.service.PLPLPlansService;
@@ -41,6 +42,7 @@ import udpm.hn.server.utils.Helper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,6 +67,8 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
     private final PlanLogHistoryService planLogHistoryService;
 
     private final GoogleFormService googleFormService;
+
+    private final PLPLSemestersRepository semestersRepository;
 
     @Value("${ws.topicPrefix}")
     private String topicPrefix;
@@ -103,6 +107,12 @@ public class PLPLPlansServiceImpl implements PLPLPlansService {
             if (blockOptional.isEmpty()) {
                 planLogHistory.setStatus(false);
                 return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Block không tồn tại");
+            }
+
+            Long currentTime = new Date().getTime();
+            if (blockOptional.get().getEndTime() <= currentTime) {
+                planLogHistory.setStatus(false);
+                return new ResponseObject<>(null, HttpStatus.NOT_FOUND, "Block đã qua thời gian hoạt động");
             }
 
             Optional<Staff> staffOptional = plplStaffsRepository.findByStaffCode(request.getUserCode());

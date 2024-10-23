@@ -27,10 +27,12 @@ import udpm.hn.server.infrastructure.connection.IdentityValidation;
 import udpm.hn.server.infrastructure.constant.EntityStatus;
 import udpm.hn.server.infrastructure.constant.Role;
 import udpm.hn.server.infrastructure.constant.StatusUserActivity;
+import udpm.hn.server.infrastructure.security.repository.RoleAuthRepository;
 import udpm.hn.server.infrastructure.security.repository.SemesterAuthRepository;
 import udpm.hn.server.infrastructure.security.repository.StaffAuthRepository;
 import udpm.hn.server.infrastructure.security.repository.StaffMajorFacilityAuthRepository;
 import udpm.hn.server.infrastructure.security.repository.StaffRoleAuthRepository;
+import udpm.hn.server.infrastructure.security.response.TokenFacilityResponse;
 import udpm.hn.server.infrastructure.security.response.TokenSemesterResponse;
 import udpm.hn.server.infrastructure.security.response.TokenSubjectResponse;
 import udpm.hn.server.infrastructure.security.user.UserPrincipal;
@@ -76,6 +78,9 @@ public class TokenProvider {
 
     @Setter(onMethod_ = @Autowired)
     private SemesterAuthRepository semesterAuthRepository;
+
+    @Setter(onMethod_ = @Autowired)
+    private RoleAuthRepository roleAuthRepository;
 
 //    public String createToken(Authentication authentication) throws BadRequestException, JsonProcessingException {
 //        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
@@ -147,21 +152,23 @@ public class TokenProvider {
             String subject = new ObjectMapper().writeValueAsString(tokenSubjectResponse);
 
             Optional<StaffMajorFacility> staffMajorFacility = staffMajorFacilityAuthRepository.findByStaffId(user.getId());
+            TokenFacilityResponse facility = roleAuthRepository.findFacilityByStaffId(user.getId());
+
+            if(facility != null) {
+                tokenSubjectResponse.setFacilityId(facility.getFacilityId());
+                tokenSubjectResponse.setFacilityCode(facility.getFacilityCode());
+            }else {
+                tokenSubjectResponse.setFacilityId("");
+                tokenSubjectResponse.setFacilityCode("");
+            }
 
             if (staffMajorFacility.isPresent()) {
                 MajorFacility majorFacility = staffMajorFacility.get().getMajorFacility();
-                Facility facility = majorFacility.getDepartmentFacility().getFacility();
                 DepartmentFacility departmentFacility = majorFacility.getDepartmentFacility();
-                tokenSubjectResponse.setFacilityCode(facility.getCode());
                 tokenSubjectResponse.setDepartmentCode(departmentFacility.getDepartment().getCode());
-                tokenSubjectResponse.setFacilityId(facility.getId());
-                tokenSubjectResponse.setFacilityName(facility.getName());
                 tokenSubjectResponse.setDepartmentName(departmentFacility.getDepartment().getName());
             } else {
-                tokenSubjectResponse.setFacilityCode("");
                 tokenSubjectResponse.setDepartmentCode("");
-                tokenSubjectResponse.setFacilityId("");
-                tokenSubjectResponse.setFacilityName("");
                 tokenSubjectResponse.setDepartmentName("");
             }
 
@@ -208,20 +215,23 @@ public class TokenProvider {
         String subject = new ObjectMapper().writeValueAsString(tokenSubjectResponse);
 
         Optional<StaffMajorFacility> staffMajorFacility = staffMajorFacilityAuthRepository.findByStaffId(user.getId());
+        TokenFacilityResponse facility = roleAuthRepository.findFacilityByStaffId(user.getId());
+
+        if(facility != null) {
+            tokenSubjectResponse.setFacilityId(facility.getFacilityId());
+            tokenSubjectResponse.setFacilityCode(facility.getFacilityCode());
+        }else {
+            tokenSubjectResponse.setFacilityId("");
+            tokenSubjectResponse.setFacilityCode("");
+        }
+
         if (staffMajorFacility.isPresent()) {
             MajorFacility majorFacility = staffMajorFacility.get().getMajorFacility();
-            Facility facility = majorFacility.getDepartmentFacility().getFacility();
             DepartmentFacility departmentFacility = majorFacility.getDepartmentFacility();
-            tokenSubjectResponse.setFacilityCode(facility.getCode());
             tokenSubjectResponse.setDepartmentCode(departmentFacility.getDepartment().getCode());
-            tokenSubjectResponse.setFacilityId(facility.getId());
-            tokenSubjectResponse.setFacilityName(facility.getName());
             tokenSubjectResponse.setDepartmentName(departmentFacility.getDepartment().getName());
         } else {
-            tokenSubjectResponse.setFacilityCode("");
             tokenSubjectResponse.setDepartmentCode("");
-            tokenSubjectResponse.setFacilityId("");
-            tokenSubjectResponse.setFacilityName("");
             tokenSubjectResponse.setDepartmentName("");
         }
 
